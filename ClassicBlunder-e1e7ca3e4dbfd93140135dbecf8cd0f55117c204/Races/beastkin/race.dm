@@ -30,11 +30,11 @@ Inspiration taken from Sett (League of Legends)}",\
 "<:3c",\
 "AHRI")
 		// attaching this here cause lol
-		stats_per_class = list("Heart of The Beastkin" = list(1.25, 2, 0.75, 1, 1, 1.5), "Monkey King" = list(1.25,1.25,1.25,1.25,1.25,1.25),\
+		stats_per_class = list("Heart of The Beastkin" = list(1.25, 2, 0.75, 1, 1, 1.5), "Monkey King" = list(1.25,1.33,1.25,1.33,1.25,1.25),\
 						"Unseen Predator" = list(1.75, 0.75, 1, 1.75, 0.75, 1.5), "Undying Rage" = list(1.75, 0.75, 1.75, 1, 0.75, 1.5), \
 						"Feather Cowl" = list(0.75, 2, 0.75, 1.25, 1.5, 1.25), "Feather Knife" = list(1.5, 0.75, 1, 1.75, 0.75, 1.75), \
 						"Spirit Walker" = list(1, 1.5, 1, 0.75, 0.75, 1), \
-						"Trickster" = list(1, 1, 2, 1, 1.5, 1), "Fox Fire" = list(0.75, 1, 2, 1.5, 1.5, 0.75 ))
+						"Trickster" = list(1, 1.25, 2, 1, 1.5, 1), "Fox Fire" = list(0.75, 1, 2, 1.5, 1.5, 0.75 ))
 		imagination = 1
 		var/MaxGrit = 0
 		var/Grit = 0
@@ -56,6 +56,7 @@ Inspiration taken from Sett (League of Legends)}",\
 					p.passive_handler.Set("DoubleStrike",1)
 				if("Monkey King")
 					p.passive_handler.Increase("Nimbus", 1)
+                    p.passive_handler.Increase("MartialMagic", 1)
 					var/obj/Skills/Buffs/SlotlessBuffs/Autonomous/Racial/Beastkin/Never_Fall/nf = new(p)
 					p.AddSkill(nf)
 					p.passive_handler.Increase("Instinct", 1)
