@@ -13473,10 +13473,19 @@ mob
 			src.DefMultTotal+=(src.SpecialBuff.DefMult-1)
 			src.RecovMultTotal+=(src.SpecialBuff.RecovMult-1)
 			src.AllSkillsAdd(src.SpecialBuff)
+			// Job Attunement overwrites base stats wholesale (see JobStones.dm).
+			if(istype(src.SpecialBuff, /obj/Skills/Buffs/SpecialBuffs/Job_Attunement))
+				var/obj/Skills/Buffs/SpecialBuffs/Job_Attunement/JA = src.SpecialBuff
+				src.ApplyJobStats(JA.JobStats, JA.JobLabel)
 			if(isplayer(src))
 				src:move_speed = MovementSpeed()
 
 		RemoveSpecialBuff()
+
+			// Job Attunement restores the base stats it overwrote before the
+			// slot is released (SpecialBuff is still valid at this point).
+			if(istype(src.SpecialBuff, /obj/Skills/Buffs/SpecialBuffs/Job_Attunement))
+				src.RestoreJobStats()
 
 			src.StrAdded -= SpecialBuff.strAdd
 			src.EndAdded -= SpecialBuff.endAdd

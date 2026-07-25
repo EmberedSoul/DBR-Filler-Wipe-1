@@ -56,7 +56,7 @@ Inspiration taken from Sett (League of Legends)}",\
 					p.passive_handler.Set("DoubleStrike",1)
 				if("Monkey King")
 					p.passive_handler.Increase("Nimbus", 1)
-                    p.passive_handler.Increase("MartialMagic", 1)
+					p.passive_handler.Increase("MartialMagic", 1)
 					var/obj/Skills/Buffs/SlotlessBuffs/Autonomous/Racial/Beastkin/Never_Fall/nf = new(p)
 					p.AddSkill(nf)
 					p.passive_handler.Increase("Instinct", 1)

@@ -54,7 +54,7 @@ proc/log_func(x, a, b)
 #define DEMON /race/demon
 #define MAJIN /race/majin
 // Majin absorb zone
-#define MAJIN_ABSORB_Z 19
+#define MAJIN_ABSORB_Z 4
 #define MAJIN_UNHINGED_POWER_MULT 2
 #define MAKYO /race/makyo
 #define DRAGON /race/dragon

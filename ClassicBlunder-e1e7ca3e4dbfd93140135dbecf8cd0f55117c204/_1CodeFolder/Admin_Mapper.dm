@@ -123,6 +123,11 @@ mob
 			set name="Mapper Delete"
 			if(!istype(o, /obj/Turfs) && !istype(o, /obj/KatieObj))
 				return
+			// Common builders (BuildGiven but not full staff) may only delete the
+			// objects they built themselves. Admins/Mappers are unrestricted.
+			if(!usr.Admin && !usr.Mapper && o.Builder != usr.ckey)
+				usr << "You can only delete objects you built yourself."
+				return
 			if(istype(o, /obj/Items/Tech/Door))
 				if(o.Builder!=usr.ckey)
 					return
