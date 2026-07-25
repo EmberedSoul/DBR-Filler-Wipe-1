@@ -10,8 +10,6 @@ globalTracker/var/list/IGNORE_POWER_CLAMP_PASSIVES = list("Star Surge", "The Fla
         return FALSE
     if(passive_handler.Get("Justice") || defender.passive_handler.Get("Justice"))
         return FALSE
-    if(isRace(MAJIN))
-        return TRUE
     if(Secret == "Heavenly Restriction" && secretDatum?:hasImprovement("Power"))
         return TRUE
     for(var/passive in glob.IGNORE_POWER_CLAMP_PASSIVES)
