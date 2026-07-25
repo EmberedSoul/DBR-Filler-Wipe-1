@@ -60,6 +60,9 @@ mob/Players
 		ForceClearHeldChargeState()
 		players += usr
 		src.GiveCommonBuild()
+		// Safeguard: if a save happened mid-attunement (e.g. a crash), roll the
+		// Job Stone stats back to the stored originals on login.
+		RestoreJobStats()
 		OverwatchNotifyLogin(usr, "logged in")
 		// StyleRating decay runs in spawn(); the loop dies on disconnect and
 		// leaves the persistent StyleRating var stuck above zero on the next
@@ -505,6 +508,9 @@ mob/Players
 			P.Shadowbringer_ClearShadow()
 			P.KatenCleanseBankaiState()
 		ForceClearHeldChargeState()
+		// Drop any Job Stone attunement so the character is always saved with
+		// its true base stats (attunement is a live-session toggle only).
+		RestoreJobStats()
 		MajinAbsorbOnLogout()
 		DevilSummonerLogout()
 		OverwatchNotifyLogin(src, "logged out")

@@ -556,7 +556,7 @@ mob/var/buildPreviousZ = 0
 // build gates here and in NewBuild.dm so common players can actually place.
 mob/proc/GiveCommonBuild()
 	BuildGiven = 1
-	var/list/CommonBuildVerbs = list(/mob/Mapper/verb/Build, /mob/Mapper/verb/changeHudScale, /mob/Mapper/verb/useCustomTurfSettings, /mob/Mapper/verb/customObjSettings, /mob/Mapper/verb/customTurfSettings, /mob/Mapper/verb/ToggleBuildMode)
+	var/list/CommonBuildVerbs = list(/mob/Mapper/verb/Build, /mob/Mapper/verb/changeHudScale, /mob/Mapper/verb/useCustomTurfSettings, /mob/Mapper/verb/customObjSettings, /mob/Mapper/verb/customTurfSettings, /mob/Mapper/verb/ToggleBuildMode, /mob/Mapper/verb/Mapper_Delete)
 	verbs -= CommonBuildVerbs
 	verbs += CommonBuildVerbs
 	if(!locate(/obj/Skills/Fly, src))
