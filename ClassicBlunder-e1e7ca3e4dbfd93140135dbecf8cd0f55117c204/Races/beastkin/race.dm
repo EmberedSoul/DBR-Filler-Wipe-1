@@ -34,7 +34,7 @@ Inspiration taken from Sett (League of Legends)}",\
 						"Unseen Predator" = list(1.75, 0.75, 1, 1.75, 0.75, 1.5), "Undying Rage" = list(1.75, 0.75, 1.75, 1, 0.75, 1.5), \
 						"Feather Cowl" = list(0.75, 2, 0.75, 1.25, 1.5, 1.25), "Feather Knife" = list(1.5, 0.75, 1, 1.75, 0.75, 1.75), \
 						"Spirit Walker" = list(1, 1.5, 1, 0.75, 0.75, 1), \
-						"Trickster" = list(1, 1.25, 2, 1, 1.5, 1), "Fox Fire" = list(0.75, 1, 2, 1.5, 1.5, 0.75 ))
+						"Trickster" = list(1, 1.25, 2, 1, 1.5, 1.25), "Fox Fire" = list(0.75, 1, 2, 1.5, 1.5, 0.75 ))
 		imagination = 1
 		var/MaxGrit = 0
 		var/Grit = 0

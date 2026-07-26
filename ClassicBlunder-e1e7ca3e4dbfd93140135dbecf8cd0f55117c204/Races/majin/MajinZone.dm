@@ -3,7 +3,7 @@ var/global/list/MAJIN_ROOM_COORDS = list(
     list(8,  33,  MAJIN_ABSORB_Z),  // Room 2
     list(8,  56,  MAJIN_ABSORB_Z),  // Room 3
     list(8,  78,  MAJIN_ABSORB_Z),  // Room 4
-    list(8, 101,  MAJIN_ABSORB_Z)   // Room 5
+    list(8, 101,  MAJIN_ABSORB_Z)   // Room 5                                                                                                                               
 )
 
 var/global/list/MAJIN_ROOM_OWNERS = list(null, null, null, null, null)
