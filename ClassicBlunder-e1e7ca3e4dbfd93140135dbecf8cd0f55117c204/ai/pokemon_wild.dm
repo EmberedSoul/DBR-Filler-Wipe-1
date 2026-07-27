@@ -117,6 +117,10 @@ mob/var/list/owned_pokemon = list()
 		set src in usr
 		set name = "Capture Pokemon"
 		set category = "Skills"
+		// Requires the Trainer's Pledge (a T1 signature choice) to throw a Pokeball.
+		if(!usr.passive_handler || !usr.passive_handler.Get("Trainers Pledge"))
+			usr << "Your finger rest over the Pokeballs button, but your lack of resolve to be a trainer holds you back from throwing it..."
+			return
 		if(!istype(wild)) return
 		if(wild.ai_owner)
 			usr << "That Pokemon already belongs to a trainer."

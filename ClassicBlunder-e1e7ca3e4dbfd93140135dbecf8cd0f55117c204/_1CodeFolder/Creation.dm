@@ -18,6 +18,10 @@
 	for(var/S in missingSkills)
 		if(!locate(S, usr.contents))
 			usr.AddSkill(new S)
+	// Re-apply the permanent Trainer's Pledge passive (a T1 signature choice) so it
+	// survives relogs, since it's stored as a signature rather than a skill/buff.
+	if(usr.passive_handler && ("Trainers Pledge" in usr.SignatureSelected))
+		usr.passive_handler.Set("Trainers Pledge", 1)
 
 /mob/verb/See_Targets_Target()
 	set category="Skills"
