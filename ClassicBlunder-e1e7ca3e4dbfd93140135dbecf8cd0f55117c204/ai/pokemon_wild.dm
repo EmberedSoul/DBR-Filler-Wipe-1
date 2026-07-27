@@ -241,6 +241,23 @@ mob/proc/SpawnPokemonAlly(datum/pokemon_species/s)
 	spawn(15)
 		a.overlays -= em
 
+// The trainer's Pokemon "speaks" — but whatever the trainer types comes out as
+// just the Pokemon's name + "!". Routes through AISay so it uses the game's full
+// speech pipeline (hearers, observers, wiretaps, chat logs).
+/mob/PokemonOwner/verb/Pokemon_Say(msg as text)
+	set category = "Pokemon"
+	set name = "Pokemon: Say"
+	var/mob/Player/AI/Pokemon/a = null
+	for(var/mob/Player/AI/Pokemon/p in usr.ai_followers)
+		if(p.ai_owner == usr)
+			a = p
+			break
+	if(!a)
+		usr << "You don't have a Pokemon out to speak. Summon one first!"
+		return
+	if(!msg) return
+	a.AISay("[a.name]!")
+
 // --- Linked fainting: an ally Pokemon and its trainer share their fate ------
 // If a summoned Pokemon is KO'd, its trainer goes down with it, and vice versa.
 // These override the shared Unconscious() proc; the base guards re-entry with
