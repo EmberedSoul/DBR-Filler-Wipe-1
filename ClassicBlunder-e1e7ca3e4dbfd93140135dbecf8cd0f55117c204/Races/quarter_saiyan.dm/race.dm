@@ -18,7 +18,7 @@ race
 		imagination = 1.5
 		classes = list("Dormant", "Awakend")
 		class_info = list("Quarter-Saiyans who lean into their human side, trading raw power for adaptability and intellect.", "Quarter-Saiyans who have coaxed out their Saiyan blood, channeling it into bursts of aggression and resilience.")
-		stats_per_class = list("Dormant" = list(1, 1, 1, 1, 1, 1), "Awakened" = list(1.3, 1.3, 1.3, 1, 1, 1))
+		stats_per_class = list("Dormant" = list(1, 1.5, 1, 1.5, 1, 1.25), "Awakened" = list(1.3, 1.3, 1.3, 1, 1, 1))
 
 		onFinalization(mob/user)
 			if(user.Class == "Dormant")
