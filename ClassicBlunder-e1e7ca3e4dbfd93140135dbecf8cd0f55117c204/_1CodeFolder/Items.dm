@@ -388,6 +388,15 @@ obj/Items
 
 
 			var/manaCost = src.Cost * (glob.progress.EconomyMana / 100)
+			// Job Stones are forged with Manabits (Mineral) instead of Mana Capacity.
+			// Charge the same number the craft menu shows, then zero manaCost so the
+			// capacity path below is a no-op.
+			if(istype(src, /obj/Items/Enchantment/Job_Stone))
+				if(usr.GetMineral() < manaCost)
+					usr << "You don't have enough Manabits to forge [src]. (You need [Commas(round(manaCost))].)"
+					return
+				usr.TakeMineral(manaCost)
+				manaCost = 0
 			if(istype(src, /obj/Items/Enchantment/Limited_Rank_Up_Magic))
 				if(usr.getTotalMagicLevel() < 20)
 					usr << "Your total magic level is not high enough to craft Limited Rank-Up Magic. (Requires 20 or higher.)"
