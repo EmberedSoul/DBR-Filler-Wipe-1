@@ -236,11 +236,39 @@ var/global/list/pokemon_database = list()
 	layer = MOB_LAYER
 	vis_flags = VIS_INHERIT_DIR
 
+// Multi-tile species (the legendary birds, Onix, Wailord, Ho-Oh, etc.) are drawn
+// larger than a single tile: the DMI stores the creature as a grid of
+// icon_states, with the base state as the centre tile and directional-suffix
+// states (_n/_s/_e/_w plus the four diagonals) as the surrounding tiles. These
+// offsets place each surrounding piece exactly one tile (32px) from centre so
+// the whole creature reassembles correctly. pixel_y is +up / -down, pixel_x is
+// +right / -left.
+var/global/list/pokemon_piece_offsets = list(
+	"n"  = list(0,   32), "s"  = list(0,  -32), "e"  = list( 32,  0), "w"  = list(-32,  0),
+	"ne" = list(32,  32), "nw" = list(-32, 32), "se" = list( 32,-32), "sw" = list(-32,-32))
+
+// Cached list of every icon_state in POKEMON.dmi (built once on first use), so we
+// can detect which species have grid pieces without hardcoding a list of them.
+var/global/list/pokemon_icon_state_cache = null
+/proc/PokemonIconStates()
+	if(!pokemon_icon_state_cache)
+		pokemon_icon_state_cache = icon_states(POKEMON_ICON)
+	return pokemon_icon_state_cache
+
 // --- The Pokemon AI mob ----------------------------------------------------
 /mob/Player/AI/Pokemon
 	var/PokemonType = null
 	var/pkmn_species = null
 	var/obj/pokemon_sprite/body_sprite = null
+	var/list/body_pieces = null   // extra vis sprites assembled for multi-tile species
+
+	// Tear down any assembled multi-tile pieces. Called before (re-)applying a
+	// species so evolutions don't leave the previous form's tiles hanging around.
+	proc/ClearBodyPieces()
+		if(body_pieces)
+			for(var/obj/pokemon_sprite/p in body_pieces)
+				vis_contents -= p
+			body_pieces = null
 
 	// Configure this Pokemon from a species entry, then evolve it as far as its
 	// current Potential allows (so a high-level spawn/summon comes out already
@@ -264,6 +292,25 @@ var/global/list/pokemon_database = list()
 			vis_contents += body_sprite
 		body_sprite.icon = POKEMON_ICON
 		body_sprite.icon_state = s.icon_state
+		// Large, multi-tile species are split across a grid of icon_states; the
+		// base state above is the centre tile. Assemble the rest of the creature
+		// by adding an offset vis piece for each directional-suffix state that
+		// exists for this species. Normal species have no suffixed states, so this
+		// loop adds nothing and they render from the single centre sprite as before.
+		ClearBodyPieces()
+		var/list/all_states = PokemonIconStates()
+		for(var/suffix in pokemon_piece_offsets)
+			var/pstate = "[s.icon_state]_[suffix]"
+			if(pstate in all_states)
+				if(!body_pieces) body_pieces = list()
+				var/obj/pokemon_sprite/piece = new
+				piece.icon = POKEMON_ICON
+				piece.icon_state = pstate
+				var/list/off = pokemon_piece_offsets[suffix]
+				piece.pixel_x = off[1]
+				piece.pixel_y = off[2]
+				body_pieces += piece
+				vis_contents += piece
 		alpha = 255
 		density = 1
 		ApplyPokemonStats(s)
