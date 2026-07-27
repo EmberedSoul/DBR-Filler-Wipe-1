@@ -40,7 +40,8 @@ var/list/Tier1 = list(
 	"Spirit Sword" = "/obj/Skills/Buffs/SlotlessBuffs/Spirit_Sword",
 	"Advanced Fire Magic" = list("/obj/Skills/Projectile/Magic/Uber_Shots/Hellfire_Nova"),
 	"Advanced Space Magic" = list("/obj/Skills/AutoHit/Magic/Magnetga", "/obj/Skills/AutoHit/Magic/Graviga", "/obj/Skills/AutoHit/Magic/Stopga"),
-	"White Magic" = list("/obj/Skills/Buffs/SlotlessBuffs/Magic/Cure", "/obj/Skills/Buffs/SlotlessBuffs/Magic/Esuna")
+	"White Magic" = list("/obj/Skills/Buffs/SlotlessBuffs/Magic/Cure", "/obj/Skills/Buffs/SlotlessBuffs/Magic/Esuna"),
+	"Trainers Pledge" = list() // handled specially in DevelopSignature (grants the "Trainers Pledge" passive, not a skill)
 )
 
 var/list/Tier2 = list(
@@ -163,6 +164,14 @@ proc/DevelopSignature(mob/m, Tier, Type)
 		options.Remove(usr.SignatureSelected)
 	var/obj/Skills/new_skill = input("Tier [Tier] [Type] Development") as null|anything in options
 	if (!new_skill) return
+	// Trainer's Pledge: not a skill — a permanent passive gated behind a solemn choice.
+	if (new_skill == "Trainers Pledge")
+		switch (input(usr, "You are about to forsake part of your own development, in order to make a Pledge to train and capture Pokemon. Do you wish to pursue the life of a Pokemon Trainer, and be the very best? Like no one ever was?", "Trainer's Pledge") in list("Yes", "No"))
+			if ("Yes")
+				if (usr.passive_handler) usr.passive_handler.Set("Trainers Pledge", 1)
+				usr.SignatureSelected.Add("Trainers Pledge")
+				usr << "<b>You take the Trainer's Pledge. Your journey to become the very best begins!</b>"
+		return
 	if (!istype(options[new_skill], /list))
 		if(istext(options[new_skill]))
 			options[new_skill] = text2path(options[new_skill])
