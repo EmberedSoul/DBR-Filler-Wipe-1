@@ -1,4 +1,4 @@
-/mob/Admin2/verb/Screen_Shatter()
+ /* /mob/Admin2/verb/Screen_Shatter()
 	set category = "Admin"
 	set name = "Screen Shatter"
 
@@ -13,4 +13,4 @@
 	for(var/mob/M in targets)
 		ScreenShatter(M)
 
-	Log("Admin", "[ExtractInfo(src)] triggered Screen Shatter effect on [targets.len] player(s).")
+	Log("Admin", "[ExtractInfo(src)] triggered Screen Shatter effect on [targets.len] player(s).") */
