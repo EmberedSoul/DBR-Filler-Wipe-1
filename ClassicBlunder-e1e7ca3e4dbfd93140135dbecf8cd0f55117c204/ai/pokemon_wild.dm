@@ -187,6 +187,60 @@ mob/proc/SpawnPokemonAlly(datum/pokemon_species/s)
 	owned_pokemon -= sp
 	src << "You released [sp]. ([owned_pokemon.len]/[MAX_OWNED_POKEMON])"
 
+// --- Pokemon Emote ---------------------------------------------------------
+// Let a trainer roleplay their summoned Pokemon. Any "quoted speech" the trainer
+// types is swapped for the Pokemon's name + "!", since Pokemon only ever say
+// their own name (a Pikachu emoting `perks up, "hi there!"` broadcasts as
+// `*Pikachu perks up, "Pikachu!"*`).
+
+// Replace every "quoted" span in T with "[name]!". Unbalanced trailing quotes
+// are left untouched. Done by hand (no regex) for a couple of short scans.
+/proc/PokemonSpeak(T, name)
+	var/out = ""
+	var/pos = 1
+	while(TRUE)
+		var/open = findtext(T, "\"", pos)
+		if(!open)
+			out += copytext(T, pos)          // no more quotes: keep the rest
+			break
+		var/close = findtext(T, "\"", open + 1)
+		if(!close)
+			out += copytext(T, pos)          // dangling quote: leave as typed
+			break
+		out += copytext(T, pos, open)        // text before the opening quote
+		out += "\"[name]!\""                 // the Pokemon "says" its own name
+		pos = close + 1
+	return out
+
+/mob/PokemonOwner/verb/Pokemon_Emote()
+	set category = "Pokemon"
+	set name = "Pokemon: Emote"
+	// Emote is performed by the trainer's currently-summoned Pokemon.
+	var/mob/Player/AI/Pokemon/a = null
+	for(var/mob/Player/AI/Pokemon/p in usr.ai_followers)
+		if(p.ai_owner == usr)
+			a = p
+			break
+	if(!a)
+		usr << "You don't have a Pokemon out to emote. Summon one first!"
+		return
+	var/T = input(usr, "What does [a.name] do? (Anything in \"quotes\" becomes [a.name]!)", "Pokemon Emote") as message|null
+	if(isnull(T)) return
+	T = html_decode(T)
+	if(!length(T)) return
+	T = PokemonSpeak(T, a.name)
+	// Bubble over the Pokemon while it acts, then broadcast the emote to everyone
+	// who can hear the Pokemon or its trainer (same reach as the game's emotes).
+	var/image/em = new('Emoting.dmi')
+	em.appearance_flags = 66
+	em.layer = EFFECTS_LAYER
+	a.overlays += em
+	for(var/mob/Players/E in (hearers(15, a) | hearers(15, usr)))
+		E << output("<font color=yellow>*[a.name] [T]*</font>", "output")
+		E << output("<font color=yellow>*[a.name] [T]*</font>", "icchat")
+	spawn(15)
+		a.overlays -= em
+
 // --- Linked fainting: an ally Pokemon and its trainer share their fate ------
 // If a summoned Pokemon is KO'd, its trainer goes down with it, and vice versa.
 // These override the shared Unconscious() proc; the base guards re-entry with
