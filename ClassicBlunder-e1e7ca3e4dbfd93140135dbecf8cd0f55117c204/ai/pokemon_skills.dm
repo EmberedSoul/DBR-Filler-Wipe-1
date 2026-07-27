@@ -72,6 +72,16 @@ var/global/list/PokemonTypeSkills = list(
 	DamageMult = 3
 	ForOffense = 1
 	BuffAffected = "/obj/Skills/Buffs/SlotlessBuffs/Autonomous/PkmnDebuff/Fairy_Wind"
+	// A swirling pink gust: a spinning wind spark and a rose-pink shockwave.
+	HitSparkIcon = 'Hit Effect Wind.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 1.5
+	HitSparkTurns = 1
+	ShockIcon = 'KenShockwavePink.dmi'
+	Shockwave = 2
+	Shockwaves = 1
+	PostShockwave = 1
 	Cooldown = 40
 	ActiveMessage = "uses Fairy Wind!"
 	verb/Fairy_Wind()
@@ -87,6 +97,12 @@ var/global/list/PokemonTypeSkills = list(
 	Rounds = 3
 	Scorching = 8
 	StrOffense = 1
+	// A spinning wheel of fire — a whirling hellfire slash on each rotation.
+	HitSparkIcon = 'Slash - Hellfire.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 1.75
+	HitSparkTurns = 1
 	Cooldown = 45
 	ActiveMessage = "uses Flame Wheel!"
 	verb/Flame_Wheel()
@@ -101,6 +117,15 @@ var/global/list/PokemonTypeSkills = list(
 	DamageMult = 4
 	Chilling = 8
 	ForOffense = 1
+	// A crashing wave: bursts of spray on impact and a rolling shockwave.
+	HitSparkIcon = 'IceBurst.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
+	ShockIcon = 'KenShockwave.dmi'
+	Shockwave = 3
+	Shockwaves = 1
+	PostShockwave = 1
 	Cooldown = 50
 	ActiveMessage = "uses Surf!"
 	verb/Surf()
@@ -116,8 +141,9 @@ var/global/list/PokemonTypeSkills = list(
 	Shattering = 8
 	ForRate = 1
 	Charge = 1
-	IconLock = 'Blast - Rapid.dmi' // placeholder art
+	IconLock = 'Blast - Charged.dmi' // charged metallic slug
 	IconSize = 1
+	Trail = 'LightImpulseTrail.dmi'  // streak of steel-bright light
 	ManaCost = 12
 	Cooldown = 40
 	ActiveMessage = "uses Flash Cannon!"
@@ -131,10 +157,17 @@ var/global/list/PokemonTypeSkills = list(
 	name = "Draco Meteor"
 	DamageMult = 35
 	Launcher = 2
+	// A blazing dragon-meteor impact.
+	HitSparkIcon = 'fevExplosion - Hellfire.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
 	Cooldown = 120
 	ActiveMessage = "uses Draco Meteor!"
 	verb/Draco_Meteor()
 		set category = "Skills"
+		// Draconic energy erupts skyward before the meteor falls.
+		KenShockwave(usr, icon = 'KenShockwavePurple.dmi', Size = 4, Blend = 2, Time = 12)
 		MeteorStrike(usr, src)
 
 // --- Electric: Thunder Shock (thunder-like queue hitting in succession) ----
@@ -147,6 +180,11 @@ var/global/list/PokemonTypeSkills = list(
 	Rapid = 1
 	Shocking = 6
 	Paralyzing = 6
+	// Arcs of lightning crash down with each strike.
+	Bolt = 2
+	HitSparkIcon = 'Hit Effect.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
 	Cooldown = 40
 	ActiveMessage = "uses Thunder Shock!"
 	verb/Thunder_Shock()
@@ -161,6 +199,12 @@ var/global/list/PokemonTypeSkills = list(
 	AccuracyMult = 1.2
 	Combo = 2            // small, fast combo
 	Rapid = 1
+	// A quick blur of a strike.
+	HitSparkIcon = 'Slash.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 1
+	HitSparkTurns = 1
 	Cooldown = 15
 	ActiveMessage = "uses Quick Attack!"
 	verb/Quick_Attack()
@@ -177,10 +221,21 @@ var/global/list/PokemonTypeSkills = list(
 	Poisoning = 6
 	Crippling = 25
 	ForOffense = 1
+	// A wicked, spectral cut wrapped in violet malice.
+	HitSparkIcon = 'Slash - Black.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 1.75
+	ShockIcon = 'KenShockwavePurple.dmi'
+	Shockwave = 2
+	Shockwaves = 1
+	PostShockwave = 1
 	Cooldown = 40
 	ActiveMessage = "uses Hex!"
 	verb/Hex()
 		set category = "Skills"
+		// A ring of violet dread flares around the caster.
+		KenShockwave(usr, icon = 'SparkleViolet.dmi', Size = 2, Blend = 2, Time = 12)
 		usr.Activate(src)
 
 // --- Psychic: Psybeam (powerful homing beam) -------------------------------
@@ -212,8 +267,9 @@ var/global/list/PokemonTypeSkills = list(
 	Crippling = 25
 	ForRate = 1
 	Charge = 1
-	IconLock = 'Blast - Rapid.dmi' // placeholder art
+	IconLock = 'DarkChargesGreen.dmi' // roiling toxic-green payload
 	IconSize = 1
+	Trail = 'venomoustrail.dmi'       // dripping venom trail
 	ManaCost = 15
 	Cooldown = 50
 	ActiveMessage = "uses Sludge Bomb!"
@@ -231,6 +287,15 @@ var/global/list/PokemonTypeSkills = list(
 	Shattering = 8
 	StrOffense = 1
 	BuffAffected = "/obj/Skills/Buffs/SlotlessBuffs/Autonomous/PkmnDebuff/Rock_Smash"
+	// A crushing blow: a heavy shockwave and a spray of shattered stone.
+	ShockIcon = 'KenShockwave.dmi'
+	Shockwave = 4
+	Shockwaves = 1
+	PostShockwave = 1
+	HitSparkIcon = 'Hit Effect Wind.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
 	Cooldown = 60
 	ActiveMessage = "uses Rock Smash!"
 	verb/Rock_Smash()
@@ -245,6 +310,11 @@ var/global/list/PokemonTypeSkills = list(
 	AccuracyMult = 1.1
 	Combo = 2            // two-part combo
 	BuffAffected = "/obj/Skills/Buffs/SlotlessBuffs/Autonomous/PkmnDebuff/Double_Kick" // halves target End (approx ignore .5)
+	// Two solid impacts land in quick succession.
+	HitSparkIcon = 'Hit Effect.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 1.25
 	Cooldown = 30
 	ActiveMessage = "uses Double Kick!"
 	verb/Double_Kick()
@@ -269,8 +339,9 @@ var/global/list/PokemonTypeSkills = list(
 	Homing = 1
 	Crippling = 20
 	Charge = 1
-	IconLock = 'Blast - Rapid.dmi' // placeholder art
+	IconLock = 'Air Render.dmi' // whirling, slicing leaves
 	IconSize = 1
+	Trail = 'HeinreikeWindScarTrail.dmi' // a cutting wind-scar in its wake
 	EnergyCost = 6
 	Cooldown = 40
 	ActiveMessage = "uses Razor Leaf!"
@@ -289,8 +360,9 @@ var/global/list/PokemonTypeSkills = list(
 	Homing = 1
 	Poisoning = 5
 	Charge = 1
-	IconLock = 'Blast - Rapid.dmi' // placeholder art
+	IconLock = 'CrossbowBolt.dmi' // volley of sharp stinger needles
 	IconSize = 0.7
+	Trail = 'shadowneedletrail.dmi'
 	EnergyCost = 6
 	Cooldown = 40
 	ActiveMessage = "uses Pin Missile!"
@@ -307,6 +379,12 @@ var/global/list/PokemonTypeSkills = list(
 	Launcher = 2
 	Rush = 15
 	StrOffense = 1
+	// A blink-fast slicing pass.
+	HitSparkIcon = 'Slash - Zan.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 1.5
+	HitSparkTurns = 1
 	Cooldown = 30
 	ActiveMessage = "uses Aerial Ace!"
 	verb/Aerial_Ace()
@@ -324,6 +402,15 @@ var/global/list/PokemonTypeSkills = list(
 	Crippling = 20
 	Launcher = 1
 	StrOffense = 1
+	// The ground ruptures: rolling shockwaves and flying debris in every direction.
+	ShockIcon = 'KenShockwave.dmi'
+	Shockwave = 5
+	Shockwaves = 3
+	PostShockwave = 1
+	HitSparkIcon = 'Hit Effect Wind.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
 	Cooldown = 60
 	ActiveMessage = "uses Earthquake!"
 	verb/Pkmn_Earthquake()
@@ -341,7 +428,7 @@ var/global/list/PokemonTypeSkills = list(
 	Chilling = 6
 	Distance = 40
 	ForRate = 1
-	IconLock = 'BeamKHH.dmi' // placeholder beam art
+	IconLock = 'Ice Beam.dmi' // a proper freezing beam
 	EnergyCost = 8
 	Cooldown = 50
 	ActiveMessage = "uses Ice Beam!"
