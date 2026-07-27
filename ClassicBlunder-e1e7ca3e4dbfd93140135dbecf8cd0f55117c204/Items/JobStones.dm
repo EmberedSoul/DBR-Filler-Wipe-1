@@ -168,15 +168,67 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		passives = list("LifeSteal" = 1, "KillerInstinct" = 1)
 		BuffTechniques = list("/obj/Skills/Projectile/Aero", "/obj/Skills/Projectile/Fire_II", "/obj/Skills/AutoHit/Thunder_II", "/obj/Skills/Utility/Esuna")
 
+	// Samurai: the ultimate glass cannon. Sky-high Strength/Speed/Offense with
+	// almost no Endurance or Defense. Conjures a Legendary light blade (a katana)
+	// with a Chaos edge, and its passives push raw DPS and attack rate.
+	Samurai
+		BuffName = "Samurai Attunement"
+		JobLabel = "Samurai"
+		ActiveMessage = "attunes to a Samurai Job Stone, drawing a gleaming blade in a single flash of steel!"
+		OffMessage = "sheathes the Samurai blade, the attunement fading with a soft click..."
+		JobStats = list("Strength" = 10, "Endurance" = 1, "Force" = 1, "Speed" = 9, "Offense" = 10, "Defense" = 0.75, \
+			"Power" = 1.75, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
+		passives = list("AttackSpeed" = 3, "SwordDamage" = 3)
+		BuffTechniques = list("/obj/Skills/AutoHit/Moonlight_Dash", "/obj/Skills/AutoHit/Heavenly_Quake")
+		// Conjured Legendary light blade with a Chaos edge. SwordAscension +
+		// SwordUnbreakable make it ascended and shatterproof (Legendary-tier); the
+		// stone's Customize verb can override the icon/name (see Job_Stone/Samurai).
+		MakesSword = 1
+		SwordClass = "Light"
+		SwordElement = "Chaos"
+		SwordAscension = 5
+		SwordUnbreakable = 1
+		KillSword = 1
+		SwordName = "Samurai Blade"
+		SwordIcon = 'SwordKatana.dmi'
+		SwordX = 0
+		SwordY = 0
+
+	// Dark Knight: a void-clad tank. Heavy, slow, punishing hits and a wall of
+	// Endurance/Defense. Conjures a Legendary heavy blade with a Void edge, drinks
+	// life from every blow (50 LifeSteal) and turns aside pain (CallousedHands).
+	Dark_Knight
+		BuffName = "Dark Knight Attunement"
+		JobLabel = "Dark Knight"
+		ActiveMessage = "attunes to a Dark Knight Job Stone, summoning a heavy blade wreathed in devouring void!"
+		OffMessage = "lets the Dark Knight attunement fade, the blade receding from their soul..."
+		JobStats = list("Strength" = 8, "Endurance" = 8, "Force" = 1, "Speed" = 1, "Offense" = 2, "Defense" = 8, \
+			"Power" = 1.5, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
+		passives = list("LifeSteal" = 50, "CallousedHands" = 1,"PureReduction" = 2)
+		BuffTechniques = list("/obj/Skills/AutoHit/Abyssal_Cleave", "/obj/Skills/AutoHit/Dread_Harbinger")
+		// Conjured Legendary heavy blade with a Void edge (shatterproof, ascended).
+		MakesSword = 1
+		SwordClass = "Heavy"
+		SwordElement = "Void"
+		SwordAscension = 5
+		SwordUnbreakable = 1
+		KillSword = 1
+		SwordName = "Death Knight Sword"
+		SwordIcon = 'BlackShard.dmi'
+		SwordX = -32
+		SwordY = -32
+
 // --- the item -------------------------------------------------------------
 // Base is abstract (Unobtainable so it never lists in the craft menu). Each
 // concrete stone points JobBuffType at its Job Attunement buff.
 //
 // Craftable from Access Enchantment -> Tool Enchantment. Requires only the
 // ToolEnchantment knowledge (EnchType gates the section; SubType="Any" adds no
-// second requirement). Cost is the raw price at default economy: the menu
-// charges Cost * (EconomyMana / 100), and EconomyMana defaults to 100, so
-// Cost = 100000 is 100,000 a piece by default (and scales with the economy).
+// second requirement). Job Stones are paid for in MANABITS (Mineral), not Mana
+// Capacity like other enchantments -- see the Job_Stone special case in the
+// Enchantment purchase handler (Items.dm). The menu shows Cost * (EconomyMana /
+// 100); EconomyMana defaults to 100, so Cost = 100000 is 100,000 Manabits a
+// piece by default (and scales with the economy).
 obj/Items/Enchantment/Job_Stone
 	EnchType = "ToolEnchantment" // craft section (requires ToolEnchantment knowledge)
 	SubType = "Any"              // no additional knowledge requirement
@@ -188,6 +240,14 @@ obj/Items/Enchantment/Job_Stone
 	desc = "A dormant stone with a job imprinted inside it."
 	var/JobBuffType = null
 	var/JobName = "Job"
+	// Per-stone visual customization for jobs that conjure a sword (Samurai,
+	// Dark Knight). Saved with the stone (Savable=1) and pushed onto the job buff
+	// on attune, so the conjured blade wears the player's chosen look. Null =
+	// use the buff's default sword icon/name.
+	var/icon/CustomSwordIcon = null
+	var/CustomSwordX = 0
+	var/CustomSwordY = 0
+	var/CustomSwordName = null
 
 	verb/Attune_to_Job()
 		set src in usr
@@ -200,10 +260,58 @@ obj/Items/Enchantment/Job_Stone
 		if(!J)
 			J = new JobBuffType
 			usr.AddSkill(J)
+		// Push any saved blade customization onto the buff before it conjures, so
+		// the summoned sword uses the player's chosen icon/name. Harmless for jobs
+		// that don't make a sword (their buff simply ignores unused sword vars).
+		if(CustomSwordIcon)
+			J.SwordIcon = CustomSwordIcon
+			J.SwordX = CustomSwordX
+			J.SwordY = CustomSwordY
+		if(CustomSwordName)
+			J.SwordName = CustomSwordName
 		// Trigger routes through the Special Buff slot dispatcher: activates if
 		// the slot is free, deactivates if this buff already holds it, or is
 		// refused if a different special buff is active.
 		J.Trigger(usr)
+
+	// Shared blade-customization flow used by the sword jobs' Utility verbs. Stores
+	// the chosen look on the (saved) stone, mirrors it onto the job buff, and — if
+	// the job is active right now — refreshes the conjured blade in hand live.
+	proc/CustomizeConjuredBlade(mob/user)
+		if(!user) return
+		var/icon/newIcon = input(user, "Choose a new icon for your blade (Cancel to keep the current one):", "Customize Blade") as icon|null
+		if(newIcon)
+			var/nx = input(user, "Pixel X offset for the blade?", "Customize Blade") as num|null
+			var/ny = input(user, "Pixel Y offset for the blade?", "Customize Blade") as num|null
+			CustomSwordIcon = newIcon
+			CustomSwordX = isnull(nx) ? 0 : nx
+			CustomSwordY = isnull(ny) ? 0 : ny
+		var/newName = input(user, "Rename the blade? (leave blank to keep the current name)", "Customize Blade") as text|null
+		if(newName && length(newName))
+			CustomSwordName = newName
+		if(!newIcon && !(newName && length(newName)))
+			return // nothing changed
+		// Mirror onto the job buff so the next conjure uses the new look.
+		var/obj/Skills/Buffs/SpecialBuffs/Job_Attunement/J = locate(JobBuffType) in user
+		if(J)
+			if(CustomSwordIcon)
+				J.SwordIcon = CustomSwordIcon
+				J.SwordX = CustomSwordX
+				J.SwordY = CustomSwordY
+			if(CustomSwordName)
+				J.SwordName = CustomSwordName
+			// If this job is the active special buff, update the blade in hand now.
+			if(user.SpecialBuff == J)
+				for(var/obj/Items/Sword/s in user)
+					if(!s.Conjured) continue
+					if(CustomSwordIcon)
+						s.icon = CustomSwordIcon
+						s.pixel_x = CustomSwordX
+						s.pixel_y = CustomSwordY
+					if(CustomSwordName)
+						s.name = CustomSwordName
+					s.AlignEquip(user)
+		user << "Your blade's look has been updated. It will appear whenever you attune to this Job."
 
 	Warrior
 		name = "Warrior Job Stone"
@@ -254,6 +362,30 @@ obj/Items/Enchantment/Job_Stone
 		Unobtainable = 0
 		desc = "A Job Stone imprinted with the Berserker job. Attune to trade your stats for a reckless ragemonger's."
 
+	Samurai
+		name = "Samurai Job Stone"
+		JobName = "Samurai"
+		JobBuffType = /obj/Skills/Buffs/SpecialBuffs/Job_Attunement/Samurai
+		Unobtainable = 0
+		desc = "A Job Stone imprinted with the Samurai job. Attune to conjure a Legendary Chaos-edged blade and trade your body for a peerless glass cannon's."
+		verb/Customize_Samurai_Blade()
+			set src in usr
+			set name = "Customize Samurai Blade"
+			set category = "Utility"
+			CustomizeConjuredBlade(usr)
+
+	Dark_Knight
+		name = "Dark Knight Job Stone"
+		JobName = "Dark Knight"
+		JobBuffType = /obj/Skills/Buffs/SpecialBuffs/Job_Attunement/Dark_Knight
+		Unobtainable = 0
+		desc = "A Job Stone imprinted with the Dark Knight job. Attune to conjure a Legendary Void-edged greatsword and trade your body for an unrelenting tank's."
+		verb/Customize_Death_Knight_Sword()
+			set src in usr
+			set name = "Customize Death Knight Sword"
+			set category = "Utility"
+			CustomizeConjuredBlade(usr)
+
 // ==========================================================================
 // JOB SKILLS
 // Granted by the job buffs above via BuffTechniques (added on attune, stripped
@@ -274,6 +406,10 @@ obj/Items/Enchantment/Job_Stone
 	SpeedStrike = 2      // full Speed-mod scaling
 	Crippling = 30
 	Warp = 1             // homes onto the target
+	HitSparkIcon = 'Slash - Zan.dmi' // a lance-slash flash on the dive-in
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 1.5
 	Cooldown = 20
 	ActiveMessage = "dives at breakneck speed, digging into their target from an impossible angle!"
 	verb/Dragon_Step()
@@ -314,7 +450,7 @@ obj/Items/Enchantment/Job_Stone
 	StrRate = 0
 	ForRate = 1          // Force-based, fits Black Mage
 	Radius = 1
-	IconLock = 'Blast - Rapid.dmi' // placeholder art
+	IconLock = 'Fireball.dmi' // flaming projectile art (matches the base Fire spell)
 	IconSize = 1
 	Charge = 1
 	ManaCost = 15
@@ -336,6 +472,7 @@ obj/Items/Enchantment/Job_Stone
 	Launcher = 2
 	StrOffense = 0
 	ForOffense = 1
+	Bolt = 2             // same lightning-strike visual Thunder uses
 	FollowUp = "/obj/Skills/AutoHit/Thunder_II_Followup"
 	FollowUpDelay = 3
 	Cooldown = 40
@@ -354,6 +491,7 @@ obj/Items/Enchantment/Job_Stone
 	DamageMult = 10
 	Launcher = 1
 	ForOffense = 1
+	Bolt = 2             // the airborne finisher flashes lightning too
 	Cooldown = 0
 
 // Blizzard II: a queued strike that freezes the foe solid, in the vein of
@@ -366,6 +504,10 @@ obj/Items/Enchantment/Job_Stone
 	Freezing = 10        // the freeze
 	Shattering = 1
 	Chilling = 5
+	HitSparkIcon = 'IceBurst.dmi' // a shard of ice bursts on impact
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 1.5
 	Cooldown = 60
 	ManaCost = 15
 	ActiveMessage = "invokes: BLIZZARD II!"
@@ -436,6 +578,8 @@ obj/Items/Enchantment/Job_Stone
 			return
 		Target.HealHealth(99999)
 		Target.HealWounds(99999)
+		// A wash of restorative sparkles over whoever was mended.
+		KenShockwave(Target, icon = 'DivineSparkles.dmi', Size = 2, Blend = 2, Time = 15)
 		OMsg(usr, "[usr] casts Cure II, fully mending [Target == usr ? "themselves" : "[Target]"]!")
 		src.Using = 0
 		Cooldown()
@@ -451,11 +595,15 @@ obj/Items/Enchantment/Job_Stone
 		if(src.Using) return
 		src.Using = 1
 		usr.HealHealth(25) // the caster is mended too
+		// A radiant pillar erupts from the caster...
+		KenShockwave(usr, icon = 'SparkleGod.dmi', Size = 4, Blend = 2, Time = 15)
 		for(var/mob/m in oview(5, usr))
 			if(m.IsEvil())
 				m.LoseHealth(30)
+				KenShockwave(m, icon = 'Hit Effect Divine.dmi', Size = 2, Blend = 2, Time = 12) // ...searing the wicked
 			else
 				m.HealHealth(25)
+				KenShockwave(m, icon = 'DivineSparkles.dmi', Size = 1.5, Blend = 2, Time = 12) // ...and blessing the rest
 		OMsg(usr, "[usr] calls down a radiant pillar of Holy light!")
 		src.Using = 0
 		Cooldown()
@@ -483,6 +631,8 @@ obj/Items/Enchantment/Job_Stone
 			src.Using = 0
 			return
 		Target.CleanseDebuff(100)
+		// A cleansing shimmer washes the ailments away.
+		KenShockwave(Target, icon = 'SparkleGreen.dmi', Size = 2, Blend = 2, Time = 12)
 		OMsg(usr, "[usr] casts Esuna, purging the ailments from [Target == usr ? "themselves" : "[Target]"]!")
 		src.Using = 0
 		Cooldown()
@@ -501,6 +651,16 @@ obj/Items/Enchantment/Job_Stone
 	GuardBreak = 1
 	Stunner = 2
 	StrOffense = 1
+	// A bone-crunching impact: a gold shockwave rings out and a heavy hit-spark
+	// bursts on contact.
+	ShockIcon = 'KenShockwaveGold.dmi'
+	Shockwave = 4
+	Shockwaves = 1
+	PostShockwave = 1
+	HitSparkIcon = 'Hit Effect Wind.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
 	Cooldown = 45
 	ActiveMessage = "hurls themselves into a Reckless Slam!"
 	verb/Reckless_Slam()
@@ -515,6 +675,12 @@ obj/Items/Enchantment/Job_Stone
 	DamageMult = 3
 	Rounds = 4
 	StrOffense = 1
+	// A blur of slashing blows — each of the rapid hits throws a spinning slash.
+	HitSparkIcon = 'Slash.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 1.5
+	HitSparkTurns = 1
 	Cooldown = 40
 	ActiveMessage = "erupts into a Berserk Flurry!"
 	verb/Berserk_Flurry()
@@ -534,6 +700,15 @@ obj/Items/Enchantment/Job_Stone
 	Stunner = 4
 	GuardBreak = 1
 	StrOffense = 1
+	// A concussive shield slam: a shockwave and a heavy impact spark.
+	ShockIcon = 'KenShockwave.dmi'
+	Shockwave = 3
+	Shockwaves = 1
+	PostShockwave = 1
+	HitSparkIcon = 'Hit Effect Wind.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
 	Cooldown = 40
 	ActiveMessage = "slams forward with a brutal Shield Bash!"
 	verb/Bulwark_Bash()
@@ -549,6 +724,11 @@ obj/Items/Enchantment/Job_Stone
 	DamageMult = 4.5
 	Launcher = 1
 	StrOffense = 1
+	// A wide arcing cleave — a big sweeping slash across everything in front.
+	HitSparkIcon = 'Slash - Zan.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
 	Cooldown = 45
 	ActiveMessage = "swings a wide Cleaving Blow!"
 	verb/Cleaving_Blow()
@@ -566,6 +746,12 @@ obj/Items/Enchantment/Job_Stone
 	Rush = 20
 	Crippling = 25
 	StrOffense = 1
+	// A swift, precise cut — a quick spinning slash on the strike.
+	HitSparkIcon = 'Slash.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 1.25
+	HitSparkTurns = 1
 	Cooldown = 40
 	ActiveMessage = "darts in for a vicious Backstab!"
 	verb/Backstab()
@@ -583,7 +769,7 @@ obj/Items/Enchantment/Job_Stone
 	Crippling = 15
 	Homing = 1
 	Charge = 1
-	IconLock = 'Blast - Rapid.dmi' // placeholder art
+	IconLock = 'BlastKiShuriken.dmi' // spinning thrown-blade art
 	IconSize = 0.7
 	EnergyCost = 5
 	Cooldown = 35
@@ -591,3 +777,167 @@ obj/Items/Enchantment/Job_Stone
 	verb/Fan_Of_Knives()
 		set category = "Skills"
 		usr.UseProjectile(src)
+
+// --- Samurai --------------------------------------------------------------
+
+// Moonlight Dash: a hold-to-charge strike (see _HeldSkill.dm). Hold the bound
+// key to charge; on release the Samurai vanishes in a streak of moonlight,
+// reappearing beside their target for a strike whose damage scales with how
+// long the charge was held (with a sweet-spot bonus in the middle of the hold).
+/obj/Skills/AutoHit/Moonlight_Dash
+	name = "Moonlight Dash"
+	Area = "Strike"
+	Distance = 12
+	DamageMult = 5
+	NeedsSword = 1
+	StrOffense = 1
+	Stunner = 2
+	HitSparkIcon = 'Slash - Future.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 1.75
+	HitSparkTurns = 1
+	Cooldown = 30
+	// Hold-charge configuration.
+	HeldSkill = TRUE
+	ChargePeriod = 3          // up to 3 seconds of charge
+	SweetSpot = 1.5           // a well-timed release ~1.5s in lands the bonus
+	SweetSpotWindow = 0.4
+	SweetSpotBenefit = 1.5    // sweet spot = max scaling
+	ChargeWaveIcon = 'LunarWrathIcon.dmi'
+	ChargeWaveBlend = 2
+	ActiveMessage = "flickers across the field in a streak of moonlight!"
+
+	// benefit is 0-1 from how far through ChargePeriod the release happened, or
+	// SweetSpotBenefit if the sweet-spot window was hit.
+	OnHeldRelease(mob/p, var/benefit, var/sweet_spot_hit = FALSE)
+		if(p.Target && p.z == p.Target.z && get_dist(p, p.Target) > 1)
+			var/turf/origin = get_turf(p)
+			var/turf/dest = get_step(p.Target, get_dir(p.Target, p))
+			if(dest && !dest.density)
+				// Leave a fading moonlit afterimage at the launch point.
+				if(origin)
+					var/image/ghost = image(p.icon, origin, p.icon_state, MOB_LAYER)
+					ghost.color = "#88aaff"
+					world << ghost
+					spawn()
+						animate(ghost, alpha = 0, time = 6)
+						sleep(6)
+						del ghost
+				p.loc = dest
+				p.dir = get_dir(p, p.Target)
+				KenShockwave(p, icon = 'LunarWrathIcon.dmi', Size = 2, Blend = 2, Time = 10)
+		// Longer holds hit harder (base at a flick, up to 2.5x at the sweet spot).
+		DamageMult = initial(DamageMult) * (1 + benefit)
+		p.Activate(src)
+
+	verb/Moonlight_Dash()
+		set category = "Skills"
+		usr.BeginHeldSkill(src)
+
+// Heavenly Quake: the Samurai leaps forward in the direction they face and slams
+// down, erupting a shockwave that shatters guards and slows everything nearby.
+/obj/Skills/AutoHit/Heavenly_Quake
+	name = "Heavenly Quake"
+	Area = "Circle"
+	Distance = 3
+	DamageMult = 6
+	NeedsSword = 1
+	StrOffense = 1
+	Jump = 2                  // airborne hop as it lands (see AutoHit Jump handling)
+	Shattering = 12           // shatters
+	Slow = 0.5                // and slows
+	Launcher = 1
+	Knockback = 6
+	ShockIcon = 'KenShockwave.dmi'
+	Shockwave = 4
+	Shockwaves = 2
+	PostShockwave = 1
+	HitSparkIcon = 'Hit Effect Wind.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
+	Cooldown = 45
+	ActiveMessage = "leaps skyward and crashes down with a Heavenly Quake!"
+
+	verb/Heavenly_Quake()
+		set category = "Skills"
+		if(usr.KO || usr.Frozen) return
+		// Leap forward in the direction the Samurai is facing...
+		var/leaps = 3
+		while(leaps > 0)
+			var/turf/t = get_step(usr, usr.dir)
+			if(!t || t.density) break
+			step(usr, usr.dir)
+			leaps--
+			sleep(1)
+		// ...then slam down for the quake.
+		usr.Activate(src)
+
+// --- Dark Knight ----------------------------------------------------------
+
+// Abyssal Cleave: a slow, immense void greatsword swing. It winds up as the
+// abyss opens behind the knight, then cleaves through everything in front with
+// a crushing, guard-shattering blow.
+/obj/Skills/AutoHit/Abyssal_Cleave
+	name = "Abyssal Cleave"
+	Area = "Wave"
+	Distance = 8
+	DamageMult = 14           // heavy, slow, punishing
+	NeedsSword = 1
+	StrOffense = 1
+	GuardBreak = 1
+	Launcher = 1
+	Crushing = 40
+	WindUp = 0.6              // deliberate, weighty windup
+	Icon = 'Deathbringer VFX1.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 8
+	HitSparkIcon = 'Slash - Black.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	ShockIcon = 'KenShockwavePurple.dmi'
+	Shockwave = 5
+	Shockwaves = 1
+	PostShockwave = 1
+	Cooldown = 55
+	WindupMessage = "raises their blade as the abyss yawns open behind them..."
+	ActiveMessage = "brings down an Abyssal Cleave, rending the void itself!"
+	verb/Abyssal_Cleave()
+		set category = "Skills"
+		usr.Activate(src)
+
+// Dread Harbinger: the Dark Knight drives their blade down and erupts a ring of
+// violet, necrotic void — stunning, shattering, and dragging down the speed of
+// every foe caught in the dread.
+/obj/Skills/AutoHit/Dread_Harbinger
+	name = "Dread Harbinger"
+	Area = "Circle"
+	Distance = 4
+	DamageMult = 5
+	NeedsSword = 1
+	StrOffense = 1
+	Slow = 0.4
+	Shattering = 8
+	Stunner = 2
+	Icon = 'DoomAura1.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 10
+	HitSparkIcon = 'Deathbringer VFX2.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
+	ShockIcon = 'KenShockwavePurple.dmi'
+	Shockwave = 5
+	Shockwaves = 3
+	PostShockwave = 1
+	Cooldown = 60
+	ActiveMessage = "unleashes a wave of Dread, the abyss clawing at all who stand near!"
+	verb/Dread_Harbinger()
+		set category = "Skills"
+		// A shroud of violet death erupts around the knight before the pulse lands.
+		KenShockwave(usr, icon = 'SparkleViolet.dmi', Size = 4, Blend = 2, Time = 15)
+		usr.Activate(src)
