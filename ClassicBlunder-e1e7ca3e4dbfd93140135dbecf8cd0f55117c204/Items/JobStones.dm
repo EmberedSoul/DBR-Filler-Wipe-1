@@ -72,6 +72,14 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 	BuffName = "Job Attunement"
 	Cooldown = 0
 	Copyable = 0
+	// Activation sparkle burst (same mechanism Valor/Wisdom Form use on activate:
+	// a KenWave shockwave rendered with a Sparkle icon). Gold to distinguish Job
+	// Stones from Valor Form (red) and Wisdom Form (blue). Inherited by every job.
+	KenWave = 1
+	KenWaveIcon = 'SparkleGold.dmi'
+	KenWaveSize = 3
+	KenWaveX = 105
+	KenWaveY = 105
 	var/list/JobStats = list()
 	var/JobLabel = "Job"
 
@@ -86,27 +94,31 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		JobLabel = "Warrior"
 		ActiveMessage = "attunes to a Warrior Job Stone, their body reforging into a hardened frontline fighter!"
 		OffMessage = "sheds the Warrior attunement, their body settling back to normal..."
-		JobStats = list("Strength" = 3, "Endurance" = 2.5, "Force" = 1, "Speed" = 1.5, "Offense" = 2, "Defense" = 2, \
+		JobStats = list("Strength" = 11, "Endurance" = 4.5, "Force" = 1, "Speed" = 1.5, "Offense" = 2, "Defense" = 2, \
 			"Power" = 1.25, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
-		BuffTechniques = list("/obj/Skills/AutoHit/Meteor_Strike")
+		passives = list("SwordDamage" = 2, "TechniqueMastery" = 2)	
+		BuffTechniques = list("/obj/Skills/AutoHit/Bulwark_Bash", "/obj/Skills/AutoHit/Cleaving_Blow")
 
-	Mage
-		BuffName = "Mage Attunement"
-		JobLabel = "Mage"
-		ActiveMessage = "attunes to a Mage Job Stone, arcane focus sharpening their mind and ki!"
-		OffMessage = "lets the Mage attunement fade, their mind settling back to normal..."
-		JobStats = list("Strength" = 1, "Endurance" = 1.5, "Force" = 3, "Speed" = 1.5, "Offense" = 2, "Defense" = 1.5, \
-			"Power" = 1.5, "Anger" = 1, "Learning" = 1.5, "Intellect" = 2, "Imagination" = 2)
-		BuffTechniques = list("/obj/Skills/Projectile/Magic/DarkMagic/Shadow_Ball")
+	Berserker
+		BuffName = "Berserker Attunement"
+		JobLabel = "Berserker"
+		ActiveMessage = "attunes to a Berserker Job Stone, their rage building with each strike!"
+		OffMessage = "lets the Berserker attunement fade, their rage subsiding..."
+		JobStats = list("Strength" = 4, "Endurance" = 4, "Force" = 4, "Speed" = 2.5, "Offense" = 2, "Defense" = 1.5, \
+			"Power" = 1.75, "Anger" = 3, "Learning" = 1.5, "Intellect" = 2, "Imagination" = 2)
+		passives = list("EndlessAnger" = 1, "UnbridledFury" = 1)
+		BuffTechniques = list("/obj/Skills/AutoHit/Reckless_Slam", "/obj/Skills/AutoHit/Berserk_Flurry")	
+		
 
 	Rogue
 		BuffName = "Rogue Attunement"
 		JobLabel = "Rogue"
 		ActiveMessage = "attunes to a Rogue Job Stone, becoming a blur of speed and precision!"
 		OffMessage = "drops the Rogue attunement, their movements settling back to normal..."
-		JobStats = list("Strength" = 1.5, "Endurance" = 1.5, "Force" = 1.5, "Speed" = 3, "Offense" = 2.5, "Defense" = 1, \
+		JobStats = list("Strength" = 1.5, "Endurance" = 1.5, "Force" = 1.5, "Speed" = 6, "Offense" = 8, "Defense" = 12, \
 			"Power" = 1.25, "Anger" = 1.25, "Learning" = 1.25, "Intellect" = 1.25, "Imagination" = 1.25)
-		BuffTechniques = list("/obj/Skills/Zanzoken")
+		BuffTechniques = list("/obj/Skills/AutoHit/Backstab", "/obj/Skills/Projectile/Fan_Of_Knives")
+		passives = list("CriticalChance" = 20, "CriticalStrike" = 0.5, "Flow" = 2, "Instinct" = 2)
 
 	// Dragoon: high speed, rapid strikes, the Extend passive. Grants the two
 	// Dragoon skills (defined at the bottom of this file).
@@ -200,13 +212,6 @@ obj/Items/Enchantment/Job_Stone
 		Unobtainable = 0
 		desc = "A Job Stone imprinted with the Warrior job. Attune to trade your stats for a hardened fighter's."
 
-	Mage
-		name = "Mage Job Stone"
-		JobName = "Mage"
-		JobBuffType = /obj/Skills/Buffs/SpecialBuffs/Job_Attunement/Mage
-		Unobtainable = 0
-		desc = "A Job Stone imprinted with the Mage job. Attune to trade your stats for an arcane caster's."
-
 	Rogue
 		name = "Rogue Job Stone"
 		JobName = "Rogue"
@@ -241,6 +246,13 @@ obj/Items/Enchantment/Job_Stone
 		JobBuffType = /obj/Skills/Buffs/SpecialBuffs/Job_Attunement/Red_Mage
 		Unobtainable = 0
 		desc = "A Job Stone imprinted with the Red Mage job. Attune to trade your stats for a spellblade's."
+
+	Berserker
+		name = "Berserker Job Stone"
+		JobName = "Berserker"
+		JobBuffType = /obj/Skills/Buffs/SpecialBuffs/Job_Attunement/Berserker
+		Unobtainable = 0
+		desc = "A Job Stone imprinted with the Berserker job. Attune to trade your stats for a reckless ragemonger's."
 
 // ==========================================================================
 // JOB SKILLS
@@ -474,3 +486,108 @@ obj/Items/Enchantment/Job_Stone
 		OMsg(usr, "[usr] casts Esuna, purging the ailments from [Target == usr ? "themselves" : "[Target]"]!")
 		src.Using = 0
 		Cooldown()
+
+// --- Berserker ------------------------------------------------------------
+
+// Reckless Slam: a raging gap-closer that crashes into the target, launching and
+// guard-breaking them.
+/obj/Skills/AutoHit/Reckless_Slam
+	name = "Reckless Slam"
+	Area = "Strike"
+	Distance = 10
+	DamageMult = 6
+	Rush = 20
+	Launcher = 2
+	GuardBreak = 1
+	Stunner = 2
+	StrOffense = 1
+	Cooldown = 45
+	ActiveMessage = "hurls themselves into a Reckless Slam!"
+	verb/Reckless_Slam()
+		set category = "Skills"
+		usr.Activate(src)
+
+// Berserk Flurry: a frenzy of rapid blows.
+/obj/Skills/AutoHit/Berserk_Flurry
+	name = "Berserk Flurry"
+	Area = "Strike"
+	Distance = 6
+	DamageMult = 3
+	Rounds = 4
+	StrOffense = 1
+	Cooldown = 40
+	ActiveMessage = "erupts into a Berserk Flurry!"
+	verb/Berserk_Flurry()
+		set category = "Skills"
+		usr.Activate(src)
+
+// --- Warrior --------------------------------------------------------------
+
+// Bulwark Bash: a shield bash that stuns and breaks guard. (Typed Bulwark_Bash
+// to avoid the existing /obj/Skills/Queue/Finisher/Shield_Bash.)
+/obj/Skills/AutoHit/Bulwark_Bash
+	name = "Shield Bash"
+	Area = "Strike"
+	Distance = 8
+	DamageMult = 4
+	Rush = 15
+	Stunner = 4
+	GuardBreak = 1
+	StrOffense = 1
+	Cooldown = 40
+	ActiveMessage = "slams forward with a brutal Shield Bash!"
+	verb/Bulwark_Bash()
+		set category = "Skills"
+		set name = "Shield Bash"
+		usr.Activate(src)
+
+// Cleaving Blow: a wide sweeping cleave that launches everything in front.
+/obj/Skills/AutoHit/Cleaving_Blow
+	name = "Cleaving Blow"
+	Area = "Wave"
+	Distance = 10
+	DamageMult = 4.5
+	Launcher = 1
+	StrOffense = 1
+	Cooldown = 45
+	ActiveMessage = "swings a wide Cleaving Blow!"
+	verb/Cleaving_Blow()
+		set category = "Skills"
+		usr.Activate(src)
+
+// --- Rogue ----------------------------------------------------------------
+
+// Backstab: a swift dash-in strike that cripples the target's movement.
+/obj/Skills/AutoHit/Backstab
+	name = "Backstab"
+	Area = "Strike"
+	Distance = 10
+	DamageMult = 5
+	Rush = 20
+	Crippling = 25
+	StrOffense = 1
+	Cooldown = 40
+	ActiveMessage = "darts in for a vicious Backstab!"
+	verb/Backstab()
+		set category = "Skills"
+		usr.Activate(src)
+
+// Fan of Knives: a homing volley of thrown blades that hobble the target.
+/obj/Skills/Projectile/Fan_Of_Knives
+	name = "Fan of Knives"
+	Distance = 40
+	DamageMult = 2.5
+	Blasts = 5
+	StrRate = 1
+	ForRate = 0
+	Crippling = 15
+	Homing = 1
+	Charge = 1
+	IconLock = 'Blast - Rapid.dmi' // placeholder art
+	IconSize = 0.7
+	EnergyCost = 5
+	Cooldown = 35
+	ActiveMessage = "flings a Fan of Knives!"
+	verb/Fan_Of_Knives()
+		set category = "Skills"
+		usr.UseProjectile(src)
