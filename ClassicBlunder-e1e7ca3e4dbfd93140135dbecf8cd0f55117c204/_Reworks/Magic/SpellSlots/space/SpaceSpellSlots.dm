@@ -1,4 +1,5 @@
 //space
+//space
 /obj/Skills/AutoHit/Magic/Space
 	SpellElement="Space"
 	SpellSlot=1
