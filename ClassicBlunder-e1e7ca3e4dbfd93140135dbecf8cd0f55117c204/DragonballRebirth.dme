@@ -586,6 +586,7 @@
 #include "ai\companion_vanguard.dm"
 #include "ai\pokemon_skills.dm"
 #include "ai\pokemon_ai.dm"
+#include "ai\pokemon_wild.dm"
 #include "ai\squad.dm"
 #include "Effects\_Effects.dm"
 #include "Effects\Effects_Specific\_ShockWave.dm"
