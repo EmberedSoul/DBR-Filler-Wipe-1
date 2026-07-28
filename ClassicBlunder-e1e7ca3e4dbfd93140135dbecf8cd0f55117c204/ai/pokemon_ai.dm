@@ -61,6 +61,11 @@
 // Registry the Pokemon AI draws from. Built lazily (see GetPokemonSpecies).
 var/global/list/pokemon_database = list()
 
+// Legendary species. Kept separate from the regular dex in the "Make Pokemon
+// Spawner" admin UI so legendaries aren't handed out by accident. Extend this as
+// the dex grows past Kanto.
+var/global/list/pokemon_legendaries = list("Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew")
+
 // species, icon_state, type, the 6 base stats (HP,Atk,Def,SpA,SpD,Spe), then the
 // evolution target species and the Potential level it evolves at (or null/0).
 /proc/_pkmn(species, state, ptype, hp, atk, def, spatk, spdef, spe, evolves_into, evolve_level)
