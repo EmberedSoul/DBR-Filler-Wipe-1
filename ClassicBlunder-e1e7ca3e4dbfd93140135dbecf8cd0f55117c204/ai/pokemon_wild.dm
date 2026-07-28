@@ -20,16 +20,37 @@ mob/var/list/owned_pokemon = list()
 	set name = "Make Pokemon Spawner"
 	set category = "Admin"
 	if(!pokemon_database.len) BuildPokemonDatabase()
-	var/list/all_names = list()
+	// Split the dex into Legendary and standard pools so the two are kept apart.
+	var/list/legendary_names = list()
+	var/list/standard_names = list()
 	for(var/k in pokemon_database)
-		all_names += k
+		if(k in pokemon_legendaries)
+			legendary_names += k
+		else
+			standard_names += k
 	var/list/wild_species = list()
-	var/mode = input(src, "Which species should this spot spawn?", "Pokemon Spawner") in list("Any species", "Pick specific")
-	if(mode == "Pick specific")
-		while(TRUE)
-			var/chosen = input(src, "Add a species (Cancel to finish). Chosen so far: [wild_species.len ? jointext(wild_species, ", ") : "none"]", "Add Species") as null|anything in (all_names + "Cancel")
-			if(!chosen || chosen == "Cancel") break
-			wild_species |= chosen
+	var/spawn_desc = "any species"
+	var/mode = input(src, "Which species should this spot spawn?", "Pokemon Spawner") in list("Any (Non-Legendary)", "Any Legendary", "Any species (incl. Legendary)", "Pick specific")
+	switch(mode)
+		if("Any (Non-Legendary)")
+			wild_species = standard_names.Copy()
+			spawn_desc = "any Non-Legendary"
+		if("Any Legendary")
+			wild_species = legendary_names.Copy()
+			spawn_desc = "any Legendary"
+		if("Any species (incl. Legendary)")
+			wild_species = list() // empty = pull from the whole database
+			spawn_desc = "any species (incl. Legendary)"
+		if("Pick specific")
+			// Browse one pool at a time so Legendaries stay separated from the rest.
+			while(TRUE)
+				var/pool = input(src, "Browse which list? (Done to finish) — Chosen: [wild_species.len ? jointext(wild_species, ", ") : "none"]", "Pick Species") in list("Non-Legendary", "Legendary", "Done")
+				if(pool == "Done") break
+				var/list/src_list = (pool == "Legendary") ? legendary_names : standard_names
+				var/chosen = input(src, "Add a [pool] species (Cancel = back to list choice).", "Add Species") as null|anything in (src_list + "Back")
+				if(!chosen || chosen == "Back") continue
+				wild_species |= chosen
+			spawn_desc = wild_species.len ? jointext(wild_species, ", ") : "any species"
 	var/limit = input(src, "How many can be active at once?", "Spawn Limit") as num|null
 	var/range = input(src, "How far can they spawn from this spot? (tiles)", "Spawn Range") as num|null
 	var/timer = input(src, "Respawn timer? (whole numbers, ~30s each)", "Respawn Timer") as num|null
@@ -42,8 +63,8 @@ mob/var/list/owned_pokemon = list()
 	spot.wild_level = max(0, level)
 	spot.loc = src.loc
 	spot.generate_ai()
-	Log("Admin", "[ExtractInfo(src)] created a Pokemon spawner ([wild_species.len ? jointext(wild_species, ", ") : "any"]).")
-	src << "<b>Created a Pokemon spawner at your location.</b> Spawns: [wild_species.len ? jointext(wild_species, ", ") : "any species"] | level [max(0,level)] | limit [max(1,limit)] | range [max(1,range)] | respawn [max(1,timer)]."
+	Log("Admin", "[ExtractInfo(src)] created a Pokemon spawner ([spawn_desc]).")
+	src << "<b>Created a Pokemon spawner at your location.</b> Spawns: [spawn_desc] | level [max(0,level)] | limit [max(1,limit)] | range [max(1,range)] | respawn [max(1,timer)]."
 
 // --- Wild Pokemon spawner --------------------------------------------------
 // Inherits the AI_Spot timer/limit/tracker machinery; only the actual spawn is
