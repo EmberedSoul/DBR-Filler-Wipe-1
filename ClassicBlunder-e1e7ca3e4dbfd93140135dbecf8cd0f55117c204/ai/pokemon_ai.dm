@@ -28,6 +28,9 @@
 // admin) sets a higher level for tougher areas. Evolution thresholds below are
 // canonical Pokemon evolution levels compared directly against Potential.
 #define POKEMON_WILD_BASE_POTENTIAL 5
+// Legendaries (see pokemon_legendaries) multiply every derived combat stat by
+// this, so a Legendary is a flat 40% stronger than its raw base stats imply.
+#define POKEMON_LEGENDARY_POWER_MULT 1.4
 
 // --- Species template (mirrors the Squad system's ai_sheet) ----------------
 // Stores the canonical Pokemon base stats (HP / Attack / Defense / Sp.Atk /
@@ -45,6 +48,7 @@
 	var/spe
 	var/evolves_into       // species key of the next stage (null = final form)
 	var/evolve_level       // Potential at/above which it evolves (0 = never)
+	var/legendary = 0      // set from pokemon_legendaries after the dex is built
 	New(_species, _state, _type, _hp, _atk, _def, _spatk, _spdef, _spe, _evolves_into, _evolve_level)
 		species = _species
 		icon_state = _state
@@ -226,6 +230,11 @@ var/global/list/pokemon_legendaries = list("Articuno", "Zapdos", "Moltres", "Mew
 	_pkmn("Dragonite",  "Dragonite",  "Dragon",    91,134, 95,100,100, 80, null,           0)
 	_pkmn("Mewtwo",     "Mewtwo",     "Psychic",  106,110, 90,154, 90,130, null,           0)
 	_pkmn("Mew",        "Mew",        "Psychic",  100,100,100,100,100,100, null,           0)
+	// Flag the Legendaries (single source of truth = pokemon_legendaries).
+	for(var/legname in pokemon_legendaries)
+		if(pokemon_database[legname])
+			var/datum/pokemon_species/ls = pokemon_database[legname]
+			ls.legendary = 1
 
 /proc/GetPokemonSpecies(sp)
 	if(!pokemon_database.len) BuildPokemonDatabase()
@@ -320,17 +329,20 @@ var/global/list/pokemon_icon_state_cache = null
 		density = 1
 		ApplyPokemonStats(s)
 		GrantTypeSkill()
+		GrantLegendarySkill()
 
 	// Convert the species' canonical base stats into the game's stat mods, and
 	// scale raw power off the owner by the species' base-stat total.
 	proc/ApplyPokemonStats(datum/pokemon_species/s)
 		var/K = POKEMON_STAT_DIVISOR
-		StrMod   = s.atk / K                    // Attack   -> physical offense
-		ForMod   = s.spatk / K                  // Sp.Atk   -> ki / special offense
-		DefMod   = s.def / K                    // Defense
-		EndMod   = ((s.hp + s.spdef) / 2) / K   // HP + Sp.Def -> bulk / endurance
-		SpdMod   = s.spe / K                     // Speed
-		OffMod   = ((s.atk + s.spatk) / 2) / K  // general offensive pressure
+		// Legendaries get a flat multiplier on every combat stat (1 = no change).
+		var/L = s.legendary ? POKEMON_LEGENDARY_POWER_MULT : 1
+		StrMod   = (s.atk / K) * L               // Attack   -> physical offense
+		ForMod   = (s.spatk / K) * L             // Sp.Atk   -> ki / special offense
+		DefMod   = (s.def / K) * L               // Defense
+		EndMod   = (((s.hp + s.spdef) / 2) / K) * L // HP + Sp.Def -> bulk / endurance
+		SpdMod   = (s.spe / K) * L               // Speed
+		OffMod   = (((s.atk + s.spatk) / 2) / K) * L // general offensive pressure
 		RecovMod = 1
 		var/bst = s.hp + s.atk + s.def + s.spatk + s.spdef + s.spe
 		if(ai_owner)
@@ -360,6 +372,18 @@ var/global/list/pokemon_icon_state_cache = null
 	proc/GrantTypeSkill()
 		if(!PokemonType) return
 		var/txt = PokemonTypeSkills[PokemonType]
+		if(!txt) return
+		var/skpath = text2path(txt)
+		if(!skpath) return
+		if(!locate(skpath, src))
+			AddSkill(new skpath)
+
+	// Grant a Legendary's unique signature move (from pokemon_skills.dm), on top of
+	// its normal type move. No-op for non-Legendary species.
+	proc/GrantLegendarySkill()
+		var/datum/pokemon_species/s = pokemon_database[pkmn_species]
+		if(!s || !s.legendary) return
+		var/txt = PokemonLegendarySkills[pkmn_species]
 		if(!txt) return
 		var/skpath = text2path(txt)
 		if(!skpath) return

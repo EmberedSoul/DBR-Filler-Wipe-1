@@ -75,7 +75,8 @@ var/list/Tier2 = list(
 	"Advanced Defense Magic" = "/obj/Skills/Buffs/SlotlessBuffs/Magic/Protega",
 	"Advanced Shell Magic" = "/obj/Skills/Buffs/SlotlessBuffs/Magic/Resilient_Sphere",
 	"Advanced White Magic" = list("/obj/Skills/Buffs/SlotlessBuffs/Magic/Curaga", "/obj/Skills/Buffs/SlotlessBuffs/Magic/Esunaga"),
-	"Holy Magic" = "/obj/Skills/AutoHit/Magic/Holy"
+	"Holy Magic" = "/obj/Skills/AutoHit/Magic/Holy",
+	"Primordial Tamer" = list() // handled specially in DevelopSignature (grants the "Primordial Tamer" passive, requires Trainers Pledge)
 )
 
 var/list/Tier3 = list(
@@ -171,6 +172,18 @@ proc/DevelopSignature(mob/m, Tier, Type)
 				if (usr.passive_handler) usr.passive_handler.Set("Trainers Pledge", 1)
 				usr.SignatureSelected.Add("Trainers Pledge")
 				usr << "<b>You take the Trainer's Pledge. Your journey to become the very best begins!</b>"
+		return
+	// Primordial Tamer: a T2 passive that unlocks capturing LEGENDARY Pokemon.
+	// Requires already having taken the Trainer's Pledge.
+	if (new_skill == "Primordial Tamer")
+		if (!usr.passive_handler || !usr.passive_handler.Get("Trainers Pledge"))
+			usr << "You have not yet taken the Trainer's Pledge. You must walk a trainer's path before the ancient ones will ever heed your call."
+			return
+		switch (input(usr, "The Legendaries are relics of myth, older than the first bond between trainer and Pokemon. To ever capture one, you must surrender still more of your own potential to the primordial pact. Do you accept the mantle of a Primordial Tamer?", "Primordial Tamer") in list("Yes", "No"))
+			if ("Yes")
+				if (usr.passive_handler) usr.passive_handler.Set("Primordial Tamer", 1)
+				usr.SignatureSelected.Add("Primordial Tamer")
+				usr << "<b>You become a Primordial Tamer. The Legendaries will answer your call.</b>"
 		return
 	if (!istype(options[new_skill], /list))
 		if(istext(options[new_skill]))
