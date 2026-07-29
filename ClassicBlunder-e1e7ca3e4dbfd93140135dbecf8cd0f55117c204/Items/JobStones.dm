@@ -96,7 +96,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		OffMessage = "sheds the Warrior attunement, their body settling back to normal..."
 		JobStats = list("Strength" = 11, "Endurance" = 4.5, "Force" = 1, "Speed" = 1.5, "Offense" = 2, "Defense" = 2, \
 			"Power" = 1.25, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
-		passives = list("SwordDamage" = 2, "TechniqueMastery" = 2)	
+		passives = list("SwordDamage" = 2, "TechniqueMastery" = 2)
 		BuffTechniques = list("/obj/Skills/AutoHit/Bulwark_Bash", "/obj/Skills/AutoHit/Cleaving_Blow")
 
 	Berserker
@@ -107,8 +107,8 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		JobStats = list("Strength" = 4, "Endurance" = 4, "Force" = 4, "Speed" = 2.5, "Offense" = 2, "Defense" = 1.5, \
 			"Power" = 1.75, "Anger" = 3, "Learning" = 1.5, "Intellect" = 2, "Imagination" = 2)
 		passives = list("EndlessAnger" = 1, "UnbridledFury" = 1)
-		BuffTechniques = list("/obj/Skills/AutoHit/Reckless_Slam", "/obj/Skills/AutoHit/Berserk_Flurry")	
-		
+		BuffTechniques = list("/obj/Skills/AutoHit/Reckless_Slam", "/obj/Skills/AutoHit/Berserk_Flurry")
+
 
 	Rogue
 		BuffName = "Rogue Attunement"
@@ -178,7 +178,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		OffMessage = "sheathes the Samurai blade, the attunement fading with a soft click..."
 		JobStats = list("Strength" = 10, "Endurance" = 1, "Force" = 1, "Speed" = 9, "Offense" = 10, "Defense" = 0.75, \
 			"Power" = 1.75, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
-		passives = list("AttackSpeed" = 3, "SwordDamage" = 3)
+		passives = list("AttackSpeed" = 3, "SwordDamage" = 3, "PureReduction" =-5)
 		BuffTechniques = list("/obj/Skills/AutoHit/Moonlight_Dash", "/obj/Skills/AutoHit/Heavenly_Quake")
 		// Conjured Legendary light blade with a Chaos edge. SwordAscension +
 		// SwordUnbreakable make it ascended and shatterproof (Legendary-tier); the
