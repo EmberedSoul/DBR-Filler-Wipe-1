@@ -120,6 +120,9 @@ ascension
 				applyDormantDemonPassives(owner)
 				if(owner.Class=="Underdog" && owner.transUnlocked<2)
 					owner.transUnlocked=2
+				// Heroic Humans gain the Third Eye slotless buff at Ascension 2.
+				if(owner.Class=="Heroic" && !locate(/obj/Skills/Buffs/SlotlessBuffs/Racial/Human/Third_Eye, owner))
+					owner.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Racial/Human/Third_Eye)
 				..()
 		three
 			unlock_potential = ASCENSION_THREE_POTENTIAL
