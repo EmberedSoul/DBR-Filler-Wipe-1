@@ -71,3 +71,24 @@
 			if(usr.canSHTM())
 				usr.race.transformations[4].transform(usr, TRUE)
 				usr.DoubleHelix=0
+
+/obj/Skills/Buffs/SlotlessBuffs/Racial/Human
+	Third_Eye
+		BuffName = "Third Eye"
+		UnrestrictedBuff = 1
+		Cooldown = -1
+		StrMult = 1.25
+		EndMult = 1.25
+		ForMult = 1.25
+		SpdMult = 1.25
+		OffMult = 1.25
+		DefMult = 1.25
+		passives = list("FavoredPrey" = "Transformations", "SlayerMod" = 2)
+		IconLock = 'Third Eye.dmi'
+		IconApart = 1
+		FlashChange = 1
+		ActiveMessage = "opens their Third Eye, perceiving the very flow of battle!"
+		OffMessage = "closes their Third Eye, the world dimming back to normal..."
+		verb/Third_Eye()
+			set category = "Skills"
+			src.Trigger(usr)
