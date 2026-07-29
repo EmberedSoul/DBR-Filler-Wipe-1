@@ -40,6 +40,16 @@ var/global/list/PokemonTypeSkills = list(
 	"Ground"   = "/obj/Skills/AutoHit/Pkmn_Earthquake",
 	"Ice"      = "/obj/Skills/Projectile/Beams/Ice_Beam")
 
+// Legendary -> its exclusive, powerful signature move (granted on top of the
+// type move by GrantLegendarySkill in pokemon_ai.dm). Only species flagged in
+// pokemon_legendaries use this.
+var/global/list/PokemonLegendarySkills = list(
+	"Mewtwo"   = "/obj/Skills/AutoHit/Psystrike",
+	"Mew"      = "/obj/Skills/AutoHit/Psychic_Overload",
+	"Moltres"  = "/obj/Skills/AutoHit/Meteor_Strike/Sky_Attack",
+	"Zapdos"   = "/obj/Skills/AutoHit/Zap_Cannon",
+	"Articuno" = "/obj/Skills/AutoHit/Sheer_Cold")
+
 // --- On-hit debuff buffs (applied to the target via BuffAffected) ----------
 // Modeled on existing autonomous debuffs like "Shredded" (EndMult/DefMult<1).
 /obj/Skills/Buffs/SlotlessBuffs/Autonomous/PkmnDebuff
@@ -435,3 +445,127 @@ var/global/list/PokemonTypeSkills = list(
 	verb/Ice_Beam()
 		set category = "Skills"
 		usr.UseProjectile(src)
+
+// ==========================================================================
+// LEGENDARY SIGNATURE MOVES
+// Exclusive, powerful moves granted to the Legendaries on top of their normal
+// type move (see GrantLegendarySkill in pokemon_ai.dm). Tuned well above the
+// type moves so a Legendary fights like a boss.
+// ==========================================================================
+
+// --- Mewtwo: Psystrike — a lance of pure psychic force that tears through guard.
+/obj/Skills/AutoHit/Psystrike
+	name = "Psystrike"
+	Area = "Strike"
+	Distance = 14
+	DamageMult = 18
+	ForOffense = 1
+	Crushing = 60          // punches through defense/guard
+	Launcher = 2
+	Stunner = 3
+	Icon = 'PsychoFlame.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 8
+	HitSparkIcon = 'Slash - Future.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 70
+	ActiveMessage = "unleashes Psystrike, a lance of raw psychic force!"
+	verb/Psystrike()
+		set category = "Skills"
+		KenShockwave(usr, icon = 'KenShockwavePurple.dmi', Size = 4, Blend = 2, Time = 12)
+		usr.Activate(src)
+
+// --- Mew: Psychic Overload — a wide psychic detonation around the ancestor.
+/obj/Skills/AutoHit/Psychic_Overload
+	name = "Psychic Overload"
+	Area = "Circle"
+	Distance = 4
+	DamageMult = 13
+	ForOffense = 1
+	Stunner = 3
+	Launcher = 1
+	Shattering = 6
+	Icon = 'PsychoFlame.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 10
+	HitSparkIcon = 'Slash - Future.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
+	ShockIcon = 'KenShockwavePurple.dmi'
+	Shockwave = 4
+	Shockwaves = 2
+	PostShockwave = 1
+	Cooldown = 80
+	ActiveMessage = "detonates a Psychic Overload, warping the space around them!"
+	verb/Psychic_Overload()
+		set category = "Skills"
+		KenShockwave(usr, icon = 'SparkleViolet.dmi', Size = 4, Blend = 2, Time = 15)
+		usr.Activate(src)
+
+// --- Moltres: Sky Attack — a blazing dive-bomb from on high (heavier Meteor).
+/obj/Skills/AutoHit/Meteor_Strike/Sky_Attack
+	name = "Sky Attack"
+	DamageMult = 28
+	Scorching = 12
+	Launcher = 2
+	Stunner = 2
+	HitSparkIcon = 'fevExplosion - Hellfire.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 100
+	ActiveMessage = "rockets skyward and plummets down in a blazing Sky Attack!"
+	verb/Sky_Attack()
+		set category = "Skills"
+		MeteorStrike(usr, src)
+
+// --- Zapdos: Zap Cannon — a screaming cannon of raw voltage.
+/obj/Skills/AutoHit/Zap_Cannon
+	name = "Zap Cannon"
+	Area = "Strike"
+	Distance = 14
+	DamageMult = 16
+	ForOffense = 1
+	Bolt = 3               // heavy lightning strike
+	Paralyzing = 12
+	Shocking = 12
+	Stunner = 4
+	Launcher = 1
+	HitSparkIcon = 'Hit Effect.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	Cooldown = 90
+	ActiveMessage = "fires a Zap Cannon, a screaming bolt of pure voltage!"
+	verb/Zap_Cannon()
+		set category = "Skills"
+		usr.Activate(src)
+
+// --- Articuno: Sheer Cold — a blast of absolute zero that freezes solid.
+/obj/Skills/AutoHit/Sheer_Cold
+	name = "Sheer Cold"
+	Area = "Wave"
+	Distance = 12
+	DamageMult = 15
+	ForOffense = 1
+	Freezing = 18
+	Chilling = 12
+	Shattering = 8
+	Launcher = 1
+	HitSparkIcon = 'IceBurst.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	ShockIcon = 'KenShockwave.dmi'
+	Shockwave = 4
+	Shockwaves = 1
+	PostShockwave = 1
+	Cooldown = 100
+	ActiveMessage = "exhales Sheer Cold, a gale of absolute zero!"
+	verb/Sheer_Cold()
+		set category = "Skills"
+		usr.Activate(src)

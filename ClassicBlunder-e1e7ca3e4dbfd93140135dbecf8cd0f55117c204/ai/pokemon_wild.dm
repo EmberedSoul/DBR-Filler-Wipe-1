@@ -13,6 +13,9 @@
 // Species names (keys into pokemon_database) this trainer has captured.
 mob/var/list/owned_pokemon = list()
 
+// Custom text color for this trainer's Pokemon Say/Emote output (null = default).
+mob/var/pokemon_text_color = null
+
 // --- Admin: place a wild Pokemon spawner -----------------------------------
 // Level 3+ admins (cumulative, so level-4 admins have it) get this in the Admin
 // tab. Sits next to the base "MakeAISpawner" but builds a Pokemon spawner.
@@ -111,6 +114,20 @@ mob/var/list/owned_pokemon = list()
 		p.WoundIntent = 1
 		p.ko_death = 0               // stay KO'd when defeated so they can be caught
 		p.ai_alliances = list("AI Friends")
+		// Manabit loot, so killing a wild Pokemon rewards Mana Bits like other AI.
+		// The kill-reward path (BattleSystem.dm) collects any minerals held by the
+		// dead AI; captured Pokemon are del'd instead, so only KILLING one drops it.
+		// Same scaling monster spawners use (see _AISpot.dm), plus a Legendary bonus.
+		var/obj/Items/mineral/loot = new()
+		var/potExtra = p.Potential < 11 ? 0 : rand(35, 50) * round(p.Potential / 10, 1)
+		loot.value = rand(8, 21) + p.Potential + potExtra
+		loot.value *= 1 + (powerModifier / 2)
+		loot.value *= mineralModifier
+		if(s.legendary)
+			loot.value *= 3          // Legendaries are worth far more
+		loot.value = round(loot.value)
+		loot.name = "[Commas(loot.value)] Mana Bits"
+		p.contents += loot
 		ai_active.Add(p)
 
 	// Example placeable zone (uses the sample species). Add more zones as the dex grows.
@@ -143,6 +160,11 @@ mob/var/list/owned_pokemon = list()
 			usr << "Your finger rest over the Pokeballs button, but your lack of resolve to be a trainer holds you back from throwing it..."
 			return
 		if(!istype(wild)) return
+		// Legendary Pokemon can only be captured by a Primordial Tamer (a T2 signature
+		// that itself requires the Trainer's Pledge).
+		if((wild.pkmn_species in pokemon_legendaries) && (!usr.passive_handler || !usr.passive_handler.Get("Primordial Tamer")))
+			usr << "This is a Legendary Pokemon. Without the resolve of a Primordial Tamer, your Pokeball holds no power over a being of myth..."
+			return
 		if(wild.ai_owner)
 			usr << "That Pokemon already belongs to a trainer."
 			return
@@ -256,9 +278,10 @@ mob/proc/SpawnPokemonAlly(datum/pokemon_species/s)
 	em.appearance_flags = 66
 	em.layer = EFFECTS_LAYER
 	a.overlays += em
+	var/emcolor = usr.pokemon_text_color ? usr.pokemon_text_color : "yellow"
 	for(var/mob/Players/E in (hearers(15, a) | hearers(15, usr)))
-		E << output("<font color=yellow>*[a.name] [T]*</font>", "output")
-		E << output("<font color=yellow>*[a.name] [T]*</font>", "icchat")
+		E << output("<font color=[emcolor]>*[a.name] [T]*</font>", "output")
+		E << output("<font color=[emcolor]>*[a.name] [T]*</font>", "icchat")
 	spawn(15)
 		a.overlays -= em
 
@@ -277,7 +300,23 @@ mob/proc/SpawnPokemonAlly(datum/pokemon_species/s)
 		usr << "You don't have a Pokemon out to speak. Summon one first!"
 		return
 	if(!msg) return
+	// AISay renders in the speaker's Text_Color; apply the trainer's chosen color
+	// (if any) so it matches their emotes. Read live so recoloring takes effect at once.
+	if(usr.pokemon_text_color)
+		a.Text_Color = usr.pokemon_text_color
 	a.AISay("[a.name]!")
+
+// Let a trainer pick the text color their Pokemon's Say and Emote use. Stored on
+// the trainer (persists across relogs); applied to both verbs above.
+/mob/PokemonOwner/verb/Pokemon_Text_Color()
+	set category = "Pokemon"
+	set name = "Pokemon: Text Color"
+	var/newcolor = input(usr, "Pick the text color for your Pokemon's Say and Emote. (Cancel to reset to default.)", "Pokemon Text Color") as color|null
+	usr.pokemon_text_color = newcolor
+	if(newcolor)
+		usr << "<font color=[newcolor]>Your Pokemon will now speak and emote in this color.</font>"
+	else
+		usr << "Your Pokemon's text color has been reset to the default."
 
 // --- Linked fainting: an ally Pokemon and its trainer share their fate ------
 // If a summoned Pokemon is KO'd, its trainer goes down with it, and vice versa.

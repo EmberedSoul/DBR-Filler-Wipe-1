@@ -22,6 +22,15 @@
 	// survives relogs, since it's stored as a signature rather than a skill/buff.
 	if(usr.passive_handler && ("Trainers Pledge" in usr.SignatureSelected))
 		usr.passive_handler.Set("Trainers Pledge", 1)
+	// Same for the T2 Primordial Tamer passive (unlocks capturing Legendaries).
+	if(usr.passive_handler && ("Primordial Tamer" in usr.SignatureSelected))
+		usr.passive_handler.Set("Primordial Tamer", 1)
+	// Re-grant the Pokemon command tab. GivePokemonCommandVerbs() adds its verbs at
+	// runtime (verbs += typesof(...)), and runtime-added verbs don't survive a relog.
+	// The owned_pokemon party itself IS saved, so a returning trainer keeps their
+	// Pokemon — they just need the tab back to summon them again.
+	if(usr.owned_pokemon && usr.owned_pokemon.len)
+		usr.GivePokemonCommandVerbs()
 
 /mob/verb/See_Targets_Target()
 	set category="Skills"
