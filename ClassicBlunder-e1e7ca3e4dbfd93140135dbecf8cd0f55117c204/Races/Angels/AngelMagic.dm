@@ -111,8 +111,8 @@
 				if(perfect)
 					User.Quake(5, 0)
 				keyQ.TRIGGERED = null
-			if(0)
-				User << "Too Soon..."
+		//	if(0)
+		//		User << "Too Soon..."
 			if(-1)
 				User << "You took too long."
 				keyQ.TRIGGERED = null

@@ -65,14 +65,14 @@
 
 /obj/Skills/Buffs/SlotlessBuffs/DemonMagic/Cooldown(modify, Time, mob/p, t)
     for(var/obj/Skills/Buffs/SlotlessBuffs/DemonMagic/dm in p)
-        if("[dm.type]" == "[t]") // all instances of this 
+        if("[dm.type]" == "[t]") // all instances of this
             for(var/x in dm.possible_skills)
                 if(dm.possible_skills[x])
                     if(x == "Corruption")
                         continue // no longer cuck corruption skills
                     if(dm.possible_skills[x].cooldown_remaining && !(dm in src.possible_skills))
                         continue
-                    dm.possible_skills[x].Using= 0 
+                    dm.possible_skills[x].Using= 0
                     dm.possible_skills[x].Cooldown(modify, Time, p)
                     p << "[dm.possible_skills[x]] has been put on cooldown."
 
@@ -146,15 +146,15 @@
                 if(possible_skills[trueType[2]].cooldown_remaining > 0)
                     User << "This is on cooldown"
                     return
-                
+
                 var/triggered = theSkill?:Trigger(User, 0)
                 if(triggered)
                     Cooldown(1, null, User, type)
                 if(perfect)
                     User.Quake(5, 0)
                 keyQ.TRIGGERED = null
-            if(0)
-                User << "Too Soon..."
+       //     if(0)
+         //       User << "Too Soon..."
             if(-1)
                 User << "You took too long."
                 keyQ.TRIGGERED = null
@@ -162,12 +162,12 @@
 
 /obj/Skills/Buffs/SlotlessBuffs/DemonMagic/DarkMagic
     name = "Dark Magic"
-    
+
     KEYWORD = "damage"
     verb/Dark_Magic()
         set category = "Skills"
         fakeTrigger(usr)
-    
+
 
 
     possible_skills = list("DarkMagic" = new/obj/Skills/Projectile/Magic/DarkMagic/Shadow_Ball, "HellFire" = new/obj/Skills/Projectile/Magic/HellFire/Hellpyre ,"Corruption" = new/obj/Skills/AutoHit/Magic/Corruption/Corrupt_Reality )
