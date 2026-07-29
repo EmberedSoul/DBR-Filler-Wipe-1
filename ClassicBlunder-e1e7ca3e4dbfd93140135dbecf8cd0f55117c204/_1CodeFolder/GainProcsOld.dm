@@ -8,6 +8,11 @@ mob/proc/Meditation()
 		sleep(5)
 		return
 
+	// Meditating rouses any fainted Pokemon so they can be sent out again.
+	if(fainted_pokemon && fainted_pokemon.len)
+		fainted_pokemon.Cut()
+		src << "<font color='#88ff88'>Your fainted Pokemon have recovered and can be summoned again.</font>"
+
 	spawn()
 		if(src.VaizardHealth>0)
 			src.VaizardHealth=0

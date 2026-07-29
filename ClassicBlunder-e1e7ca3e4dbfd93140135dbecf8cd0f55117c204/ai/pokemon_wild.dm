@@ -16,6 +16,11 @@ mob/var/list/owned_pokemon = list()
 // Custom text color for this trainer's Pokemon Say/Emote output (null = default).
 mob/var/pokemon_text_color = null
 
+// Species that have fainted this session. A fainted Pokemon can't be sent out
+// again until the trainer meditates (which clears this list in Meditation()).
+// tmp, so relogging also lets them recover.
+mob/var/tmp/list/fainted_pokemon = list()
+
 // --- Admin: place a wild Pokemon spawner -----------------------------------
 // Level 3+ admins (cumulative, so level-4 admins have it) get this in the Admin
 // tab. Sits next to the base "MakeAISpawner" but builds a Pokemon spawner.
@@ -124,7 +129,7 @@ mob/var/pokemon_text_color = null
 		loot.value *= 1 + (powerModifier / 2)
 		loot.value *= mineralModifier
 		if(s.legendary)
-			loot.value *= 3          // Legendaries are worth far more
+			loot.value *= 120          // Legendaries are worth far more
 		loot.value = round(loot.value)
 		loot.name = "[Commas(loot.value)] Mana Bits"
 		p.contents += loot
@@ -194,8 +199,11 @@ mob/proc/SpawnPokemonAlly(datum/pokemon_species/s)
 	a.ai_hostility = 1
 	a.ai_focus_owner_target = 1
 	a.Timeless = 1
+	a.ko_death = 0             // on KO, our Unconscious() recalls it — it never "dies"
 	a.ai_alliances = list("[src.ckey]")
 	a.ApplyPokemonSpecies(s) // ai_owner set -> scales to the trainer
+	a.HealHealth(99999)       // a re-summoned Pokemon always comes out fully healed
+	a.HealEnergy(99999)
 	ai_followers += a
 	a.aiGain()
 	src << "<b>Go, [s.species]!</b>"
@@ -210,7 +218,12 @@ mob/proc/SpawnPokemonAlly(datum/pokemon_species/s)
 	for(var/mob/Player/AI/Pokemon/p in ai_followers)
 		src << "You can only have one Pokemon out at a time. Recall it first."
 		return
-	var/sp = input(src, "Which Pokemon do you want to send out?", "Summon Pokemon") as null|anything in owned_pokemon
+	// A fainted Pokemon can't be sent out again until you meditate.
+	var/list/available = owned_pokemon - fainted_pokemon
+	if(!available.len)
+		src << "All of your Pokemon have fainted. Meditate to let them recover before sending one out."
+		return
+	var/sp = input(src, "Which Pokemon do you want to send out?", "Summon Pokemon") as null|anything in available
 	if(!sp) return
 	if(!pokemon_database.len) BuildPokemonDatabase()
 	var/datum/pokemon_species/s = pokemon_database[sp]
@@ -318,23 +331,22 @@ mob/proc/SpawnPokemonAlly(datum/pokemon_species/s)
 	else
 		usr << "Your Pokemon's text color has been reset to the default."
 
-// --- Linked fainting: an ally Pokemon and its trainer share their fate ------
-// If a summoned Pokemon is KO'd, its trainer goes down with it, and vice versa.
-// These override the shared Unconscious() proc; the base guards re-entry with
-// `if(src.KO) return`, and we re-check KO after ..() (which accounts for any
-// get-up/revive logic), so this can never loop.
-// (Only ALLY Pokemon carry an ai_owner, so wild Pokemon are unaffected.)
-
-// Pokemon faints -> its trainer faints, spirit crushed.
+// --- Fainting: a downed owned Pokemon is recalled and faint-locked ----------
+// A KO'd owned Pokemon is NOT linked to its trainer's fate (they no longer share
+// KOs). Instead it returns to the trainer and can't be sent out again until the
+// trainer meditates (see fainted_pokemon / Meditation()). The trainer may still
+// summon their other Pokemon in the meantime.
+// (Only ALLY Pokemon carry an ai_owner; wild Pokemon are unaffected — they lie
+// KO'd on the field so they can be captured.)
 /mob/Player/AI/Pokemon/Unconscious(mob/P, text)
 	..()
-	if(src.KO && ai_owner && !ai_owner.KO)
-		ai_owner.Unconscious(null, "their Pokemon falling, crushing their spirit")
-
-// Trainer faints -> their summoned Pokemon faints too.
-/mob/Players/Unconscious(mob/P, text)
-	..()
-	if(src.KO)
-		for(var/mob/Player/AI/Pokemon/pk in ai_followers)
-			if(pk.ai_owner == src && !pk.KO)
-				pk.Unconscious(null, "their trainer falling")
+	if(src.KO && ai_owner)
+		var/mob/owner = ai_owner
+		var/downed = src.pkmn_species
+		if(!(downed in owner.fainted_pokemon))
+			owner.fainted_pokemon += downed
+		owner << "<b>[downed] fainted!</b> It returns to you, and can't be sent out again until you meditate."
+		owner.ai_followers -= src
+		ai_owner = null            // sever the link before the mob is cleaned up
+		spawn(2)
+			if(src) del src

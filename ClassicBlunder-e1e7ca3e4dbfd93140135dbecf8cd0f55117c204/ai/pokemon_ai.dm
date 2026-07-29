@@ -31,6 +31,9 @@
 // Legendaries (see pokemon_legendaries) multiply every derived combat stat by
 // this, so a Legendary is a flat 40% stronger than its raw base stats imply.
 #define POKEMON_LEGENDARY_POWER_MULT 1.4
+// Single-type Pokemon get only one type move, so its cooldown is multiplied by
+// this to compensate. Dual-type Pokemon (two moves) pay full cooldown on each.
+#define POKEMON_SINGLE_TYPE_CD_MULT 0.6
 
 // --- Species template (mirrors the Squad system's ai_sheet) ----------------
 // Stores the canonical Pokemon base stats (HP / Attack / Defense / Sp.Atk /
@@ -40,6 +43,7 @@
 	var/species            // display name / database key
 	var/icon_state         // state name inside POKEMON.dmi
 	var/PokemonType        // one of the PokemonTypeSkills keys
+	var/PokemonType2       // second type for dual-type species (null = single-type); set from pokemon_second_types
 	var/hp
 	var/atk
 	var/def
@@ -68,7 +72,90 @@ var/global/list/pokemon_database = list()
 // Legendary species. Kept separate from the regular dex in the "Make Pokemon
 // Spawner" admin UI so legendaries aren't handed out by accident. Extend this as
 // the dex grows past Kanto.
-var/global/list/pokemon_legendaries = list("Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew")
+var/global/list/pokemon_legendaries = list("Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew", \
+	"Raikou", "Entei", "Suicune", "Lugia", "Ho-Oh", "Celebi")
+
+// Second type for dual-type species. The dex line holds the primary type; this
+// adds the other half of the canonical pair, so a dual-type Pokemon is granted
+// BOTH type moves. Species absent here are single-type (and get a cooldown
+// discount on their one move). Applied in BuildPokemonDatabase.
+var/global/list/pokemon_second_types = list(
+	// --- Kanto ---
+	"Bulbasaur"="Poison", "Ivysaur"="Poison", "Venusaur"="Poison",
+	"Charizard"="Flying",
+	"Butterfree"="Flying",
+	"Weedle"="Poison", "Kakuna"="Poison", "Beedrill"="Poison",
+	"Pidgey"="Normal", "Pidgeotto"="Normal", "Pidgeot"="Normal",
+	"Spearow"="Normal", "Fearow"="Normal",
+	"Nidoqueen"="Poison", "Nidoking"="Poison",
+	"Jigglypuff"="Normal", "Wigglytuff"="Normal",
+	"Zubat"="Flying", "Golbat"="Flying",
+	"Oddish"="Poison", "Gloom"="Poison", "Vileplume"="Poison",
+	"Paras"="Grass", "Parasect"="Grass",
+	"Venonat"="Poison", "Venomoth"="Poison",
+	"Poliwrath"="Fighting",
+	"Bellsprout"="Poison", "Weepinbell"="Poison", "Victreebel"="Poison",
+	"Tentacool"="Poison", "Tentacruel"="Poison",
+	"Geodude"="Ground", "Graveler"="Ground", "Golem"="Ground",
+	"Slowpoke"="Psychic", "Slowbro"="Psychic",
+	"Magnemite"="Steel", "Magneton"="Steel",
+	"Farfetchd"="Normal",
+	"Doduo"="Normal", "Dodrio"="Normal",
+	"Dewgong"="Ice",
+	"Cloyster"="Ice",
+	"Gastly"="Poison", "Haunter"="Poison", "Gengar"="Poison",
+	"Onix"="Ground",
+	"Exeggcute"="Psychic", "Exeggutor"="Psychic",
+	"Rhyhorn"="Rock", "Rhydon"="Rock",
+	"Starmie"="Psychic",
+	"Mr. Mime"="Fairy",
+	"Scyther"="Flying",
+	"Jynx"="Psychic",
+	"Gyarados"="Flying",
+	"Lapras"="Ice",
+	"Omanyte"="Water", "Omastar"="Water",
+	"Kabuto"="Water", "Kabutops"="Water",
+	"Aerodactyl"="Flying",
+	"Articuno"="Flying", "Zapdos"="Flying", "Moltres"="Flying",
+	"Dragonite"="Flying",
+	// --- Johto ---
+	"Hoothoot"="Normal", "Noctowl"="Normal",
+	"Ledyba"="Flying", "Ledian"="Flying",
+	"Spinarak"="Poison", "Ariados"="Poison",
+	"Crobat"="Flying",
+	"Chinchou"="Electric", "Lanturn"="Electric",
+	"Igglybuff"="Normal",
+	"Togetic"="Flying",
+	"Natu"="Flying", "Xatu"="Flying",
+	"Marill"="Fairy", "Azumarill"="Fairy",
+	"Hoppip"="Flying", "Skiploom"="Flying", "Jumpluff"="Flying",
+	"Yanma"="Flying",
+	"Wooper"="Ground", "Quagsire"="Ground",
+	"Murkrow"="Flying",
+	"Slowking"="Water",
+	"Girafarig"="Normal",
+	"Forretress"="Steel",
+	"Gligar"="Flying",
+	"Steelix"="Ground",
+	"Qwilfish"="Poison",
+	"Scizor"="Bug",
+	"Shuckle"="Rock",
+	"Heracross"="Fighting",
+	"Sneasel"="Ice",
+	"Magcargo"="Rock",
+	"Swinub"="Ground", "Piloswine"="Ground",
+	"Corsola"="Rock",
+	"Delibird"="Flying",
+	"Mantine"="Flying",
+	"Skarmory"="Flying",
+	"Houndour"="Fire", "Houndoom"="Fire",
+	"Kingdra"="Water",
+	"Smoochum"="Psychic",
+	"Larvitar"="Ground", "Pupitar"="Ground",
+	"Tyranitar"="Dark",
+	"Lugia"="Flying",
+	"Ho-Oh"="Flying",
+	"Celebi"="Grass")
 
 // species, icon_state, type, the 6 base stats (HP,Atk,Def,SpA,SpD,Spe), then the
 // evolution target species and the Potential level it evolves at (or null/0).
@@ -230,11 +317,120 @@ var/global/list/pokemon_legendaries = list("Articuno", "Zapdos", "Moltres", "Mew
 	_pkmn("Dragonite",  "Dragonite",  "Dragon",    91,134, 95,100,100, 80, null,           0)
 	_pkmn("Mewtwo",     "Mewtwo",     "Psychic",  106,110, 90,154, 90,130, null,           0)
 	_pkmn("Mew",        "Mew",        "Psychic",  100,100,100,100,100,100, null,           0)
+	// --- JOHTO REGION (Gen 2, #152-251) ---
+	// Same format as Kanto. icon_state matches the exact POKEMON.dmi state (a few use
+	// the sheet's spellings: Bayleaf, Typholsion, Unknown, lugiamiddle). Single most-
+	// fitting type; non-level evolutions (stone/trade/happiness) get a sensible level.
+	_pkmn("Chikorita",  "Chikorita",  "Grass",     45, 49, 65, 49, 65, 45, "Bayleef",     16)
+	_pkmn("Bayleef",    "Bayleaf",    "Grass",     60, 62, 80, 63, 80, 60, "Meganium",    32)
+	_pkmn("Meganium",   "Meganium",   "Grass",     80, 82,100, 83,100, 80, null,           0)
+	_pkmn("Cyndaquil",  "Cyndaquil",  "Fire",      39, 52, 43, 60, 50, 65, "Quilava",     14)
+	_pkmn("Quilava",    "Quilava",    "Fire",      58, 64, 58, 80, 65, 80, "Typhlosion",  36)
+	_pkmn("Typhlosion", "Typholsion", "Fire",      78, 84, 78,109, 85,100, null,           0)
+	_pkmn("Totodile",   "Totodile",   "Water",     50, 65, 64, 44, 48, 43, "Croconaw",    18)
+	_pkmn("Croconaw",   "Croconaw",   "Water",     65, 80, 80, 59, 63, 58, "Feraligatr",  30)
+	_pkmn("Feraligatr", "Feraligatr", "Water",     85,105,100, 79, 83, 78, null,           0)
+	_pkmn("Sentret",    "Sentret",    "Normal",    35, 46, 34, 35, 45, 20, "Furret",      15)
+	_pkmn("Furret",     "Furret",     "Normal",    85, 76, 64, 45, 55, 90, null,           0)
+	_pkmn("Hoothoot",   "Hoothoot",   "Flying",    60, 30, 30, 36, 56, 50, "Noctowl",     20)
+	_pkmn("Noctowl",    "Noctowl",    "Flying",   100, 50, 50, 86, 96, 70, null,           0)
+	_pkmn("Ledyba",     "Ledyba",     "Bug",       40, 20, 30, 40, 80, 55, "Ledian",      18)
+	_pkmn("Ledian",     "Ledian",     "Bug",       55, 35, 50, 55,110, 85, null,           0)
+	_pkmn("Spinarak",   "Spinarak",   "Bug",       40, 60, 40, 40, 40, 30, "Ariados",     22)
+	_pkmn("Ariados",    "Ariados",    "Bug",       70, 90, 70, 60, 70, 40, null,           0)
+	_pkmn("Crobat",     "Crobat",     "Poison",    85, 90, 80, 70, 80,130, null,           0)
+	_pkmn("Chinchou",   "Chinchou",   "Water",     75, 38, 38, 56, 56, 67, "Lanturn",     27)
+	_pkmn("Lanturn",    "Lanturn",    "Water",    125, 58, 58, 76, 76, 67, null,           0)
+	_pkmn("Pichu",      "Pichu",      "Electric",  20, 40, 15, 35, 35, 60, "Pikachu",     10)
+	_pkmn("Cleffa",     "Cleffa",     "Fairy",     50, 25, 28, 45, 55, 15, "Clefairy",    10)
+	_pkmn("Igglybuff",  "Igglybuff",  "Fairy",     90, 30, 15, 40, 20, 15, "Jigglypuff",  10)
+	_pkmn("Togepi",     "Togepi",     "Fairy",     35, 20, 65, 40, 65, 20, "Togetic",     10)
+	_pkmn("Togetic",    "Togetic",    "Fairy",     55, 40, 85, 80,105, 40, null,           0)
+	_pkmn("Natu",       "Natu",       "Psychic",   40, 50, 45, 70, 45, 70, "Xatu",        25)
+	_pkmn("Xatu",       "Xatu",       "Psychic",   65, 75, 70, 95, 70, 95, null,           0)
+	_pkmn("Mareep",     "Mareep",     "Electric",  55, 40, 40, 65, 45, 35, "Flaaffy",     15)
+	_pkmn("Flaaffy",    "Flaaffy",    "Electric",  70, 55, 55, 80, 60, 45, "Ampharos",    30)
+	_pkmn("Ampharos",   "Ampharos",   "Electric",  90, 75, 85,115, 90, 55, null,           0)
+	_pkmn("Bellossom",  "Bellossom",  "Grass",     75, 80, 95, 90,100, 50, null,           0)
+	_pkmn("Marill",     "Marill",     "Water",     70, 20, 50, 20, 50, 40, "Azumarill",   18)
+	_pkmn("Azumarill",  "Azumarill",  "Water",    100, 50, 80, 60, 80, 50, null,           0)
+	_pkmn("Sudowoodo",  "Sudowoodo",  "Rock",      70,100,115, 30, 65, 30, null,           0)
+	_pkmn("Politoed",   "Politoed",   "Water",     90, 75, 75, 90,100, 70, null,           0)
+	_pkmn("Hoppip",     "Hoppip",     "Grass",     35, 35, 40, 35, 55, 50, "Skiploom",    18)
+	_pkmn("Skiploom",   "Skiploom",   "Grass",     55, 45, 50, 45, 65, 80, "Jumpluff",    27)
+	_pkmn("Jumpluff",   "Jumpluff",   "Grass",     75, 55, 70, 55, 95,110, null,           0)
+	_pkmn("Aipom",      "Aipom",      "Normal",    55, 70, 55, 40, 55, 85, null,           0)
+	_pkmn("Sunkern",    "Sunkern",    "Grass",     30, 30, 30, 30, 30, 30, "Sunflora",    30)
+	_pkmn("Sunflora",   "Sunflora",   "Grass",     75, 75, 55,105, 85, 30, null,           0)
+	_pkmn("Yanma",      "Yanma",      "Bug",       65, 65, 45, 75, 45, 95, null,           0)
+	_pkmn("Wooper",     "Wooper",     "Water",     55, 45, 45, 25, 25, 15, "Quagsire",    20)
+	_pkmn("Quagsire",   "Quagsire",   "Water",     95, 85, 85, 65, 65, 35, null,           0)
+	_pkmn("Espeon",     "Espeon",     "Psychic",   65, 65, 60,130, 95,110, null,           0)
+	_pkmn("Umbreon",    "Umbreon",    "Dark",      95, 65,110, 60,130, 65, null,           0)
+	_pkmn("Murkrow",    "Murkrow",    "Dark",      60, 85, 42, 85, 42, 91, null,           0)
+	_pkmn("Slowking",   "Slowking",   "Psychic",   95, 75, 80,100,110, 30, null,           0)
+	_pkmn("Misdreavus", "Misdreavus", "Ghost",     60, 60, 60, 85, 85, 85, null,           0)
+	_pkmn("Unown",      "Unknown",    "Psychic",   48, 72, 48, 72, 48, 48, null,           0)
+	_pkmn("Wobbuffet",  "Wobbuffet",  "Psychic",  190, 33, 58, 33, 58, 33, null,           0)
+	_pkmn("Girafarig",  "Girafarig",  "Psychic",   70, 80, 65, 90, 65, 85, null,           0)
+	_pkmn("Pineco",     "Pineco",     "Bug",       50, 65, 90, 35, 35, 15, "Forretress",  31)
+	_pkmn("Forretress", "Forretress", "Bug",       75, 90,140, 60, 60, 40, null,           0)
+	_pkmn("Dunsparce",  "Dunsparce",  "Normal",   100, 70, 70, 65, 65, 45, null,           0)
+	_pkmn("Gligar",     "Gligar",     "Ground",    65, 75,105, 35, 65, 85, null,           0)
+	_pkmn("Steelix",    "Steelix",    "Steel",     75, 85,200, 55, 65, 30, null,           0)
+	_pkmn("Snubbull",   "Snubbull",   "Fairy",     60, 80, 50, 40, 40, 30, "Granbull",    23)
+	_pkmn("Granbull",   "Granbull",   "Fairy",     90,120, 75, 60, 60, 45, null,           0)
+	_pkmn("Qwilfish",   "Qwilfish",   "Water",     65, 95, 85, 55, 55, 85, null,           0)
+	_pkmn("Scizor",     "Scizor",     "Steel",     70,130,100, 55, 80, 65, null,           0)
+	_pkmn("Shuckle",    "Shuckle",    "Bug",       20, 10,230, 10,230,  5, null,           0)
+	_pkmn("Heracross",  "Heracross",  "Bug",       80,125, 75, 40, 95, 85, null,           0)
+	_pkmn("Sneasel",    "Sneasel",    "Dark",      55, 95, 55, 35, 75,115, null,           0)
+	_pkmn("Teddiursa",  "Teddiursa",  "Normal",    60, 80, 50, 50, 50, 40, "Ursaring",    30)
+	_pkmn("Ursaring",   "Ursaring",   "Normal",    90,130, 75, 75, 75, 55, null,           0)
+	_pkmn("Slugma",     "Slugma",     "Fire",      40, 40, 40, 70, 40, 20, "Magcargo",    38)
+	_pkmn("Magcargo",   "Magcargo",   "Fire",      50, 50,120, 80, 80, 30, null,           0)
+	_pkmn("Swinub",     "Swinub",     "Ice",       50, 50, 40, 30, 30, 50, "Piloswine",   33)
+	_pkmn("Piloswine",  "Piloswine",  "Ice",      100,100, 80, 60, 60, 50, null,           0)
+	_pkmn("Corsola",    "Corsola",    "Water",     65, 55, 95, 65, 95, 35, null,           0)
+	_pkmn("Remoraid",   "Remoraid",   "Water",     35, 65, 35, 65, 35, 65, "Octillery",   25)
+	_pkmn("Octillery",  "Octillery",  "Water",     75,105, 75,105, 75, 45, null,           0)
+	_pkmn("Delibird",   "Delibird",   "Ice",       45, 55, 45, 65, 45, 75, null,           0)
+	_pkmn("Mantine",    "Mantine",    "Water",     85, 40, 70, 80,140, 70, null,           0)
+	_pkmn("Skarmory",   "Skarmory",   "Steel",     65, 80,140, 40, 70, 70, null,           0)
+	_pkmn("Houndour",   "Houndour",   "Dark",      45, 60, 30, 80, 50, 65, "Houndoom",    24)
+	_pkmn("Houndoom",   "Houndoom",   "Dark",      75, 90, 50,110, 80, 95, null,           0)
+	_pkmn("Kingdra",    "Kingdra",    "Dragon",    75, 95, 95, 95, 95, 85, null,           0)
+	_pkmn("Phanpy",     "Phanpy",     "Ground",    90, 60, 60, 40, 40, 40, "Donphan",     25)
+	_pkmn("Donphan",    "Donphan",    "Ground",    90,120,120, 60, 60, 50, null,           0)
+	_pkmn("Porygon2",   "Porygon2",   "Normal",    85, 80, 90,105, 95, 60, null,           0)
+	_pkmn("Stantler",   "Stantler",   "Normal",    73, 95, 62, 85, 65, 85, null,           0)
+	_pkmn("Smeargle",   "Smeargle",   "Normal",    55, 20, 35, 20, 45, 75, null,           0)
+	_pkmn("Tyrogue",    "Tyrogue",    "Fighting",  35, 35, 35, 35, 35, 35, "Hitmontop",   20)
+	_pkmn("Hitmontop",  "Hitmontop",  "Fighting",  50, 95, 95, 35,110, 70, null,           0)
+	_pkmn("Smoochum",   "Smoochum",   "Ice",       45, 30, 15, 85, 65, 65, "Jynx",        30)
+	_pkmn("Elekid",     "Elekid",     "Electric",  45, 63, 37, 65, 55, 95, "Electabuzz",  30)
+	_pkmn("Magby",      "Magby",      "Fire",      45, 75, 37, 70, 55, 83, "Magmar",      30)
+	_pkmn("Miltank",    "Miltank",    "Normal",    95, 80,105, 40, 70,100, null,           0)
+	_pkmn("Blissey",    "Blissey",    "Normal",   255, 10, 10, 75,135, 55, null,           0)
+	_pkmn("Raikou",     "Raikou",     "Electric",  90, 85, 75,115,100,115, null,           0)
+	_pkmn("Entei",      "Entei",      "Fire",     115,115, 85, 90, 75,100, null,           0)
+	_pkmn("Suicune",    "Suicune",    "Water",    100, 75,115, 90,115, 85, null,           0)
+	_pkmn("Larvitar",   "Larvitar",   "Rock",      50, 64, 50, 45, 50, 41, "Pupitar",     30)
+	_pkmn("Pupitar",    "Pupitar",    "Rock",      70, 84, 70, 65, 70, 51, "Tyranitar",   55)
+	_pkmn("Tyranitar",  "Tyranitar",  "Rock",     100,134,110, 95,100, 61, null,           0)
+	_pkmn("Lugia",      "lugiamiddle","Psychic",  106, 90,130, 90,154,110, null,           0)
+	_pkmn("Ho-Oh",      "Ho-Oh",      "Fire",     106,130, 90,110,154, 90, null,           0)
+	_pkmn("Celebi",     "Celebi",     "Psychic",  100,100,100,100,100,100, null,           0)
 	// Flag the Legendaries (single source of truth = pokemon_legendaries).
 	for(var/legname in pokemon_legendaries)
 		if(pokemon_database[legname])
 			var/datum/pokemon_species/ls = pokemon_database[legname]
 			ls.legendary = 1
+	// Assign second types to the dual-type species (see pokemon_second_types).
+	for(var/dtname in pokemon_second_types)
+		if(pokemon_database[dtname])
+			var/datum/pokemon_species/ds = pokemon_database[dtname]
+			ds.PokemonType2 = pokemon_second_types[dtname]
 
 /proc/GetPokemonSpecies(sp)
 	if(!pokemon_database.len) BuildPokemonDatabase()
@@ -272,6 +468,7 @@ var/global/list/pokemon_icon_state_cache = null
 // --- The Pokemon AI mob ----------------------------------------------------
 /mob/Player/AI/Pokemon
 	var/PokemonType = null
+	var/PokemonType2 = null
 	var/pkmn_species = null
 	var/obj/pokemon_sprite/body_sprite = null
 	var/list/body_pieces = null   // extra vis sprites assembled for multi-tile species
@@ -299,6 +496,7 @@ var/global/list/pokemon_icon_state_cache = null
 		pkmn_species = s.species
 		name = s.species
 		PokemonType = s.PokemonType
+		PokemonType2 = s.PokemonType2
 		// Blank the churning base body; show the Pokemon via the stable vis object.
 		icon = null
 		if(!body_sprite)
@@ -370,13 +568,32 @@ var/global/list/pokemon_icon_state_cache = null
 
 	// Grant the signature skill for this Pokemon's type (from pokemon_skills.dm).
 	proc/GrantTypeSkill()
-		if(!PokemonType) return
-		var/txt = PokemonTypeSkills[PokemonType]
+		// A dual-type Pokemon gets BOTH of its type moves; a single-type Pokemon
+		// gets its one move at a discounted cooldown to compensate.
+		var/single = !PokemonType2
+		GrantOneTypeSkill(PokemonType, single)
+		GrantOneTypeSkill(PokemonType2, 0)
+
+	// Grant the signature move for one type. If discount, shorten this instance's
+	// cooldown (single-type compensation) — done on the instance so it doesn't
+	// affect the same move on a dual-type Pokemon.
+	proc/GrantOneTypeSkill(ptype, discount)
+		if(!ptype) return
+		var/txt = PokemonTypeSkills[ptype]
 		if(!txt) return
 		var/skpath = text2path(txt)
 		if(!skpath) return
-		if(!locate(skpath, src))
-			AddSkill(new skpath)
+		var/obj/Skills/existing = locate(skpath, src)
+		if(existing)
+			// Already have this move (e.g. from a pre-evolution). Re-fit its cooldown
+			// to the current form: full for dual-type, discounted for single-type — so
+			// a mono -> dual evolution (Charmeleon -> Charizard) stops being discounted.
+			existing.Cooldown = discount ? round(initial(existing.Cooldown) * POKEMON_SINGLE_TYPE_CD_MULT) : initial(existing.Cooldown)
+			return
+		var/obj/Skills/sk = new skpath
+		if(discount)
+			sk.Cooldown = round(sk.Cooldown * POKEMON_SINGLE_TYPE_CD_MULT)
+		AddSkill(sk)
 
 	// Grant a Legendary's unique signature move (from pokemon_skills.dm), on top of
 	// its normal type move. No-op for non-Legendary species.
@@ -388,12 +605,25 @@ var/global/list/pokemon_icon_state_cache = null
 		var/skpath = text2path(txt)
 		if(!skpath) return
 		if(!locate(skpath, src))
-			AddSkill(new skpath)
+			var/obj/Skills/leg = new skpath
+			leg.pokemon_legendary_move = 1   // drives the screen-shake in Activate()
+			AddSkill(leg)
 
 	// Per-life tick: an owned Pokemon tracks its trainer's growth and evolves as
 	// its Potential crosses thresholds.
 	aiGain()
 		..()
+		if(ai_owner)
+			// Recover Health/Energy at the trainer's pace — while the trainer is
+			// meditating, their Pokemon recovers fast right alongside them. We never
+			// touch the Pokemon's own icon_state (it shares POKEMON.dmi via the vis
+			// object, so a "Meditate" state would glitch it).
+			if(ai_owner.icon_state == "Meditate")
+				HealHealth(5)
+				HealEnergy(12)
+			else
+				HealHealth(1)
+				HealEnergy(2)
 		if(ai_owner && pkmn_species)
 			var/datum/pokemon_species/cur = pokemon_database[pkmn_species]
 			if(cur)
