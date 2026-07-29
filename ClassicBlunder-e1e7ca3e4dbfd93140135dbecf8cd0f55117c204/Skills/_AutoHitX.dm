@@ -5552,6 +5552,10 @@ mob
 					OMsg(src, "<b><font color='[Z.ActiveColor]'>[src] [Z.ActiveMessage]</font color></b>")
 					if(Z.PlatinumMad)
 						world<<"<font color=[src.Text_Color]>[src.name]</font>: <font color=red><b>FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUCK!</b></font>"
+			// Legendary Pokemon signature moves give a slight screen shake to sell their power.
+			if(Z.pokemon_legendary_move)
+				spawn() src.Earthquake(5, -4, 4, -4, 4)
+				Z.OnLegendaryActivate(src)
 			if(passive_handler["AirBend"] && can_use_style_effect("AirBend"))
 				flick("KB", Target)
 				step_away(Target, src)

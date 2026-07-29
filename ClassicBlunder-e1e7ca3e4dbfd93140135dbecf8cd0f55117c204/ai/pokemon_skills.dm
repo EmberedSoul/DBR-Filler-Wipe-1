@@ -17,6 +17,16 @@
 // New Companion var — set per companion; drives the Pokemon AI's kit.
 /obj/Skills/Companion/var/PokemonType = null
 
+// Set on a Legendary's granted signature move (see GrantLegendarySkill). Activate()
+// reads it to add a slight screen shake when a Legendary unleashes its unique move.
+/obj/Skills/var/pokemon_legendary_move = 0
+
+// Custom on-activate flourish for a Legendary's signature move. Called from Activate()
+// (so it fires for AI use, not just the player verb). Override per-skill; user is the
+// Pokemon unleashing the move.
+/obj/Skills/proc/OnLegendaryActivate(mob/user)
+	return
+
 // Type -> signature skill path. Values are text paths so the AI can text2path
 // + `new` them when building a companion's kit.
 var/global/list/PokemonTypeSkills = list(
@@ -48,7 +58,14 @@ var/global/list/PokemonLegendarySkills = list(
 	"Mew"      = "/obj/Skills/AutoHit/Psychic_Overload",
 	"Moltres"  = "/obj/Skills/AutoHit/Meteor_Strike/Sky_Attack",
 	"Zapdos"   = "/obj/Skills/AutoHit/Zap_Cannon",
-	"Articuno" = "/obj/Skills/AutoHit/Sheer_Cold")
+	"Articuno" = "/obj/Skills/AutoHit/Sheer_Cold",
+	// Johto legendaries
+	"Raikou"   = "/obj/Skills/AutoHit/Thunderclap",
+	"Entei"    = "/obj/Skills/AutoHit/Sacred_Fire",
+	"Suicune"  = "/obj/Skills/AutoHit/Tidal_Crash",
+	"Lugia"    = "/obj/Skills/AutoHit/Aeroblast",
+	"Ho-Oh"    = "/obj/Skills/AutoHit/Meteor_Strike/Rainbow_Inferno",
+	"Celebi"   = "/obj/Skills/AutoHit/Sacred_Grove")
 
 // --- On-hit debuff buffs (applied to the target via BuffAffected) ----------
 // Modeled on existing autonomous debuffs like "Shredded" (EndMult/DefMult<1).
@@ -190,8 +207,10 @@ var/global/list/PokemonLegendarySkills = list(
 	Rapid = 1
 	Shocking = 6
 	Paralyzing = 6
-	// Arcs of lightning crash down with each strike.
-	Bolt = 2
+	// Queue skills fire lightning via SpecialEffect, not Bolt (Bolt is an AutoHit-only
+	// var). "Thunder" with range 2 = LightningStrike2, the same bolt Thunder/Thundaga use.
+	SpecialEffect = "Thunder"
+	SpecialEffectRange = 2
 	HitSparkIcon = 'Hit Effect.dmi'
 	HitSparkX = -32
 	HitSparkY = -32
@@ -531,7 +550,7 @@ var/global/list/PokemonLegendarySkills = list(
 	Distance = 14
 	DamageMult = 16
 	ForOffense = 1
-	Bolt = 3               // heavy lightning strike
+	Bolt = 2               // LightningStrike2 — the same bolt Thunder/Thundaga use
 	Paralyzing = 12
 	Shocking = 12
 	Stunner = 4
@@ -569,3 +588,199 @@ var/global/list/PokemonLegendarySkills = list(
 	verb/Sheer_Cold()
 		set category = "Skills"
 		usr.Activate(src)
+
+// ==========================================================================
+// JOHTO LEGENDARY SIGNATURE MOVES  (Raikou/Entei/Suicune/Lugia/Ho-Oh/Celebi)
+// ==========================================================================
+
+// --- Raikou: Thunderclap — a deafening crash of raw lightning.
+/obj/Skills/AutoHit/Thunderclap
+	name = "Thunderclap"
+	Area = "Strike"
+	Distance = 14
+	DamageMult = 16
+	ForOffense = 1
+	Bolt = 2               // LightningStrike2 — the same bolt Thunder/Thundaga use
+	Paralyzing = 12
+	Shocking = 12
+	Stunner = 4
+	Launcher = 1
+	HitSparkIcon = 'Hit Effect.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	Cooldown = 90
+	ActiveMessage = "looses a Thunderclap, a deafening crash of raw lightning!"
+	verb/Thunderclap()
+		set category = "Skills"
+		usr.Activate(src)
+
+// --- Entei: Sacred Fire — a holy flame that scorches to the bone.
+/obj/Skills/AutoHit/Sacred_Fire
+	name = "Sacred Fire"
+	Area = "Strike"
+	Distance = 12
+	DamageMult = 18
+	ForOffense = 1
+	Scorching = 16
+	Stunner = 3
+	Launcher = 1
+	Icon = 'fevExplosion - Hellfire.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 8
+	HitSparkIcon = 'Slash - Hellfire.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 90
+	ActiveMessage = "breathes Sacred Fire, a holy flame that scorches to the bone!"
+	verb/Sacred_Fire()
+		set category = "Skills"
+		usr.Activate(src)
+
+// --- Suicune: Tidal Crash — a crushing wall of frigid water.
+/obj/Skills/AutoHit/Tidal_Crash
+	name = "Tidal Crash"
+	Area = "Wave"
+	Distance = 12
+	DamageMult = 15
+	ForOffense = 1
+	Chilling = 12
+	Freezing = 8
+	Launcher = 2
+	HitSparkIcon = 'IceBurst.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	ShockIcon = 'KenShockwave.dmi'
+	Shockwave = 4
+	Shockwaves = 2
+	PostShockwave = 1
+	Cooldown = 90
+	ActiveMessage = "calls down a Tidal Crash, a crushing wall of frigid water!"
+	verb/Tidal_Crash()
+		set category = "Skills"
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		// Leaves a curtain of rain hanging over the battlefield for a few seconds.
+		var/image/rainimg = image(icon = 'rain.dmi', layer = MOB_LAYER + 3)
+		var/list/turf/wet = list()
+		for(var/turf/t in range(3, user))
+			wet += t
+			t.overlays += rainimg
+		spawn(50)
+			for(var/turf/t in wet)
+				t.overlays -= rainimg
+
+// --- Lugia: Aeroblast — a screaming lance of compressed wind.
+/obj/Skills/AutoHit/Aeroblast
+	name = "Aeroblast"
+	Area = "Strike"
+	Distance = 16
+	DamageMult = 18
+	ForOffense = 1
+	Crushing = 50
+	Launcher = 2
+	Stunner = 3
+	Icon = 'Air Render.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 8
+	HitSparkIcon = 'Slash - Zan.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 90
+	ActiveMessage = "fires an Aeroblast, a screaming lance of compressed wind!"
+	verb/Aeroblast()
+		set category = "Skills"
+		KenShockwave(usr, icon = 'KenShockwave.dmi', Size = 4, Blend = 2, Time = 12)
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		// Leaves a few enlarged whirlpools spinning in Lugia's wake for a moment.
+		var/turf/c = get_turf(user)
+		if(!c) return
+		var/list/spots = list(get_step(c, NORTH), get_step(c, EAST), get_step(c, WEST), \
+			get_step(c, SOUTH), get_step(c, NORTHEAST), get_step(c, SOUTHWEST))
+		for(var/n in 1 to 3)
+			var/turf/t = pick(spots)
+			if(!t) continue
+			var/obj/w = new /obj(t)
+			w.icon = 'WhirlSpin.dmi'
+			w.layer = MOB_LAYER
+			w.mouse_opacity = 0
+			w.density = 0
+			w.transform = matrix() * 1.6   // enlarged
+			spawn(45)
+				if(w) del w
+
+// --- Ho-Oh: Rainbow Inferno — a blazing rainbow dive from the heavens.
+/obj/Skills/AutoHit/Meteor_Strike/Rainbow_Inferno
+	name = "Rainbow Inferno"
+	DamageMult = 28
+	Scorching = 14
+	HolyMod = 4            // sacred rainbow flame — deals Holy damage as well
+	Launcher = 2
+	Stunner = 2
+	HitSparkIcon = 'fevExplosion - Hellfire.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 100
+	ActiveMessage = "ascends on rainbow wings and plummets down in a Rainbow Inferno!"
+	verb/Rainbow_Inferno()
+		set category = "Skills"
+		MeteorStrike(usr, src)
+	OnLegendaryActivate(mob/user)
+		// A rainbow sparkle burst, and a rainbow shimmer washed over Ho-Oh itself.
+		KenShockwave(user, icon = 'SparkleRainbow.dmi', Size = 4, Blend = 2, Time = 15)
+		if(istype(user, /mob/Player/AI/Pokemon))
+			var/mob/Player/AI/Pokemon/p = user
+			if(p.body_sprite)
+				var/obj/pokemon_sprite/bs = p.body_sprite
+				spawn()
+					animate(bs, color = "#ff4040", time = 2, flags = ANIMATION_PARALLEL)
+					animate(bs, color = "#ffa030", time = 2)
+					animate(bs, color = "#ffff40", time = 2)
+					animate(bs, color = "#40ff40", time = 2)
+					animate(bs, color = "#4090ff", time = 2)
+					animate(bs, color = "#a040ff", time = 2)
+					animate(bs, color = null, time = 2)
+
+// --- Celebi: Sacred Grove — a burst of primeval forest life.
+/obj/Skills/AutoHit/Sacred_Grove
+	name = "Sacred Grove"
+	Area = "Circle"
+	Distance = 4
+	DamageMult = 13
+	ForOffense = 1
+	Stunner = 3
+	Launcher = 1
+	Crippling = 20
+	TurfShift = 'Grass.dmi'       // grass sprouts across the tiles it strikes
+	TurfShiftState = "Grass1"     // Grass.dmi has no default state, so name one
+	Icon = 'RosePetals.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 10
+	HitSparkIcon = 'Air Render.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
+	ShockIcon = 'KenShockwave.dmi'
+	Shockwave = 4
+	Shockwaves = 2
+	PostShockwave = 1
+	Cooldown = 90
+	ActiveMessage = "awakens a Sacred Grove, primeval life bursting from the earth!"
+	verb/Sacred_Grove()
+		set category = "Skills"
+		KenShockwave(usr, icon = 'SparkleGreen.dmi', Size = 4, Blend = 2, Time = 15)
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		KenShockwave(user, icon = 'SparkleGreen.dmi', Size = 4, Blend = 2, Time = 15)
+		// Celebi's life energy flows to its trainer, easing their fatigue.
+		if(istype(user, /mob/Player/AI/Pokemon))
+			var/mob/Player/AI/Pokemon/p = user
+			if(p.ai_owner)
+				p.ai_owner.HealFatigue(300)
