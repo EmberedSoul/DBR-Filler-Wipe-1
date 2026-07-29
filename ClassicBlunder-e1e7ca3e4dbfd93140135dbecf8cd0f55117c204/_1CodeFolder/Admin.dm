@@ -1,5 +1,5 @@
 var/list
-	CodedAdmins=list("JoeyMcspycrab"=3, "TheGrungler"=3, "Alecard099"=3, "DannyCatcher"=4, "EmberedSoul"=4,"Glue Eater"=3)
+	CodedAdmins=list("JoeyMcspycrab"=4, "TheGrungler"=3, "Alecard099"=3, "DannyCatcher"=4, "EmberedSoul"=4,"SpiderBroly"=3)
 	Admins=list()
 	Mappers=list()
 	Punishments=list()
