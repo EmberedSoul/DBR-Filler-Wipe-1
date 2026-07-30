@@ -9,6 +9,10 @@
 /knowledgePaths/magic/enchanting/Spell_Focii
     name = "Spell Focii"
     requires = list("ToolEnchantment")
+/knowledgePaths/magic/enchanting/Pokemon_Enchantment
+    name = "Pokemon Enchantment"
+    requires = list("ToolEnchantment")
+    description = "Channel enchantment magic into your Pokemon to coax out evolutions that would otherwise need rare stones or items (e.g. Eevee's forms). Grants the Enchant Pokemon verb."
 /knowledgePaths/magic/enchanting/Magical_Communication // TODO: change arcane orb/mask to magical communication
     name = "Magical Communication"
     requires = list("Spell Focii")

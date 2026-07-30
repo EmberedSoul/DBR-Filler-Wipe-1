@@ -13,6 +13,12 @@
 // Species names (keys into pokemon_database) this trainer has captured.
 mob/var/list/owned_pokemon = list()
 
+// Per-species Potential a Pokemon was captured at (species -> Potential). Only set
+// when a Pokemon is caught while stronger than its trainer; on summon it becomes the
+// Pokemon's caught_potential floor so it keeps that strength until the trainer's own
+// Potential catches up. Saved with the character so re-summons remember it.
+mob/var/list/pokemon_caught_potential = list()
+
 // Custom text color for this trainer's Pokemon Say/Emote output (null = default).
 mob/var/pokemon_text_color = null
 
@@ -264,6 +270,13 @@ mob/var/tmp/list/fainted_pokemon = list()
 			return
 		var/caught = wild.pkmn_species
 		usr.owned_pokemon += caught
+		// If the wild was stronger than the trainer, remember the Potential it was
+		// caught at so it keeps that strength until the trainer's own Potential catches
+		// up (PokemonEffectiveLevel). Keep the highest if they already own this species.
+		if(wild.Potential > usr.Potential)
+			var/prev = usr.pokemon_caught_potential[caught]
+			if(!prev || wild.Potential > prev)
+				usr.pokemon_caught_potential[caught] = wild.Potential
 		usr.GivePokemonCommandVerbs() // grants the Pokemon command tab (Summon/Recall/...)
 		usr << "<b>Gotcha! [caught] was caught! ([usr.owned_pokemon.len]/[MAX_OWNED_POKEMON])</b>"
 		OMsg(usr, "[usr] captures a wild [caught]!")
@@ -284,6 +297,9 @@ mob/proc/SpawnPokemonAlly(datum/pokemon_species/s)
 	a.Timeless = 1
 	a.ko_death = 0             // on KO, our Unconscious() recalls it — it never "dies"
 	a.ai_alliances = list("[src.ckey]")
+	// Restore any caught-high floor so it scales/evolves off max(owner, caught).
+	if(pokemon_caught_potential && (s.species in pokemon_caught_potential))
+		a.caught_potential = pokemon_caught_potential[s.species]
 	a.ApplyPokemonSpecies(s) // ai_owner set -> scales to the trainer
 	a.HealHealth(99999)       // a re-summoned Pokemon always comes out fully healed
 	a.HealEnergy(99999)
@@ -325,6 +341,49 @@ mob/proc/SpawnPokemonAlly(datum/pokemon_species/s)
 	if(!sp) return
 	owned_pokemon -= sp
 	src << "You released [sp]. ([owned_pokemon.len]/[MAX_OWNED_POKEMON])"
+
+// --- Pokemon Enchantment: stone/item evolutions ----------------------------
+// Granted by learning the "Pokemon Enchantment" enchanting knowledge (see
+// UnlockTech in knowledgeUnlock.dm). Spends 99 Mana Capacity to evolve the
+// trainer's summoned Pokemon into one of its stone/item/trade evolutions that the
+// level-based system can't reach (pokemon_stone_evolutions).
+/obj/Skills/Utility/Enchant_Pokemon
+	name = "Enchant Pokemon"
+	desc = "Spend 99 Mana Capacity to evolve your summoned Pokemon into a form that would normally need a stone or item (e.g. Eevee's evolutions)."
+	verb/Enchant_Pokemon()
+		set category = "Utility"
+		set name = "Enchant Pokemon"
+		// Operate on the trainer's currently-summoned Pokemon.
+		var/mob/Player/AI/Pokemon/a = null
+		for(var/mob/Player/AI/Pokemon/p in usr.ai_followers)
+			if(p.ai_owner == usr)
+				a = p
+				break
+		if(!a)
+			usr << "You need one of your own Pokemon out to enchant. Summon one first!"
+			return
+		var/list/options = pokemon_stone_evolutions[a.pkmn_species]
+		if(!options || !options.len)
+			usr << "[a.name] has no enchantment-driven evolution."
+			return
+		var/choice = input(usr, "Evolve [a.name] into which form? (costs 99 Mana Capacity)", "Enchant Pokemon") as null|anything in options
+		if(!choice) return
+		if(!usr.HasManaCapacity(99))
+			usr << "You don't have enough stored Mana Capacity to enchant [a.name]. (Requires 99.)"
+			return
+		if(!pokemon_database.len) BuildPokemonDatabase()
+		var/datum/pokemon_species/ns = pokemon_database[choice]
+		if(!ns)
+			usr << "No data found for [choice]."
+			return
+		usr.TakeManaCapacity(99)
+		var/oldname = a.pkmn_species
+		a.ApplySpeciesCore(ns)   // sprite, stats and type moves all update to the new form
+		// Persist it in the party so a recall/re-summon keeps the evolved form.
+		var/idx = usr.owned_pokemon.Find(oldname)
+		if(idx)
+			usr.owned_pokemon[idx] = choice
+		OMsg(usr, "[usr] channels enchantment magic — [oldname] evolves into [choice]!")
 
 // --- Pokemon Emote ---------------------------------------------------------
 // Let a trainer roleplay their summoned Pokemon. Any "quoted speech" the trainer

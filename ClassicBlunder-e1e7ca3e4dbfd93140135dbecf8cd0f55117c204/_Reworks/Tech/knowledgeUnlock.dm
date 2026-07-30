@@ -170,6 +170,10 @@ var/knowledgePaths/tech/list/TechnologyTree = list()
 				src.AddSkill(new/obj/Skills/Utility/Create_Magic_Circle)
 		if("Spell Focii")
 			ToolEnchantmentUnlocked++
+		if("Pokemon Enchantment")
+			if(!locate(/obj/Skills/Utility/Enchant_Pokemon, src))
+				src.AddSkill(new/obj/Skills/Utility/Enchant_Pokemon)
+			src << "You learn to channel enchantment magic into Pokemon, coaxing out evolutions that would otherwise need rare stones or items. (Enchant Pokemon verb granted.)"
 		if("Magical Communication")
 			ToolEnchantmentUnlocked++
 		if("Magical Vehicles")
