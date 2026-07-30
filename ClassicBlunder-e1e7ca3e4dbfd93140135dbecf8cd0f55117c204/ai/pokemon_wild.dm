@@ -28,37 +28,93 @@ mob/var/tmp/list/fainted_pokemon = list()
 	set name = "Make Pokemon Spawner"
 	set category = "Admin"
 	if(!pokemon_database.len) BuildPokemonDatabase()
-	// Split the dex into Legendary and standard pools so the two are kept apart.
+	// Partition the dex: Legendaries and starters are kept OUT of the normal pools
+	// and offered on their own. "normal" = the regular catchable wild filler.
+	var/list/normal_names = list()
 	var/list/legendary_names = list()
-	var/list/standard_names = list()
+	var/list/starter_names = list()
 	for(var/k in pokemon_database)
 		if(k in pokemon_legendaries)
 			legendary_names += k
+		else if(k in pokemon_starters)
+			starter_names += k
 		else
-			standard_names += k
+			normal_names += k
 	var/list/wild_species = list()
 	var/spawn_desc = "any species"
-	var/mode = input(src, "Which species should this spot spawn?", "Pokemon Spawner") in list("Any (Non-Legendary)", "Any Legendary", "Any species (incl. Legendary)", "Pick specific")
+	var/mode = input(src, "Which species should this spot spawn?", "Pokemon Spawner") in list("Any (Non-Legendary, no starters)", "By Region", "By Type", "Legendary", "Starters", "Pick specific")
 	switch(mode)
-		if("Any (Non-Legendary)")
-			wild_species = standard_names.Copy()
-			spawn_desc = "any Non-Legendary"
-		if("Any Legendary")
-			wild_species = legendary_names.Copy()
-			spawn_desc = "any Legendary"
-		if("Any species (incl. Legendary)")
-			wild_species = list() // empty = pull from the whole database
-			spawn_desc = "any species (incl. Legendary)"
+		if("Any (Non-Legendary, no starters)")
+			wild_species = normal_names.Copy()
+			spawn_desc = "any Non-Legendary (no starters)"
+		if("By Region")
+			var/region = input(src, "Which region should this spot draw from?", "Region") as null|anything in list("Kanto", "Johto")
+			if(region)
+				for(var/k in normal_names)
+					var/datum/pokemon_species/sp = pokemon_database[k]
+					if(sp && sp.region == region)
+						wild_species += k
+				spawn_desc = "any [region] (no Legendaries/starters)"
+		if("By Type")
+			var/list/types = list()
+			for(var/t in PokemonTypeSkills)
+				types += t
+			var/ptype = input(src, "Which type should this spot spawn?", "Type") as null|anything in types
+			if(ptype)
+				for(var/k in normal_names)
+					var/datum/pokemon_species/sp = pokemon_database[k]
+					if(sp && (sp.PokemonType == ptype || sp.PokemonType2 == ptype))
+						wild_species += k
+				spawn_desc = "any [ptype]-type (no Legendaries/starters)"
+		if("Legendary")
+			var/pick = input(src, "Which Legendary? (or Any)", "Legendary") as null|anything in (list("Any Legendary") + legendary_names)
+			if(pick == "Any Legendary")
+				wild_species = legendary_names.Copy()
+				spawn_desc = "any Legendary"
+			else if(pick)
+				wild_species += pick
+				spawn_desc = pick
+		if("Starters")
+			var/pick = input(src, "Which Starter? (or Any)", "Starter") as null|anything in (list("Any Starter") + starter_names)
+			if(pick == "Any Starter")
+				wild_species = starter_names.Copy()
+				spawn_desc = "any Starter"
+			else if(pick)
+				wild_species += pick
+				spawn_desc = pick
 		if("Pick specific")
-			// Browse one pool at a time so Legendaries stay separated from the rest.
+			// Browse a narrowed list (by region/type/pool) and add species one at a time.
 			while(TRUE)
-				var/pool = input(src, "Browse which list? (Done to finish) — Chosen: [wild_species.len ? jointext(wild_species, ", ") : "none"]", "Pick Species") in list("Non-Legendary", "Legendary", "Done")
+				var/pool = input(src, "Browse which list? (Done to finish) — Chosen: [wild_species.len ? jointext(wild_species, ", ") : "none"]", "Pick Species") in list("Kanto", "Johto", "By Type", "Legendary", "Starters", "Done")
 				if(pool == "Done") break
-				var/list/src_list = (pool == "Legendary") ? legendary_names : standard_names
-				var/chosen = input(src, "Add a [pool] species (Cancel = back to list choice).", "Add Species") as null|anything in (src_list + "Back")
+				var/list/src_list = list()
+				switch(pool)
+					if("Kanto", "Johto")
+						for(var/k in normal_names)
+							var/datum/pokemon_species/sp = pokemon_database[k]
+							if(sp && sp.region == pool) src_list += k
+					if("By Type")
+						var/list/types = list()
+						for(var/t in PokemonTypeSkills)
+							types += t
+						var/ptype = input(src, "Which type?", "Type") as null|anything in types
+						if(!ptype) continue
+						for(var/k in normal_names)
+							var/datum/pokemon_species/sp = pokemon_database[k]
+							if(sp && (sp.PokemonType == ptype || sp.PokemonType2 == ptype)) src_list += k
+					if("Legendary")
+						src_list = legendary_names
+					if("Starters")
+						src_list = starter_names
+				var/chosen = input(src, "Add a species (Cancel = back).", "Add Species") as null|anything in (src_list + "Back")
 				if(!chosen || chosen == "Back") continue
 				wild_species |= chosen
 			spawn_desc = wild_species.len ? jointext(wild_species, ", ") : "any species"
+	// Never leave the pool empty (which would spawn everything) — fall back to the
+	// normal non-legendary, non-starter pool.
+	if(!wild_species.len)
+		wild_species = normal_names.Copy()
+		spawn_desc = "any Non-Legendary (no starters)"
 	var/limit = input(src, "How many can be active at once?", "Spawn Limit") as num|null
 	var/range = input(src, "How far can they spawn from this spot? (tiles)", "Spawn Range") as num|null
 	var/timer = input(src, "Respawn timer? (whole numbers, ~30s each)", "Respawn Timer") as num|null
@@ -74,12 +130,36 @@ mob/var/tmp/list/fainted_pokemon = list()
 	Log("Admin", "[ExtractInfo(src)] created a Pokemon spawner ([spawn_desc]).")
 	src << "<b>Created a Pokemon spawner at your location.</b> Spawns: [spawn_desc] | level [max(0,level)] | limit [max(1,limit)] | range [max(1,range)] | respawn [max(1,timer)]."
 
+// --- Admin: wipe every Pokemon spawner off the map -------------------------
+// Level 4 admins only. Removes all Pokemon spawners and despawns the wild Pokemon
+// they produced. Never touches trainer-owned/summoned Pokemon (those carry ai_owner).
+/mob/Admin4/verb/Delete_All_Pokemon_Spawners()
+	set name = "Delete All Pokemon Spawners"
+	set category = "Admin"
+	if(alert(src, "Delete EVERY Pokemon spawner on the map (and the wild Pokemon they spawned)?", "Delete All Pokemon Spawners", "No", "Yes") != "Yes")
+		return
+	// Snapshot first so we're not deleting out of the list we're iterating.
+	var/list/spots = list()
+	for(var/obj/AI_Spot/Pokemon/spot in world)
+		spots += spot
+	var/count = 0
+	var/mons = 0
+	for(var/obj/AI_Spot/Pokemon/spot in spots)
+		for(var/mob/Player/AI/Pokemon/p in spot.ai_active)
+			if(!p.ai_owner)   // only wild spawns, never a trainer's Pokemon
+				mons++
+				del p
+		count++
+		del spot
+	Log("Admin", "[ExtractInfo(src)] deleted all Pokemon spawners ([count] spot(s), [mons] wild Pokemon).")
+	src << "<b>Cleared [count] Pokemon spawner\s and [mons] wild Pokemon from the map.</b>"
+
 // --- Wild Pokemon spawner --------------------------------------------------
 // Inherits the AI_Spot timer/limit/tracker machinery; only the actual spawn is
 // overridden to produce a Pokemon AI instead of a monster_info monster.
 /obj/AI_Spot/Pokemon
 	name = "Pokemon Spawner"
-	var/list/wild_species = list() // names to spawn; empty = any species in the database
+	var/list/wild_species = list() // names to spawn; empty = any regular species (no Legendaries/starters)
 	var/wild_level = 0             // Potential level of spawns (0 = the default). Higher = tougher and more evolved.
 
 	generate_ai()
@@ -99,7 +179,10 @@ mob/var/tmp/list/fainted_pokemon = list()
 		if(wild_species.len)
 			pool = wild_species
 		else
+			// Empty pool = fall back to any regular species, but never Legendaries or
+			// starters (those are only placed via an explicit spawner choice).
 			for(var/k in pokemon_database)
+				if((k in pokemon_legendaries) || (k in pokemon_starters)) continue
 				pool += k
 		if(!pool.len) return
 		var/datum/pokemon_species/s = pokemon_database[pick(pool)]
@@ -137,7 +220,7 @@ mob/var/tmp/list/fainted_pokemon = list()
 
 	// Example placeable zone (uses the sample species). Add more zones as the dex grows.
 	Kanto_Route
-		wild_species = list("Bulbasaur","Charmander","Squirtle","Pidgey","Rattata","Caterpie","Ekans","Machop")
+		wild_species = list("Pidgey","Rattata","Caterpie","Weedle","Ekans","Spearow","Nidoran M","Nidoran F")
 		ai_limit = 3
 		spawn_range = 6
 

@@ -55,6 +55,7 @@
 	var/legendary = 0      // set from pokemon_legendaries after the dex is built
 	var/custom_icon        // if set, this species lives in its OWN full mob sheet (e.g.
 	                       // Keldeo.dmi) instead of POKEMON.dmi; used directly on the mob
+	var/region             // "Kanto" / "Johto" / "Mythical"; set from dex order in BuildPokemonDatabase
 	New(_species, _state, _type, _hp, _atk, _def, _spatk, _spdef, _spe, _evolves_into, _evolve_level, _custom_icon)
 		species = _species
 		icon_state = _state
@@ -77,6 +78,16 @@ var/global/list/pokemon_database = list()
 // the dex grows past Kanto.
 var/global/list/pokemon_legendaries = list("Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew", \
 	"Raikou", "Entei", "Suicune", "Lugia", "Ho-Oh", "Celebi", "Keldeo")
+
+// Starter lines. Kept OUT of the normal spawner pools and offered in their own
+// "Starters" list in the Make Pokemon Spawner UI (so admins place them deliberately).
+var/global/list/pokemon_starters = list(\
+	"Bulbasaur", "Ivysaur", "Venusaur", \
+	"Charmander", "Charmeleon", "Charizard", \
+	"Squirtle", "Wartortle", "Blastoise", \
+	"Chikorita", "Bayleef", "Meganium", \
+	"Cyndaquil", "Quilava", "Typhlosion", \
+	"Totodile", "Croconaw", "Feraligatr")
 
 // Second type for dual-type species. The dex line holds the primary type; this
 // adds the other half of the canonical pair, so a dual-type Pokemon is granted
@@ -438,6 +449,18 @@ var/global/list/pokemon_second_types = list(
 		if(pokemon_database[dtname])
 			var/datum/pokemon_species/ds = pokemon_database[dtname]
 			ds.PokemonType2 = pokemon_second_types[dtname]
+	// Tag each species' region by its dex position (the dex is built in order:
+	// Kanto #1-151, Johto #152-251, then any Mythicals like Keldeo).
+	var/ridx = 0
+	for(var/rspn in pokemon_database)
+		ridx++
+		var/datum/pokemon_species/rs = pokemon_database[rspn]
+		if(ridx <= 151)
+			rs.region = "Kanto"
+		else if(ridx <= 251)
+			rs.region = "Johto"
+		else
+			rs.region = "Mythical"
 
 /proc/GetPokemonSpecies(sp)
 	if(!pokemon_database.len) BuildPokemonDatabase()
