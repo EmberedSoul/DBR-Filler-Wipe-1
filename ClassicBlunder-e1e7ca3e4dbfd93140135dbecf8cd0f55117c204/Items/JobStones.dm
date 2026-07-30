@@ -94,7 +94,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		JobLabel = "Warrior"
 		ActiveMessage = "attunes to a Warrior Job Stone, their body reforging into a hardened frontline fighter!"
 		OffMessage = "sheds the Warrior attunement, their body settling back to normal..."
-		JobStats = list("Strength" = 11, "Endurance" = 4.5, "Force" = 1, "Speed" = 1.5, "Offense" = 2, "Defense" = 2, \
+		JobStats = list("Strength" = 10, "Endurance" = 4.5, "Force" = 1, "Speed" = 1.5, "Offense" = 2, "Defense" = 2, \
 			"Power" = 1.25, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
 		passives = list("SwordDamage" = 2, "TechniqueMastery" = 2)
 		BuffTechniques = list("/obj/Skills/AutoHit/Bulwark_Bash", "/obj/Skills/AutoHit/Cleaving_Blow")
@@ -118,7 +118,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		JobStats = list("Strength" = 1.5, "Endurance" = 1.5, "Force" = 1.5, "Speed" = 6, "Offense" = 8, "Defense" = 12, \
 			"Power" = 1.25, "Anger" = 1.25, "Learning" = 1.25, "Intellect" = 1.25, "Imagination" = 1.25)
 		BuffTechniques = list("/obj/Skills/AutoHit/Backstab", "/obj/Skills/Projectile/Fan_Of_Knives")
-		passives = list("CriticalChance" = 20, "CriticalStrike" = 0.5, "Flow" = 2, "Instinct" = 2)
+		passives = list("CriticalChance" = 20, "CriticalStrike" = 0.33, "Flow" = 2, "Instinct" = 2)
 
 	// Dragoon: high speed, rapid strikes, the Extend passive. Grants the two
 	// Dragoon skills (defined at the bottom of this file).
@@ -151,10 +151,10 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		JobLabel = "White Mage"
 		ActiveMessage = "attunes to a White Mage Job Stone, wrapped in a warm, protective radiance!"
 		OffMessage = "lets the White Mage attunement fade, the radiance dimming..."
-		JobStats = list("Strength" = 1, "Endurance" = 2, "Force" = 3, "Speed" = 1.5, "Offense" = 1.5, "Defense" = 3.5, \
+		JobStats = list("Strength" = 1, "Endurance" = 3, "Force" = 5, "Speed" = 1.5, "Offense" = 1.5, "Defense" = 3.5, \
 			"Power" = 1.5, "Anger" = 1, "Learning" = 1.5, "Intellect" = 2, "Imagination" = 2)
-		passives = list("Blubber" = 2, "LifeGeneration" = 2)
-		BuffTechniques = list("/obj/Skills/Projectile/Aero", "/obj/Skills/Utility/Cure_II", "/obj/Skills/Utility/Holy")
+		passives = list("Blubber" = 2, "LifeGeneration" = 2, "Holy" = 3,)
+		BuffTechniques = list("/obj/Skills/Projectile/Aero", "/obj/Skills/Utility/Holy")
 
 	// Red Mage: hybrid bruiser-caster, high Force and Strength, aggressive
 	// sustain passives. Grants Aero, Fire II, Thunder II, and Esuna.
@@ -178,7 +178,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		OffMessage = "sheathes the Samurai blade, the attunement fading with a soft click..."
 		JobStats = list("Strength" = 10, "Endurance" = 1, "Force" = 1, "Speed" = 9, "Offense" = 10, "Defense" = 0.75, \
 			"Power" = 1.75, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
-		passives = list("AttackSpeed" = 3, "SwordDamage" = 3, "PureReduction" =-5)
+		passives = list("AttackSpeed" = 3, "SwordDamage" = 3, "PureReduction" = -5)
 		BuffTechniques = list("/obj/Skills/AutoHit/Moonlight_Dash", "/obj/Skills/AutoHit/Heavenly_Quake")
 		// Conjured Legendary light blade with a Chaos edge. SwordAscension +
 		// SwordUnbreakable make it ascended and shatterproof (Legendary-tier); the
@@ -204,7 +204,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		OffMessage = "lets the Dark Knight attunement fade, the blade receding from their soul..."
 		JobStats = list("Strength" = 8, "Endurance" = 8, "Force" = 1, "Speed" = 1, "Offense" = 2, "Defense" = 8, \
 			"Power" = 1.5, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
-		passives = list("LifeSteal" = 50, "CallousedHands" = 1,"PureReduction" = 2)
+		passives = list("LifeSteal" = 25, "CallousedHands" = 0.2,"PureReduction" = 2)
 		BuffTechniques = list("/obj/Skills/AutoHit/Abyssal_Cleave", "/obj/Skills/AutoHit/Dread_Harbinger")
 		// Conjured Legendary heavy blade with a Void edge (shatterproof, ascended).
 		MakesSword = 1
@@ -424,11 +424,11 @@ obj/Items/Enchantment/Job_Stone
 // impact from its parent; adds launch, stun, guard break, and more damage.
 /obj/Skills/AutoHit/Meteor_Strike/Dragoon_Dive
 	name = "Dragoon Dive"
-	DamageMult = 30      // Meteor Strike is 20
+	DamageMult = 20      // Meteor Strike is 20
 	Launcher = 2
-	Stunner = 3
+	Dunker = 3
 	GuardBreak = 1
-	Cooldown = 90
+	Cooldown = 60
 	verb/Dragoon_Dive()
 		set category = "Skills"
 		MeteorStrike(usr, src)
@@ -454,7 +454,7 @@ obj/Items/Enchantment/Job_Stone
 	IconSize = 1
 	Charge = 1
 	ManaCost = 15
-	Cooldown = 30
+	Cooldown = 45
 	ActiveMessage = "invokes: FIRE II!"
 	verb/Fire_II()
 		set category = "Skills"
@@ -475,7 +475,7 @@ obj/Items/Enchantment/Job_Stone
 	Bolt = 2             // same lightning-strike visual Thunder uses
 	FollowUp = "/obj/Skills/AutoHit/Thunder_II_Followup"
 	FollowUpDelay = 3
-	Cooldown = 40
+	Cooldown = 60
 	ActiveMessage = "invokes: THUNDER II!"
 	verb/Thunder_II()
 		set category = "Skills"
@@ -488,8 +488,8 @@ obj/Items/Enchantment/Job_Stone
 	name = "Thunder II (Follow-up)"
 	Area = "Strike"
 	Distance = 12
-	DamageMult = 10
-	Launcher = 1
+	DamageMult = 6
+	Dunker = 2
 	ForOffense = 1
 	Bolt = 2             // the airborne finisher flashes lightning too
 	Cooldown = 0
@@ -526,7 +526,7 @@ obj/Items/Enchantment/Job_Stone
 	DamageMult = 6
 	Blasts = 3
 	AccMult = 2
-	Launcher = 2
+//	Launcher = 2
 	Piercing = 1
 	Striking = 1
 	Homing = 1
@@ -550,12 +550,12 @@ obj/Items/Enchantment/Job_Stone
 // Called by Aero's OnMobHit for each blast that lands: fatigues the target.
 /proc/JobSkill_AeroFatigue(mob/m, obj/o)
 	if(ismob(m))
-		m.GainFatigue(12)
+		m.GainFatigue(2)
 
 // Cure II: fully restores a nearby ally's (or your own) health. Implemented as a
 // targeted cast rather than a literal traveling projectile (a healing projectile
 // would need custom ally-vs-enemy hit handling); see report.
-/obj/Skills/Utility/Cure_II
+/*/obj/Skills/Utility/Cure_II
 	name = "Cure II"
 	desc = "Fully restore the health of yourself or a nearby ally."
 	Cooldown = 60
@@ -576,33 +576,33 @@ obj/Items/Enchantment/Job_Stone
 			usr << "[Target] has moved too far away."
 			src.Using = 0
 			return
-		Target.HealHealth(99999)
-		Target.HealWounds(99999)
+		Target.HealHealth(25)
+		Target.HealWounds(0)
 		// A wash of restorative sparkles over whoever was mended.
 		KenShockwave(Target, icon = 'DivineSparkles.dmi', Size = 2, Blend = 2, Time = 15)
 		OMsg(usr, "[usr] casts Cure II, fully mending [Target == usr ? "themselves" : "[Target]"]!")
 		src.Using = 0
-		Cooldown()
+		Cooldown()*/
 
 // Holy: an AoE burst that damages the wicked (IsEvil: Demons, evil races/secrets,
-// anything HolyMod would target) and heals everyone else in range by 25.
+// anything HolyMod would target) and heals everyone else in range by 5.
 /obj/Skills/Utility/Holy
 	name = "Holy"
 	desc = "Call down holy light: it burns the wicked and mends everyone else."
-	Cooldown = 60
+	Cooldown = 90
 	verb/Holy()
 		set category = "Skills"
 		if(src.Using) return
 		src.Using = 1
-		usr.HealHealth(25) // the caster is mended too
+		usr.HealHealth(5) // the caster is mended too
 		// A radiant pillar erupts from the caster...
 		KenShockwave(usr, icon = 'SparkleGod.dmi', Size = 4, Blend = 2, Time = 15)
 		for(var/mob/m in oview(5, usr))
 			if(m.IsEvil())
-				m.LoseHealth(30)
+				m.LoseHealth(10)
 				KenShockwave(m, icon = 'Hit Effect Divine.dmi', Size = 2, Blend = 2, Time = 12) // ...searing the wicked
 			else
-				m.HealHealth(25)
+				m.HealHealth(5)
 				KenShockwave(m, icon = 'DivineSparkles.dmi', Size = 1.5, Blend = 2, Time = 12) // ...and blessing the rest
 		OMsg(usr, "[usr] calls down a radiant pillar of Holy light!")
 		src.Using = 0
@@ -847,7 +847,7 @@ obj/Items/Enchantment/Job_Stone
 	Jump = 2                  // airborne hop as it lands (see AutoHit Jump handling)
 	Shattering = 12           // shatters
 	Slow = 0.5                // and slows
-	Launcher = 1
+	SpeedStrike=2
 	Knockback = 6
 	ShockIcon = 'KenShockwave.dmi'
 	Shockwave = 4
@@ -878,16 +878,16 @@ obj/Items/Enchantment/Job_Stone
 
 // Abyssal Cleave: a slow, immense void greatsword swing. It winds up as the
 // abyss opens behind the knight, then cleaves through everything in front with
-// a crushing, guard-shattering blow.
+// a crushing, guard-shattering blow, steals a hit point per strike
 /obj/Skills/AutoHit/Abyssal_Cleave
 	name = "Abyssal Cleave"
 	Area = "Wave"
-	Distance = 8
-	DamageMult = 14           // heavy, slow, punishing
+	Distance = 3
+	DamageMult = 12           // heavy, slow, punishing
 	NeedsSword = 1
 	StrOffense = 1
 	GuardBreak = 1
-	Launcher = 1
+	LifeSteal = 2
 	Crushing = 40
 	WindUp = 0.6              // deliberate, weighty windup
 	Icon = 'Deathbringer VFX1.dmi'
@@ -902,7 +902,7 @@ obj/Items/Enchantment/Job_Stone
 	Shockwave = 5
 	Shockwaves = 1
 	PostShockwave = 1
-	Cooldown = 55
+	Cooldown = 60
 	WindupMessage = "raises their blade as the abyss yawns open behind them..."
 	ActiveMessage = "brings down an Abyssal Cleave, rending the void itself!"
 	verb/Abyssal_Cleave()
