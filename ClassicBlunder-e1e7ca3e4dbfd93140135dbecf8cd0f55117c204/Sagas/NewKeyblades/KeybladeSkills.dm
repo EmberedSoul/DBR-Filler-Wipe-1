@@ -18,7 +18,6 @@ obj
 				DelayTime=1.5
 				Rounds=3
 				MaxCharges=3
-				Charges=3
 				ChargeRefresh=30
 				ActiveMessage="dashes forward repeatedly with a jousting strike!"
 				adjust(mob/P)
@@ -30,7 +29,6 @@ obj
 						src.Rounds=5
 						DamageMult=2
 						MaxCharges=3
-						Charges=3
 						ChargeRefresh=15
 				verb/Sonic_Blade()
 					set category="Skills"
