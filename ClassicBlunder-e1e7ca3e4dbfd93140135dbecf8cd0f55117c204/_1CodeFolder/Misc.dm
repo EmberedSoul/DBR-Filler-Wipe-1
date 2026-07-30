@@ -119,6 +119,13 @@ mob/proc/SetTarget(atom/target)
 	// its trainer — blocks it whatever the source (manual target, retaliation, FindTarget).
 	if(ismob(target) && PokemonOwnerPair(src, target))
 		return
+	// A Pokemon told to stand down (Pokemon: Stop) won't acquire ANY target — this
+	// blocks autonomous FindTarget aggro, retaliation, and owner-issued targeting
+	// alike, until the trainer toggles Stop off (or orders an attack, which clears it).
+	if(istype(src, /mob/Player/AI/Pokemon))
+		var/mob/Player/AI/Pokemon/_ph = src
+		if(_ph.pokemon_hold)
+			return
 	if(ismob(target))
 		var/mob/_kt = target
 		if(_kt.HiddenInShadow)

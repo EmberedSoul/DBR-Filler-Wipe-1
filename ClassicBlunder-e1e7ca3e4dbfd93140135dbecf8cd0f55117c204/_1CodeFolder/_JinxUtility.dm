@@ -3555,6 +3555,13 @@ mob
 
 					Count++
 					continue
+			// Pokemon-trainer passives are signatures too, but they're stored as passives
+			// (not obj/Skills), so the loop above misses them. Count them here so picking
+			// one consumes its signature slot and doesn't re-prompt for another.
+			if(Tier==1 && ("Trainers Pledge" in src.SignatureSelected))
+				Count++
+			if(Tier==2 && ("Primordial Tamer" in src.SignatureSelected))
+				Count++
 			if(Tier==3)
 				for(var/x in accessedMagicTrees)
 					if(x in ADVANCED_ELEMENTS) Count++;

@@ -89,6 +89,23 @@ var/global/list/pokemon_starters = list(\
 	"Cyndaquil", "Quilava", "Typhlosion", \
 	"Totodile", "Croconaw", "Feraligatr")
 
+// Evolutions that in the real games need a Stone / evolution item / trade / etc.,
+// which the level-based CheckEvolution can't reach. The "Enchant Pokemon" verb (from
+// the Pokemon Enchantment enchanting knowledge) evolves the summoned Pokemon into one
+// of these for 99 Mana Capacity. Species not listed have no enchant-driven evolution.
+var/global/list/pokemon_stone_evolutions = list(
+	"Eevee"     = list("Vaporeon", "Jolteon", "Flareon", "Espeon", "Umbreon"),
+	"Gloom"     = list("Bellossom"),
+	"Poliwhirl" = list("Politoed"),
+	"Slowpoke"  = list("Slowking"),
+	"Onix"      = list("Steelix"),
+	"Scyther"   = list("Scizor"),
+	"Seadra"    = list("Kingdra"),
+	"Porygon"   = list("Porygon2"),
+	"Golbat"    = list("Crobat"),
+	"Chansey"   = list("Blissey"),
+	"Tyrogue"   = list("Hitmonlee", "Hitmonchan"))
+
 // Second type for dual-type species. The dex line holds the primary type; this
 // adds the other half of the canonical pair, so a dual-type Pokemon is granted
 // BOTH type moves. Species absent here are single-type (and get a cooldown
@@ -515,6 +532,14 @@ var/global/list/pokemon_icon_state_cache = null
 	var/pkmn_species = null
 	var/obj/pokemon_sprite/body_sprite = null
 	var/list/body_pieces = null   // extra vis sprites assembled for multi-tile species
+	// If this Pokemon was captured while stronger than its trainer, this holds the
+	// Potential it was caught at. Scaling/evolution use max(owner.Potential, this)
+	// as the effective level, so the Pokemon keeps its captured strength until the
+	// trainer's own Potential catches up — then shared scaling takes over (0 = none).
+	var/tmp/caught_potential = 0
+	// "Pokemon: Stop" toggle. While set, this Pokemon refuses to acquire ANY target
+	// (blocked in SetTarget), so it won't aggro until the trainer toggles Stop off.
+	var/tmp/pokemon_hold = 0
 
 	// Tear down any assembled multi-tile pieces. Called before (re-)applying a
 	// species so evolutions don't leave the previous form's tiles hanging around.
@@ -599,20 +624,36 @@ var/global/list/pokemon_icon_state_cache = null
 		RecovMod = 1
 		var/bst = s.hp + s.atk + s.def + s.spatk + s.spdef + s.spe
 		if(ai_owner)
+			// Combat power scales off the trainer's Potential (with the caught-high
+			// floor); evolution uses the same effective level directly (see below).
+			var/eff = PokemonEffectiveLevel()
 			var/pf = POKEMON_POWER_FRACTION * (bst / POKEMON_REFERENCE_BST)
-			Potential = max(1, ai_owner.Potential * pf)
+			Potential = max(1, eff * pf)
 			potential_power_mult = max(1, ai_owner.potential_power_mult * pf)
 		else
 			// Wild (no owner): a flat level (spawner may override). The AI power
 			// pipeline derives BP from Potential + mods, as monster AI do.
 			Potential = max(1, POKEMON_WILD_BASE_POTENTIAL)
 
-	// Evolve up the chain while this Pokemon's Potential is high enough. Chains
-	// multiple stages in one pass (e.g. Bulbasaur -> Ivysaur -> Venusaur).
-	proc/CheckEvolution()
+	// The level that drives this Pokemon's scaling and evolution. For an owned
+	// Pokemon it tracks the TRAINER's Potential directly (so it evolves alongside
+	// them) — but never drops below the Potential it was captured at, so a Pokemon
+	// caught stronger than its trainer keeps that strength until the trainer's own
+	// Potential catches up, at which point shared scaling resumes. Wild Pokemon use
+	// their own Potential.
+	proc/PokemonEffectiveLevel()
+		if(!ai_owner) return Potential
+		var/eff = ai_owner.Potential
+		if(caught_potential > eff) eff = caught_potential
+		return eff
+
+	// Evolve up the chain while the effective (trainer-facing) level is high enough.
+	// Chains multiple stages in one pass (e.g. Bulbasaur -> Ivysaur -> Venusaur).
+	proc/CheckEvolution(effLevel)
+		if(isnull(effLevel)) effLevel = PokemonEffectiveLevel()
 		var/datum/pokemon_species/cur = pokemon_database[pkmn_species]
 		var/guard = 0
-		while(cur && cur.evolves_into && cur.evolve_level && Potential >= cur.evolve_level && guard++ < 6)
+		while(cur && cur.evolves_into && cur.evolve_level && effLevel >= cur.evolve_level && guard++ < 6)
 			var/datum/pokemon_species/nxt = pokemon_database[cur.evolves_into]
 			if(!nxt) break
 			var/oldname = pkmn_species
@@ -681,12 +722,13 @@ var/global/list/pokemon_icon_state_cache = null
 				HealEnergy(2)
 		if(ai_owner && pkmn_species)
 			var/datum/pokemon_species/cur = pokemon_database[pkmn_species]
+			var/eff = PokemonEffectiveLevel()
 			if(cur)
 				var/bst = cur.hp + cur.atk + cur.def + cur.spatk + cur.spdef + cur.spe
 				var/pf = POKEMON_POWER_FRACTION * (bst / POKEMON_REFERENCE_BST)
-				Potential = max(1, ai_owner.Potential * pf)
+				Potential = max(1, eff * pf)
 				potential_power_mult = max(1, ai_owner.potential_power_mult * pf)
-			CheckEvolution()
+			CheckEvolution(eff)
 
 // --- Trainer command verbs -------------------------------------------------
 // Granted to whoever owns a Pokemon (by Spawn_Pokemon here; by the real
@@ -707,6 +749,7 @@ var/global/list/pokemon_icon_state_cache = null
 		return
 	var/count = 0
 	for(var/mob/Player/AI/Pokemon/p in ai_followers)
+		p.pokemon_hold = 0        // ordering an attack ends "stand down"
 		p.SetTarget(Target)
 		p.Chase()
 		count++
@@ -715,10 +758,18 @@ var/global/list/pokemon_icon_state_cache = null
 /mob/PokemonOwner/verb/Pokemon_Stop()
 	set category = "Pokemon"
 	set name = "Pokemon: Stop"
+	// Toggle: while "held", a Pokemon won't aggro anything until Stop is pressed again.
+	var/newstate = null
 	for(var/mob/Player/AI/Pokemon/p in ai_followers)
-		p.RemoveTarget()
-		p.Idle()
-	src << "Your Pokemon stand down."
+		p.pokemon_hold = !p.pokemon_hold
+		newstate = p.pokemon_hold
+		if(p.pokemon_hold)
+			p.RemoveTarget()
+			p.Idle()
+	if(isnull(newstate))
+		src << "You have no Pokemon out."
+	else
+		src << (newstate ? "Your Pokemon stand down — they won't engage until you press Stop again." : "Your Pokemon are ready to fight again.")
 
 /mob/PokemonOwner/verb/Pokemon_Follow()
 	set category = "Pokemon"
