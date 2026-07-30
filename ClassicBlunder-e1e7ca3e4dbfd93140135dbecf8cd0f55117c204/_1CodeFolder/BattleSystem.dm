@@ -2177,6 +2177,11 @@ mob/proc/Grab()
 mob/proc/Grab_Mob(var/mob/P, var/Forced=0)
 	if(istype(P, /mob/irlNPC))
 		return
+	// A trainer can't grab their own Pokemon (and vice versa) — this also prevents the
+	// grab from aggroing it onto its owner below.
+	if(PokemonOwnerPair(src, P))
+		if(src.client) src << "You can't grab your own Pokemon."
+		return
 	if(P.Frozen==2)
 		return
 	if(isAI(P))

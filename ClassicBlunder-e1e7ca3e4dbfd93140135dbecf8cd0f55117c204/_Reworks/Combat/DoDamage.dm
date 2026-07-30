@@ -48,6 +48,9 @@
 		return 0;
 	else if(defender == null)
 		return 0;
+	// A trainer and their own Pokemon can never damage each other, no matter the move.
+	if(PokemonOwnerPair(src, defender))
+		return 0;
 	if(!handleAI(defender)) // handles ai
 		return 0;
 	if(unarmed || sword)
