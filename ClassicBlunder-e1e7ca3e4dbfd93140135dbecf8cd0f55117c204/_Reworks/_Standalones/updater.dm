@@ -17,7 +17,7 @@ proc/generateVersionDatum()
 		glob.currentUpdate = updateversion
 
 globalTracker
-	var/UPDATE_VERSION = 30
+	var/UPDATE_VERSION = 31
 	var/tmp/update/currentUpdate
 
 	proc/updatePlayer(mob/p)
@@ -669,7 +669,14 @@ update
 					var/spell_passive/sp = new type;
 					p.acquiredSpellPassives |= sp;
 				p << "You'll need to reapply your spell passives."
-			
+	version31
+		version = 31
+		updateMob(mob/p)
+			. = ..()
+			if(p.isRace(HUMAN)&&p.Class=="Heroic"&&(p.AscensionsAcquired>=2))
+				if(p.Class=="Heroic" && !locate(/obj/Skills/Buffs/SlotlessBuffs/Racial/Human/Third_Eye,p))
+					p.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Racial/Human/Third_Eye)
+
 /globalTracker/var/COOL_GAJA_PLAYERS = list("Thorgigamax", "Gemenilove" )
 /globalTracker/var/GAJA_PER_ASC_CONVERSION = 0.25
 /globalTracker/var/GAJA_MAX_EXCHANGE = 1
