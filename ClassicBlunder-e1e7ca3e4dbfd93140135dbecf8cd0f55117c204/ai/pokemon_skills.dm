@@ -65,7 +65,9 @@ var/global/list/PokemonLegendarySkills = list(
 	"Suicune"  = "/obj/Skills/AutoHit/Tidal_Crash",
 	"Lugia"    = "/obj/Skills/AutoHit/Aeroblast",
 	"Ho-Oh"    = "/obj/Skills/AutoHit/Meteor_Strike/Rainbow_Inferno",
-	"Celebi"   = "/obj/Skills/AutoHit/Sacred_Grove")
+	"Celebi"   = "/obj/Skills/AutoHit/Sacred_Grove",
+	// Mythical
+	"Keldeo"   = "/obj/Skills/AutoHit/Secret_Sword")
 
 // --- On-hit debuff buffs (applied to the target via BuffAffected) ----------
 // Modeled on existing autonomous debuffs like "Shredded" (EndMult/DefMult<1).
@@ -622,6 +624,7 @@ var/global/list/PokemonLegendarySkills = list(
 	DamageMult = 18
 	ForOffense = 1
 	Scorching = 16
+	HolyMod = 2
 	Stunner = 3
 	Launcher = 1
 	Icon = 'fevExplosion - Hellfire.dmi'
@@ -758,7 +761,7 @@ var/global/list/PokemonLegendarySkills = list(
 	Launcher = 1
 	Crippling = 20
 	TurfShift = 'Grass.dmi'       // grass sprouts across the tiles it strikes
-	TurfShiftState = "Grass1"     // Grass.dmi has no default state, so name one
+	TurfShiftState = "Grass12"     // Looks lush and alive, not just a single grass tile.
 	Icon = 'RosePetals.dmi'
 	IconX = -32
 	IconY = -32
@@ -784,3 +787,29 @@ var/global/list/PokemonLegendarySkills = list(
 			var/mob/Player/AI/Pokemon/p = user
 			if(p.ai_owner)
 				p.ai_owner.HealFatigue(300)
+
+// --- Keldeo (Mythical): Secret Sword — the water on its head hardens into a blade
+// that cleaves through its foe's guard.
+/obj/Skills/AutoHit/Secret_Sword
+	name = "Secret Sword"
+	Area = "Strike"
+	Distance = 12
+	DamageMult = 17
+	ForOffense = 1
+	Crushing = 40          // its water-blade cuts past defense
+	Launcher = 2
+	Stunner = 3
+	HitSparkIcon = 'Slash - Zan.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 80
+	ActiveMessage = "draws the water on its head into a blade and unleashes Secret Sword!"
+	verb/Secret_Sword()
+		set category = "Skills"
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		// The water-blade is drawn in a flash of blue and silver.
+		KenShockwave(user, icon = 'KenShockwave.dmi', Size = 3, Blend = 2, Time = 10)
+		KenShockwave(user, icon = 'Icons/Effects/SparkleBlue.dmi', Size = 3, Blend = 2, Time = 12)
+		KenShockwave(user, icon = 'Icons/Effects/SparkleFinal.dmi', Size = 2, Blend = 2, Time = 14)

@@ -53,7 +53,9 @@
 	var/evolves_into       // species key of the next stage (null = final form)
 	var/evolve_level       // Potential at/above which it evolves (0 = never)
 	var/legendary = 0      // set from pokemon_legendaries after the dex is built
-	New(_species, _state, _type, _hp, _atk, _def, _spatk, _spdef, _spe, _evolves_into, _evolve_level)
+	var/custom_icon        // if set, this species lives in its OWN full mob sheet (e.g.
+	                       // Keldeo.dmi) instead of POKEMON.dmi; used directly on the mob
+	New(_species, _state, _type, _hp, _atk, _def, _spatk, _spdef, _spe, _evolves_into, _evolve_level, _custom_icon)
 		species = _species
 		icon_state = _state
 		PokemonType = _type
@@ -65,6 +67,7 @@
 		spe = _spe
 		evolves_into = _evolves_into
 		evolve_level = _evolve_level
+		custom_icon = _custom_icon
 
 // Registry the Pokemon AI draws from. Built lazily (see GetPokemonSpecies).
 var/global/list/pokemon_database = list()
@@ -73,7 +76,7 @@ var/global/list/pokemon_database = list()
 // Spawner" admin UI so legendaries aren't handed out by accident. Extend this as
 // the dex grows past Kanto.
 var/global/list/pokemon_legendaries = list("Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew", \
-	"Raikou", "Entei", "Suicune", "Lugia", "Ho-Oh", "Celebi")
+	"Raikou", "Entei", "Suicune", "Lugia", "Ho-Oh", "Celebi", "Keldeo")
 
 // Second type for dual-type species. The dex line holds the primary type; this
 // adds the other half of the canonical pair, so a dual-type Pokemon is granted
@@ -155,12 +158,13 @@ var/global/list/pokemon_second_types = list(
 	"Tyranitar"="Dark",
 	"Lugia"="Flying",
 	"Ho-Oh"="Flying",
-	"Celebi"="Grass")
+	"Celebi"="Grass",
+	"Keldeo"="Fighting")
 
 // species, icon_state, type, the 6 base stats (HP,Atk,Def,SpA,SpD,Spe), then the
 // evolution target species and the Potential level it evolves at (or null/0).
-/proc/_pkmn(species, state, ptype, hp, atk, def, spatk, spdef, spe, evolves_into, evolve_level)
-	pokemon_database[species] = new/datum/pokemon_species(species, state, ptype, hp, atk, def, spatk, spdef, spe, evolves_into, evolve_level)
+/proc/_pkmn(species, state, ptype, hp, atk, def, spatk, spdef, spe, evolves_into, evolve_level, custom_icon)
+	pokemon_database[species] = new/datum/pokemon_species(species, state, ptype, hp, atk, def, spatk, spdef, spe, evolves_into, evolve_level, custom_icon)
 
 /proc/BuildPokemonDatabase()
 	pokemon_database = list()
@@ -421,6 +425,9 @@ var/global/list/pokemon_second_types = list(
 	_pkmn("Lugia",      "lugiamiddle","Psychic",  106, 90,130, 90,154,110, null,           0)
 	_pkmn("Ho-Oh",      "Ho-Oh",      "Fire",     106,130, 90,110,154, 90, null,           0)
 	_pkmn("Celebi",     "Celebi",     "Psychic",  100,100,100,100,100,100, null,           0)
+	// --- MYTHICAL --- Keldeo lives in its OWN sheet (Keldeo.dmi), not POKEMON.dmi.
+	// Water/Fighting (second type via pokemon_second_types); flagged legendary below.
+	_pkmn("Keldeo",     "",           "Water",     91, 72, 90,129, 90,108, null, 0, 'Icons/Characters/Special/Keldeo.dmi')
 	// Flag the Legendaries (single source of truth = pokemon_legendaries).
 	for(var/legname in pokemon_legendaries)
 		if(pokemon_database[legname])
@@ -510,32 +517,44 @@ var/global/list/pokemon_icon_state_cache = null
 		name = s.species
 		PokemonType = s.PokemonType
 		PokemonType2 = s.PokemonType2
-		// Blank the churning base body; show the Pokemon via the stable vis object.
-		icon = null
-		if(!body_sprite)
-			body_sprite = new
-			vis_contents += body_sprite
-		body_sprite.icon = POKEMON_ICON
-		body_sprite.icon_state = s.icon_state
-		// Large, multi-tile species are split across a grid of icon_states; the
-		// base state above is the centre tile. Assemble the rest of the creature
-		// by adding an offset vis piece for each directional-suffix state that
-		// exists for this species. Normal species have no suffixed states, so this
-		// loop adds nothing and they render from the single centre sprite as before.
-		ClearBodyPieces()
-		var/list/all_states = PokemonIconStates()
-		for(var/suffix in pokemon_piece_offsets)
-			var/pstate = "[s.icon_state]_[suffix]"
-			if(pstate in all_states)
-				if(!body_pieces) body_pieces = list()
-				var/obj/pokemon_sprite/piece = new
-				piece.icon = POKEMON_ICON
-				piece.icon_state = pstate
-				var/list/off = pokemon_piece_offsets[suffix]
-				piece.pixel_x = off[1]
-				piece.pixel_y = off[2]
-				body_pieces += piece
-				vis_contents += piece
+		if(s.custom_icon)
+			// Special-case species with their own full mob sheet (e.g. Keldeo.dmi):
+			// use the icon directly on the mob and let the base AI animate it normally
+			// (the sheet already has "", Meditate, Attack, KO, Blast states). No vis
+			// object / multi-tile assembly needed.
+			ClearBodyPieces()
+			if(body_sprite)
+				vis_contents -= body_sprite
+				body_sprite = null
+			icon = s.custom_icon
+			icon_state = s.icon_state
+		else
+			// Blank the churning base body; show the Pokemon via the stable vis object.
+			icon = null
+			if(!body_sprite)
+				body_sprite = new
+				vis_contents += body_sprite
+			body_sprite.icon = POKEMON_ICON
+			body_sprite.icon_state = s.icon_state
+			// Large, multi-tile species are split across a grid of icon_states; the
+			// base state above is the centre tile. Assemble the rest of the creature
+			// by adding an offset vis piece for each directional-suffix state that
+			// exists for this species. Normal species have no suffixed states, so this
+			// loop adds nothing and they render from the single centre sprite as before.
+			ClearBodyPieces()
+			var/list/all_states = PokemonIconStates()
+			for(var/suffix in pokemon_piece_offsets)
+				var/pstate = "[s.icon_state]_[suffix]"
+				if(pstate in all_states)
+					if(!body_pieces) body_pieces = list()
+					var/obj/pokemon_sprite/piece = new
+					piece.icon = POKEMON_ICON
+					piece.icon_state = pstate
+					var/list/off = pokemon_piece_offsets[suffix]
+					piece.pixel_x = off[1]
+					piece.pixel_y = off[2]
+					body_pieces += piece
+					vis_contents += piece
 		alpha = 255
 		density = 1
 		ApplyPokemonStats(s)
