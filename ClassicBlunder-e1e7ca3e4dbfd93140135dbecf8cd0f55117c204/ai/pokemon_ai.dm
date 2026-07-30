@@ -436,6 +436,19 @@ var/global/list/pokemon_second_types = list(
 	if(!pokemon_database.len) BuildPokemonDatabase()
 	return pokemon_database[sp]
 
+// TRUE when a and b are a trainer and one of their OWN summoned Pokemon, in either
+// order. Used to hard-block every combat interaction between them (damage, move
+// effects, targeting/aggro, grabs) regardless of alliance / team-fire settings.
+/proc/PokemonOwnerPair(atom/a, atom/b)
+	if(!a || !b || a == b) return 0
+	if(istype(a, /mob/Player/AI/Pokemon))
+		var/mob/Player/AI/Pokemon/pa = a
+		if(pa.ai_owner == b) return 1
+	if(istype(b, /mob/Player/AI/Pokemon))
+		var/mob/Player/AI/Pokemon/pb = b
+		if(pb.ai_owner == a) return 1
+	return 0
+
 // Stable sprite holder. Its icon_state is fixed to the species and is rendered
 // through the mob's vis_contents, so it is immune to the base AI constantly
 // rewriting the mob's own icon_state ("", "Meditate", "KO", attack frames) —

@@ -5915,6 +5915,10 @@ obj
 								return
 					else if(istype(a, /mob))
 						var/mob/m = a;
+						// A trainer's projectile never hits their own Pokemon, and vice
+						// versa (works whether the caster is a player or an AI).
+						if(PokemonOwnerPair(Owner, m))
+							return 1
 						if(Owner && Owner in m.ai_followers)
 							return 1
 						if(istype(Owner, /mob/Player/AI) && Owner != m)

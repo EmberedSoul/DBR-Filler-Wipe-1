@@ -6523,6 +6523,10 @@ obj
 				if(m.mirror_reflect_active)
 					m.mirror_reflect_active = FALSE
 					mirror_reflect = TRUE
+				// A trainer's move never affects their own Pokemon, and vice versa
+				// (this check works whether the owner is a player or an AI).
+				if(PokemonOwnerPair(Owner, m))
+					return
 				if(istype(Owner, /mob/Player/AI) && m != Owner)
 					var/mob/Player/AI/a = Owner
 					if(!a.ai_team_fire && a.AllianceCheck(m))
