@@ -56,7 +56,7 @@ var/global/list/PokemonTypeSkills = list(
 var/global/list/PokemonLegendarySkills = list(
 	"Mewtwo"   = "/obj/Skills/AutoHit/Psystrike",
 	"Mew"      = "/obj/Skills/AutoHit/Psychic_Overload",
-	"Moltres"  = "/obj/Skills/AutoHit/Meteor_Strike/Sky_Attack",
+	"Moltres"  = "/obj/Skills/AutoHit/Sky_Attack",
 	"Zapdos"   = "/obj/Skills/AutoHit/Zap_Cannon",
 	"Articuno" = "/obj/Skills/AutoHit/Sheer_Cold",
 	// Johto legendaries
@@ -64,7 +64,7 @@ var/global/list/PokemonLegendarySkills = list(
 	"Entei"    = "/obj/Skills/AutoHit/Sacred_Fire",
 	"Suicune"  = "/obj/Skills/AutoHit/Tidal_Crash",
 	"Lugia"    = "/obj/Skills/AutoHit/Aeroblast",
-	"Ho-Oh"    = "/obj/Skills/AutoHit/Meteor_Strike/Rainbow_Inferno",
+	"Ho-Oh"    = "/obj/Skills/AutoHit/Rainbow_Inferno",
 	"Celebi"   = "/obj/Skills/AutoHit/Sacred_Grove",
 	// Mythical
 	"Keldeo"   = "/obj/Skills/AutoHit/Secret_Sword")
@@ -225,10 +225,10 @@ var/global/list/PokemonLegendarySkills = list(
 // --- Normal: Quick Attack (small combo, based on Meteor Combination) --------
 /obj/Skills/Queue/Quick_Attack
 	name = "Quick Attack"
-	Duration = 5
-	DamageMult = 1.5
+	Duration = 6
+	DamageMult = 2
 	AccuracyMult = 1.2
-	Combo = 2            // small, fast combo
+	Combo = 6            // small, fast combo
 	Rapid = 1
 	// A quick blur of a strike.
 	HitSparkIcon = 'Slash.dmi'
@@ -248,7 +248,7 @@ var/global/list/PokemonLegendarySkills = list(
 	name = "Hex"
 	Area = "Strike"
 	Distance = 10
-	DamageMult = 3
+	DamageMult = 5
 	Poisoning = 6
 	Crippling = 25
 	ForOffense = 1
@@ -272,12 +272,12 @@ var/global/list/PokemonLegendarySkills = list(
 // --- Psychic: Psybeam (powerful homing beam) -------------------------------
 /obj/Skills/Projectile/Beams/Psybeam
 	name = "Psybeam"
-	DamageMult = 8
+	DamageMult = 10
 	ChargeRate = 2
 	Dodgeable = 0
 	Homing = 1
-	Distance = 40
-	ForRate = 1
+	Distance = 100
+	ForRate = 2
 	IconLock = 'BeamKHH.dmi' // placeholder beam art
 	EnergyCost = 8
 	Cooldown = 60
@@ -293,8 +293,8 @@ var/global/list/PokemonLegendarySkills = list(
 	DamageMult = 6
 	Blasts = 1
 	Explode = 3
-	Poisoning = 8
-	Toxic = 4
+	Poisoning = 30
+	Toxic = 25
 	Crippling = 25
 	ForRate = 1
 	Charge = 1
@@ -315,7 +315,7 @@ var/global/list/PokemonLegendarySkills = list(
 	Distance = 8
 	DamageMult = 6
 	Launcher = 2
-	Shattering = 8
+	Shattering = 16
 	StrOffense = 1
 	BuffAffected = "/obj/Skills/Buffs/SlotlessBuffs/Autonomous/PkmnDebuff/Rock_Smash"
 	// A crushing blow: a heavy shockwave and a spray of shattered stone.
@@ -337,7 +337,7 @@ var/global/list/PokemonLegendarySkills = list(
 /obj/Skills/Queue/Double_Kick
 	name = "Double Kick"
 	Duration = 5
-	DamageMult = 4
+	DamageMult = 5
 	AccuracyMult = 1.1
 	Combo = 2            // two-part combo
 	BuffAffected = "/obj/Skills/Buffs/SlotlessBuffs/Autonomous/PkmnDebuff/Double_Kick" // halves target End (approx ignore .5)
@@ -428,7 +428,7 @@ var/global/list/PokemonLegendarySkills = list(
 	name = "Earthquake"
 	Area = "Circle"
 	Distance = 1
-	DamageMult = 5
+	DamageMult = 8
 	Shattering = 8
 	Crippling = 20
 	Launcher = 1
@@ -455,10 +455,10 @@ var/global/list/PokemonLegendarySkills = list(
 	DamageMult = 6
 	ChargeRate = 2
 	Dodgeable = 0
-	Freezing = 8
-	Chilling = 6
+	Freezing = 30
+	Chilling = 25
 	Distance = 40
-	ForRate = 1
+	ForRate = 1.5
 	IconLock = 'Ice Beam.dmi' // a proper freezing beam
 	EnergyCost = 8
 	Cooldown = 50
@@ -528,14 +528,25 @@ var/global/list/PokemonLegendarySkills = list(
 		KenShockwave(usr, icon = 'SparkleViolet.dmi', Size = 4, Blend = 2, Time = 15)
 		usr.Activate(src)
 
-// --- Moltres: Sky Attack — a blazing dive-bomb from on high (heavier Meteor).
-/obj/Skills/AutoHit/Meteor_Strike/Sky_Attack
+// --- Moltres: Sky Attack — a blazing dive-bomb that erupts around the impact.
+// A proper AutoHit (routed through Activate) so it works for the AI and fires the
+// legendary screen-shake / OnLegendaryActivate FX — unlike the old Meteor Strike
+// subclass, whose MeteorStrike() needs a client and bypasses those hooks.
+/obj/Skills/AutoHit/Sky_Attack
 	name = "Sky Attack"
-	DamageMult = 28
-	Scorching = 12
+	Area = "Around Target"
+	Distance = 14
+	DistanceAround = 4
+	DamageMult = 20
+	ForOffense = 1
+	Scorching = 25
 	Launcher = 2
 	Stunner = 2
-	HitSparkIcon = 'fevExplosion - Hellfire.dmi'
+	Icon = 'Icons/Effects/Fire VFX9.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 8
+	HitSparkIcon = 'Icons/Effects/Fire VFX5.dmi'
 	HitSparkX = -32
 	HitSparkY = -32
 	HitSparkSize = 2.5
@@ -543,7 +554,25 @@ var/global/list/PokemonLegendarySkills = list(
 	ActiveMessage = "rockets skyward and plummets down in a blazing Sky Attack!"
 	verb/Sky_Attack()
 		set category = "Skills"
-		MeteorStrike(usr, src)
+		usr.Activate(src)
+		src.OnLegendaryActivate(usr)   // players (shake flag off) still get the flourish
+	OnLegendaryActivate(mob/user)
+		// A twin blaze-burst, then flames erupt and linger across the scorched ground.
+		KenShockwave(user, icon = 'Icons/Effects/SparkleOrange.dmi', Size = 5, Blend = 2, Time = 12)
+		KenShockwave(user, icon = 'Icons/Effects/SparkleGold.dmi', Size = 4, Blend = 2, Time = 14)
+		var/list/turf/near = list()
+		for(var/turf/t in orange(2, user))
+			near += t
+		for(var/n in 1 to min(4, near.len))
+			var/turf/t = pick(near)
+			near -= t
+			var/obj/f = new /obj(t)
+			f.icon = 'Icons/Effects/Fire VFX3.dmi'
+			f.layer = MOB_LAYER + 1
+			f.mouse_opacity = 0
+			f.density = 0
+			spawn(20)
+				if(f) del f
 
 // --- Zapdos: Zap Cannon — a screaming cannon of raw voltage.
 /obj/Skills/AutoHit/Zap_Cannon
@@ -565,6 +594,24 @@ var/global/list/PokemonLegendarySkills = list(
 	verb/Zap_Cannon()
 		set category = "Skills"
 		usr.Activate(src)
+		src.OnLegendaryActivate(usr)   // players (shake flag off) still get the flourish
+	OnLegendaryActivate(mob/user)
+		// A double burst of voltage, then crackling arcs dance across the nearby ground.
+		KenShockwave(user, icon = 'Icons/Effects/SparkleYellow.dmi', Size = 5, Blend = 2, Time = 12)
+		KenShockwave(user, icon = 'Icons/Effects/SparkleYellow.dmi', Size = 3, Blend = 2, Time = 16)
+		var/list/turf/near = list()
+		for(var/turf/t in orange(3, user))
+			near += t
+		for(var/n in 1 to min(4, near.len))
+			var/turf/t = pick(near)
+			near -= t
+			var/obj/e = new /obj(t)
+			e.icon = 'Icons/Effects/Rising Electricity.dmi'
+			e.layer = MOB_LAYER + 1
+			e.mouse_opacity = 0
+			e.density = 0
+			spawn(15)
+				if(e) del e
 
 // --- Articuno: Sheer Cold — a blast of absolute zero that freezes solid.
 /obj/Skills/AutoHit/Sheer_Cold
@@ -590,6 +637,25 @@ var/global/list/PokemonLegendarySkills = list(
 	verb/Sheer_Cold()
 		set category = "Skills"
 		usr.Activate(src)
+		src.OnLegendaryActivate(usr)   // players (shake flag off) still get the flourish
+	OnLegendaryActivate(mob/user)
+		// A frozen shockwave, then hoarfrost creeps across the surrounding ground and
+		// lingers longer than most FX — a battlefield flash-frozen solid.
+		KenShockwave(user, icon = 'Icons/Effects/SparkleBlue.dmi', Size = 5, Blend = 2, Time = 12)
+		KenShockwave(user, icon = 'Icons/Effects/SnowRing.dmi', Size = 4, Blend = 2, Time = 16)
+		var/list/turf/near = list()
+		for(var/turf/t in orange(2, user))
+			near += t
+		for(var/n in 1 to min(5, near.len))
+			var/turf/t = pick(near)
+			near -= t
+			var/obj/ice = new /obj(t)
+			ice.icon = 'Icons/Effects/SnowRing.dmi'
+			ice.layer = TURF_LAYER + 1
+			ice.mouse_opacity = 0
+			ice.density = 0
+			spawn(40)
+				if(ice) del ice
 
 // ==========================================================================
 // JOHTO LEGENDARY SIGNATURE MOVES  (Raikou/Entei/Suicune/Lugia/Ho-Oh/Celebi)
@@ -627,11 +693,11 @@ var/global/list/PokemonLegendarySkills = list(
 	HolyMod = 2
 	Stunner = 3
 	Launcher = 1
-	Icon = 'fevExplosion - Hellfire.dmi'
+	Icon = 'Icons/Effects/Fire VFX6.dmi'
 	IconX = -32
 	IconY = -32
 	IconTime = 8
-	HitSparkIcon = 'Slash - Hellfire.dmi'
+	HitSparkIcon = 'Icons/Effects/Fire VFX5.dmi'
 	HitSparkX = -32
 	HitSparkY = -32
 	HitSparkSize = 2.5
@@ -717,15 +783,26 @@ var/global/list/PokemonLegendarySkills = list(
 			spawn(45)
 				if(w) del w
 
-// --- Ho-Oh: Rainbow Inferno — a blazing rainbow dive from the heavens.
-/obj/Skills/AutoHit/Meteor_Strike/Rainbow_Inferno
+// --- Ho-Oh: Rainbow Inferno — a blazing rainbow dive that erupts around the impact.
+// A proper AutoHit (routed through Activate) so it works for the AI and fires the
+// legendary screen-shake / OnLegendaryActivate FX — unlike the old Meteor Strike
+// subclass, whose MeteorStrike() needs a client and bypasses those hooks.
+/obj/Skills/AutoHit/Rainbow_Inferno
 	name = "Rainbow Inferno"
-	DamageMult = 28
+	Area = "Around Target"
+	Distance = 14
+	DistanceAround = 4
+	DamageMult = 22
+	ForOffense = 1
 	Scorching = 14
 	HolyMod = 4            // sacred rainbow flame — deals Holy damage as well
 	Launcher = 2
 	Stunner = 2
-	HitSparkIcon = 'fevExplosion - Hellfire.dmi'
+	Icon = 'Icons/Effects/Fire VFX7.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 8
+	HitSparkIcon = 'Icons/Effects/SparkleGold.dmi'
 	HitSparkX = -32
 	HitSparkY = -32
 	HitSparkSize = 2.5
@@ -733,7 +810,8 @@ var/global/list/PokemonLegendarySkills = list(
 	ActiveMessage = "ascends on rainbow wings and plummets down in a Rainbow Inferno!"
 	verb/Rainbow_Inferno()
 		set category = "Skills"
-		MeteorStrike(usr, src)
+		KenShockwave(usr, icon = 'SparkleRainbow.dmi', Size = 4, Blend = 2, Time = 15)
+		usr.Activate(src)
 	OnLegendaryActivate(mob/user)
 		// A rainbow sparkle burst, and a rainbow shimmer washed over Ho-Oh itself.
 		KenShockwave(user, icon = 'SparkleRainbow.dmi', Size = 4, Blend = 2, Time = 15)
@@ -749,6 +827,28 @@ var/global/list/PokemonLegendarySkills = list(
 					animate(bs, color = "#4090ff", time = 2)
 					animate(bs, color = "#a040ff", time = 2)
 					animate(bs, color = null, time = 2)
+			// The flames it leaves burn through the same shifting rainbow hues that
+			// wash over Ho-Oh itself, rather than plain orange fire.
+			var/list/turf/near = list()
+			for(var/turf/t in orange(2, user))
+				near += t
+			for(var/n in 1 to min(4, near.len))
+				var/turf/t = pick(near)
+				near -= t
+				var/obj/f = new /obj(t)
+				f.icon = 'Icons/Effects/Fire VFX3.dmi'
+				f.layer = MOB_LAYER + 1
+				f.mouse_opacity = 0
+				f.density = 0
+				spawn()
+					animate(f, color = "#ff4040", time = 3, flags = ANIMATION_PARALLEL)
+					animate(f, color = "#ffa030", time = 3)
+					animate(f, color = "#ffff40", time = 3)
+					animate(f, color = "#40ff40", time = 3)
+					animate(f, color = "#4090ff", time = 3)
+					animate(f, color = "#a040ff", time = 3)
+				spawn(30)
+					if(f) del f
 
 // --- Celebi: Sacred Grove — a burst of primeval forest life.
 /obj/Skills/AutoHit/Sacred_Grove
