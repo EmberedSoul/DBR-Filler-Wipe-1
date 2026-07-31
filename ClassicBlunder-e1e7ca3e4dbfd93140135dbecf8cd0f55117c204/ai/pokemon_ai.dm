@@ -126,6 +126,10 @@ var/global/list/pokemon_stone_evolutions = list(
 // BOTH type moves. Species absent here are single-type (and get a cooldown
 // discount on their one move). Applied in BuildPokemonDatabase.
 var/global/list/pokemon_second_types = list(
+	// --- Eeveelutions: given Normal as a second type (unfaithful, but a family perk)
+	// so every Eevee evolution also gets Quick Attack alongside its elemental move. ---
+	"Vaporeon"="Normal", "Jolteon"="Normal", "Flareon"="Normal",
+	"Espeon"="Normal", "Umbreon"="Normal", "Leafeon"="Normal", "Glaceon"="Normal",
 	// --- Kanto ---
 	"Bulbasaur"="Poison", "Ivysaur"="Poison", "Venusaur"="Poison",
 	"Charizard"="Flying",
