@@ -94,17 +94,32 @@ var/global/list/pokemon_starters = list(\
 // the Pokemon Enchantment enchanting knowledge) evolves the summoned Pokemon into one
 // of these for 99 Mana Capacity. Species not listed have no enchant-driven evolution.
 var/global/list/pokemon_stone_evolutions = list(
-	"Eevee"     = list("Vaporeon", "Jolteon", "Flareon", "Espeon", "Umbreon"),
-	"Gloom"     = list("Bellossom"),
-	"Poliwhirl" = list("Politoed"),
-	"Slowpoke"  = list("Slowking"),
-	"Onix"      = list("Steelix"),
-	"Scyther"   = list("Scizor"),
-	"Seadra"    = list("Kingdra"),
-	"Porygon"   = list("Porygon2"),
-	"Golbat"    = list("Crobat"),
-	"Chansey"   = list("Blissey"),
-	"Tyrogue"   = list("Hitmonlee", "Hitmonchan"))
+	// Stone evolutions (Fire/Water/Thunder/Leaf/Moon/Sun Stone in the originals).
+	"Pikachu"    = list("Raichu"),
+	"Eevee"      = list("Vaporeon", "Jolteon", "Flareon", "Espeon", "Umbreon", "Leafeon", "Glaceon"),
+	"Nidorina"   = list("Nidoqueen"),
+	"Nidorino"   = list("Nidoking"),
+	"Clefairy"   = list("Clefable"),
+	"Jigglypuff" = list("Wigglytuff"),
+	"Vulpix"     = list("Ninetales"),
+	"Gloom"      = list("Vileplume", "Bellossom"),
+	"Growlithe"  = list("Arcanine"),
+	"Poliwhirl"  = list("Poliwrath", "Politoed"),
+	"Weepinbell" = list("Victreebel"),
+	"Exeggcute"  = list("Exeggutor"),
+	"Shellder"   = list("Cloyster"),
+	"Staryu"     = list("Starmie"),
+	"Sunkern"    = list("Sunflora"),
+	// Trade-with-item evolutions (Metal Coat / King's Rock / Dragon Scale / Up-Grade).
+	"Slowpoke"   = list("Slowking"),
+	"Onix"       = list("Steelix"),
+	"Scyther"    = list("Scizor"),
+	"Seadra"     = list("Kingdra"),
+	"Porygon"    = list("Porygon2"),
+	// Friendship / special evolutions (kept from the original Eevee-forms request).
+	"Golbat"     = list("Crobat"),
+	"Chansey"    = list("Blissey"),
+	"Tyrogue"    = list("Hitmonlee", "Hitmonchan"))
 
 // Second type for dual-type species. The dex line holds the primary type; this
 // adds the other half of the canonical pair, so a dual-type Pokemon is granted
@@ -222,26 +237,26 @@ var/global/list/pokemon_second_types = list(
 	_pkmn("Fearow",     "Fearow",     "Flying",    65, 90, 65, 61, 61,100, null,           0)
 	_pkmn("Ekans",      "Ekans",      "Poison",    35, 60, 44, 40, 54, 55, "Arbok",       22)
 	_pkmn("Arbok",      "Arbok",      "Poison",    60, 95, 69, 65, 79, 80, null,           0)
-	_pkmn("Pikachu",    "Pikachu",    "Electric",  35, 55, 40, 50, 50, 90, "Raichu",      30)
+	_pkmn("Pikachu",    "Pikachu",    "Electric",  35, 55, 40, 50, 50, 90, "Raichu",       0)  // Thunder Stone -> Enchant Pokemon verb
 	_pkmn("Raichu",     "Raichu",     "Electric",  60, 90, 55, 90, 80,110, null,           0)
 	_pkmn("Sandshrew",  "Sandshrew",  "Ground",    50, 75, 85, 20, 30, 40, "Sandslash",   22)
 	_pkmn("Sandslash",  "Sandslash",  "Ground",    75,100,110, 45, 55, 65, null,           0)
 	_pkmn("Nidoran F",  "Nidoran F",  "Poison",    55, 47, 52, 40, 40, 41, "Nidorina",    16)
-	_pkmn("Nidorina",   "Nidorina",   "Poison",    70, 62, 67, 55, 55, 56, "Nidoqueen",   30)
+	_pkmn("Nidorina",   "Nidorina",   "Poison",    70, 62, 67, 55, 55, 56, "Nidoqueen",    0)  // Moon Stone -> Enchant Pokemon verb
 	_pkmn("Nidoqueen",  "Nidoqueen",  "Ground",    90, 92, 87, 75, 85, 76, null,           0)
 	_pkmn("Nidoran M",  "Nidoran M",  "Poison",    46, 57, 40, 40, 40, 50, "Nidorino",    16)
-	_pkmn("Nidorino",   "Nidorino",   "Poison",    61, 72, 57, 55, 55, 65, "Nidoking",    30)
+	_pkmn("Nidorino",   "Nidorino",   "Poison",    61, 72, 57, 55, 55, 65, "Nidoking",     0)  // Moon Stone -> Enchant Pokemon verb
 	_pkmn("Nidoking",   "Nidoking",   "Ground",    81,102, 77, 85, 75, 85, null,           0)
-	_pkmn("Clefairy",   "Clefairy",   "Fairy",     70, 45, 48, 60, 65, 35, "Clefable",    30)
+	_pkmn("Clefairy",   "Clefairy",   "Fairy",     70, 45, 48, 60, 65, 35, "Clefable",     0)  // Moon Stone -> Enchant Pokemon verb
 	_pkmn("Clefable",   "Clefable",   "Fairy",     95, 70, 73, 95, 90, 60, null,           0)
-	_pkmn("Vulpix",     "Vulpix",     "Fire",      38, 41, 40, 50, 65, 65, "Ninetales",   30)
+	_pkmn("Vulpix",     "Vulpix",     "Fire",      38, 41, 40, 50, 65, 65, "Ninetales",    0)  // Fire Stone -> Enchant Pokemon verb
 	_pkmn("Ninetales",  "Ninetails",  "Fire",      73, 76, 75, 81,100,100, null,           0)
-	_pkmn("Jigglypuff", "Jigglypuff", "Fairy",    115, 45, 20, 45, 25, 20, "Wigglytuff",  30)
+	_pkmn("Jigglypuff", "Jigglypuff", "Fairy",    115, 45, 20, 45, 25, 20, "Wigglytuff",   0)  // Moon Stone -> Enchant Pokemon verb
 	_pkmn("Wigglytuff", "Wigglytuff", "Fairy",    140, 70, 45, 85, 50, 45, null,           0)
 	_pkmn("Zubat",      "Zubat",      "Poison",    40, 45, 35, 30, 40, 55, "Golbat",      22)
 	_pkmn("Golbat",     "Golbat",     "Poison",    75, 80, 70, 65, 75, 90, null,           0)
 	_pkmn("Oddish",     "Oddish",     "Grass",     45, 50, 55, 75, 65, 30, "Gloom",       21)
-	_pkmn("Gloom",      "Gloom",      "Grass",     60, 65, 70, 85, 75, 40, "Vileplume",   30)
+	_pkmn("Gloom",      "Gloom",      "Grass",     60, 65, 70, 85, 75, 40, "Vileplume",    0)  // Leaf/Sun Stone -> Enchant Pokemon verb
 	_pkmn("Vileplume",  "Vileplume",  "Grass",     75, 80, 85,110, 90, 50, null,           0)
 	_pkmn("Paras",      "Paras",      "Bug",       35, 70, 55, 45, 55, 25, "Parasect",    24)
 	_pkmn("Parasect",   "Parasect",   "Bug",       60, 95, 80, 60, 80, 30, null,           0)
@@ -255,10 +270,10 @@ var/global/list/pokemon_second_types = list(
 	_pkmn("Golduck",    "Golduck",    "Water",     80, 82, 78, 95, 80, 85, null,           0)
 	_pkmn("Mankey",     "Mankey",     "Fighting",  40, 80, 35, 35, 45, 70, "Primeape",    28)
 	_pkmn("Primeape",   "Primeape",   "Fighting",  65,105, 60, 60, 70, 95, null,           0)
-	_pkmn("Growlithe",  "Growlithe",  "Fire",      55, 70, 45, 70, 50, 60, "Arcanine",    30)
+	_pkmn("Growlithe",  "Growlithe",  "Fire",      55, 70, 45, 70, 50, 60, "Arcanine",     0)  // Fire Stone -> Enchant Pokemon verb
 	_pkmn("Arcanine",   "Arcanine",   "Fire",      90,110, 80,100, 80, 95, null,           0)
 	_pkmn("Poliwag",    "Poliwag",    "Water",     40, 50, 40, 40, 40, 90, "Poliwhirl",   25)
-	_pkmn("Poliwhirl",  "Poliwhirl",  "Water",     65, 65, 65, 50, 50, 90, "Poliwrath",   35)
+	_pkmn("Poliwhirl",  "Poliwhirl",  "Water",     65, 65, 65, 50, 50, 90, "Poliwrath",    0)  // Water Stone / King's Rock -> Enchant Pokemon verb
 	_pkmn("Poliwrath",  "Poliwrath",  "Water",     90, 95, 95, 70, 90, 70, null,           0)
 	_pkmn("Abra",       "Abra",       "Psychic",   25, 20, 15,105, 55, 90, "Kadabra",     16)
 	_pkmn("Kadabra",    "Kadabra",    "Psychic",   40, 35, 30,120, 70,105, "Alakazam",    36)
@@ -267,7 +282,7 @@ var/global/list/pokemon_second_types = list(
 	_pkmn("Machoke",    "Machoke",    "Fighting",  80,100, 70, 50, 60, 45, "Machamp",     40)
 	_pkmn("Machamp",    "Machamp",    "Fighting",  90,130, 80, 65, 85, 55, null,           0)
 	_pkmn("Bellsprout", "Bellsprout", "Grass",     50, 75, 35, 70, 30, 40, "Weepinbell",  21)
-	_pkmn("Weepinbell", "Weepinbell", "Grass",     65, 90, 50, 85, 45, 55, "Victreebel",  30)
+	_pkmn("Weepinbell", "Weepinbell", "Grass",     65, 90, 50, 85, 45, 55, "Victreebel",   0)  // Leaf Stone -> Enchant Pokemon verb
 	_pkmn("Victreebel", "Victreebel", "Grass",     80,105, 65,100, 70, 70, null,           0)
 	_pkmn("Tentacool",  "Tentacool",  "Water",     40, 40, 35, 50,100, 70, "Tentacruel",  30)
 	_pkmn("Tentacruel", "Tentacruel", "Water",     80, 70, 65, 80,120,100, null,           0)
@@ -287,7 +302,7 @@ var/global/list/pokemon_second_types = list(
 	_pkmn("Dewgong",    "Dewgong",    "Water",     90, 70, 80, 70, 95, 70, null,           0)
 	_pkmn("Grimer",     "Grimer",     "Poison",    80, 80, 50, 40, 50, 25, "Muk",         38)
 	_pkmn("Muk",        "Muk",        "Poison",   105,105, 75, 65,100, 50, null,           0)
-	_pkmn("Shellder",   "Shellder",   "Water",     30, 65,100, 45, 25, 40, "Cloyster",    30)
+	_pkmn("Shellder",   "Shellder",   "Water",     30, 65,100, 45, 25, 40, "Cloyster",     0)  // Water Stone -> Enchant Pokemon verb
 	_pkmn("Cloyster",   "Cloyster",   "Water",     50, 95,180, 85, 45, 70, null,           0)
 	_pkmn("Gastly",     "Gastly",     "Ghost",     30, 35, 30,100, 35, 80, "Haunter",     25)
 	_pkmn("Haunter",    "Haunter",    "Ghost",     45, 50, 45,115, 55, 95, "Gengar",      35)
@@ -299,7 +314,7 @@ var/global/list/pokemon_second_types = list(
 	_pkmn("Kingler",    "Kingler",    "Water",     55,130,115, 50, 50, 75, null,           0)
 	_pkmn("Voltorb",    "Voltorb",    "Electric",  40, 30, 50, 55, 55,100, "Electrode",   30)
 	_pkmn("Electrode",  "Electrode",  "Electric",  60, 50, 70, 80, 80,150, null,           0)
-	_pkmn("Exeggcute",  "Exeggcute",  "Grass",     60, 40, 80, 60, 45, 40, "Exeggutor",   30)
+	_pkmn("Exeggcute",  "Exeggcute",  "Grass",     60, 40, 80, 60, 45, 40, "Exeggutor",    0)  // Leaf Stone -> Enchant Pokemon verb
 	_pkmn("Exeggutor",  "Exeggutor",  "Grass",     95, 95, 85,125, 75, 55, null,           0)
 	_pkmn("Cubone",     "Cubone",     "Ground",    50, 50, 95, 40, 50, 35, "Marowak",     28)
 	_pkmn("Marowak",    "Marowak",    "Ground",    60, 80,110, 50, 80, 45, null,           0)
@@ -317,7 +332,7 @@ var/global/list/pokemon_second_types = list(
 	_pkmn("Seadra",     "Seadra",     "Water",     55, 65, 95, 95, 45, 85, null,           0)
 	_pkmn("Goldeen",    "Goldeen",    "Water",     45, 67, 60, 35, 50, 63, "Seaking",     33)
 	_pkmn("Seaking",    "Seaking",    "Water",     80, 92, 65, 65, 80, 68, null,           0)
-	_pkmn("Staryu",     "Staryu",     "Water",     30, 45, 55, 70, 55, 85, "Starmie",     30)
+	_pkmn("Staryu",     "Staryu",     "Water",     30, 45, 55, 70, 55, 85, "Starmie",      0)  // Water Stone -> Enchant Pokemon verb
 	_pkmn("Starmie",    "Starmie",    "Water",     60, 75, 85,100, 85,115, null,           0)
 	_pkmn("Mr. Mime",   "Mr. Mime",   "Psychic",   40, 45, 65,100,120, 90, null,           0)
 	_pkmn("Scyther",    "Scyther",    "Bug",       70,110, 80, 55, 80,105, null,           0)
@@ -330,7 +345,7 @@ var/global/list/pokemon_second_types = list(
 	_pkmn("Gyarados",   "Gyarados",   "Water",     95,125, 79, 60,100, 81, null,           0)
 	_pkmn("Lapras",     "Lapras",     "Water",    130, 85, 80, 85, 95, 60, null,           0)
 	_pkmn("Ditto",      "Ditto",      "Normal",    48, 48, 48, 48, 48, 48, null,           0)
-	_pkmn("Eevee",      "Eevee",      "Normal",    55, 55, 50, 45, 65, 55, "Vaporeon",    25)
+	_pkmn("Eevee",      "Eevee",      "Normal",    55, 55, 50, 45, 65, 55, "Vaporeon",     0)  // Water/Thunder/Fire Stone + friendship -> Enchant Pokemon verb
 	_pkmn("Vaporeon",   "Vaporeon",   "Water",    130, 65, 60,110, 95, 65, null,           0)
 	_pkmn("Jolteon",    "Jolteon",    "Electric",  65, 65, 60,110, 95,130, null,           0)
 	_pkmn("Flareon",    "Flareon",    "Fire",      65,130, 60, 95,110, 65, null,           0)
@@ -392,7 +407,7 @@ var/global/list/pokemon_second_types = list(
 	_pkmn("Skiploom",   "Skiploom",   "Grass",     55, 45, 50, 45, 65, 80, "Jumpluff",    27)
 	_pkmn("Jumpluff",   "Jumpluff",   "Grass",     75, 55, 70, 55, 95,110, null,           0)
 	_pkmn("Aipom",      "Aipom",      "Normal",    55, 70, 55, 40, 55, 85, null,           0)
-	_pkmn("Sunkern",    "Sunkern",    "Grass",     30, 30, 30, 30, 30, 30, "Sunflora",    30)
+	_pkmn("Sunkern",    "Sunkern",    "Grass",     30, 30, 30, 30, 30, 30, "Sunflora",     0)  // Sun Stone -> Enchant Pokemon verb
 	_pkmn("Sunflora",   "Sunflora",   "Grass",     75, 75, 55,105, 85, 30, null,           0)
 	_pkmn("Yanma",      "Yanma",      "Bug",       65, 65, 45, 75, 45, 95, null,           0)
 	_pkmn("Wooper",     "Wooper",     "Water",     55, 45, 45, 25, 25, 15, "Quagsire",    20)
@@ -456,6 +471,11 @@ var/global/list/pokemon_second_types = list(
 	// --- MYTHICAL --- Keldeo lives in its OWN sheet (Keldeo.dmi), not POKEMON.dmi.
 	// Water/Fighting (second type via pokemon_second_types); flagged legendary below.
 	_pkmn("Keldeo",     "",           "Water",     91, 72, 90,129, 90,108, null, 0, 'Icons/Characters/Special/Keldeo.dmi')
+	// Gen-4 Eeveelutions (Leaf Stone / Ice Stone). Appended here — NOT inserted into
+	// the Kanto block — so they don't shift the #151/#251 region-position boundaries.
+	// Evolution-only (evolve_level 0): reached from Eevee via the Enchant Pokemon verb.
+	_pkmn("Leafeon",    "Leafeon",    "Grass",     65,110,130, 60, 65, 95, null,           0)
+	_pkmn("Glaceon",    "Glaceon",    "Ice",       65, 60,110,130, 95, 65, null,           0)
 	// Flag the Legendaries (single source of truth = pokemon_legendaries).
 	for(var/legname in pokemon_legendaries)
 		if(pokemon_database[legname])
@@ -478,6 +498,12 @@ var/global/list/pokemon_second_types = list(
 			rs.region = "Johto"
 		else
 			rs.region = "Mythical"
+	// Leafeon/Glaceon sit at the end of the dex (to preserve the position boundaries)
+	// but belong to Eevee's Kanto family, not the Mythical bucket the loop just gave them.
+	for(var/eon in list("Leafeon", "Glaceon"))
+		if(pokemon_database[eon])
+			var/datum/pokemon_species/es = pokemon_database[eon]
+			es.region = "Kanto"
 
 /proc/GetPokemonSpecies(sp)
 	if(!pokemon_database.len) BuildPokemonDatabase()
