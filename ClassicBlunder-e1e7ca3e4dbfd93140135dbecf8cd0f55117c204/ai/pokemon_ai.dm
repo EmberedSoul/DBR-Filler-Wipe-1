@@ -87,7 +87,10 @@ var/global/list/pokemon_starters = list(\
 	"Squirtle", "Wartortle", "Blastoise", \
 	"Chikorita", "Bayleef", "Meganium", \
 	"Cyndaquil", "Quilava", "Typhlosion", \
-	"Totodile", "Croconaw", "Feraligatr")
+	"Totodile", "Croconaw", "Feraligatr", \
+	"Treecko", "Grovyle", "Sceptile", \
+	"Torchic", "Combusken", "Blaziken", \
+	"Mudkip", "Marshtomp", "Swampert")
 
 // Evolutions that in the real games need a Stone / evolution item / trade / etc.,
 // which the level-based CheckEvolution can't reach. The "Enchant Pokemon" verb (from
@@ -119,7 +122,12 @@ var/global/list/pokemon_stone_evolutions = list(
 	// Friendship / special evolutions (kept from the original Eevee-forms request).
 	"Golbat"     = list("Crobat"),
 	"Chansey"    = list("Blissey"),
-	"Tyrogue"    = list("Hitmonlee", "Hitmonchan"))
+	"Tyrogue"    = list("Hitmonlee", "Hitmonchan"),
+	// --- Hoenn stone / trade-item evolutions ---
+	"Lombre"     = list("Ludicolo"),   // Water Stone
+	"Nuzleaf"    = list("Shiftry"),    // Leaf Stone
+	"Skitty"     = list("Delcatty"),   // Moon Stone
+	"Clamperl"   = list("Huntail", "Gorebyss"))  // Deep Sea Tooth / Scale trade
 
 // Second type for dual-type species. The dex line holds the primary type; this
 // adds the other half of the canonical pair, so a dual-type Pokemon is granted
@@ -206,7 +214,42 @@ var/global/list/pokemon_second_types = list(
 	"Lugia"="Flying",
 	"Ho-Oh"="Flying",
 	"Celebi"="Grass",
-	"Keldeo"="Fighting")
+	"Keldeo"="Fighting",
+	// --- Hoenn ---
+	"Combusken"="Fighting", "Blaziken"="Fighting",
+	"Marshtomp"="Ground", "Swampert"="Ground",
+	"Beautifly"="Flying",
+	"Dustox"="Poison",
+	"Lotad"="Grass", "Lombre"="Grass", "Ludicolo"="Grass",
+	"Nuzleaf"="Dark", "Shiftry"="Dark",
+	"Taillow"="Normal", "Swellow"="Normal",
+	"Wingull"="Flying", "Pelipper"="Flying",
+	"Ralts"="Fairy", "Kirlia"="Fairy", "Gardevoir"="Fairy",
+	"Surskit"="Water", "Masquerain"="Flying",
+	"Breloom"="Fighting",
+	"Nincada"="Ground", "Ninjask"="Flying", "Shedinja"="Ghost",
+	"Azurill"="Fairy",
+	"Sableye"="Ghost",
+	"Mawile"="Fairy",
+	"Aron"="Rock", "Lairon"="Rock", "Aggron"="Rock",
+	"Meditite"="Psychic", "Medicham"="Psychic",
+	"Roselia"="Poison",
+	"Carvanha"="Dark", "Sharpedo"="Dark",
+	"Numel"="Ground", "Camerupt"="Ground",
+	"Vibrava"="Dragon", "Flygon"="Dragon",
+	"Cacturne"="Dark",
+	"Swablu"="Normal", "Altaria"="Flying",
+	"Lunatone"="Psychic", "Solrock"="Psychic",
+	"Barboach"="Ground", "Whiscash"="Ground",
+	"Crawdaunt"="Dark",
+	"Baltoy"="Psychic", "Claydol"="Psychic",
+	"Lileep"="Grass", "Cradily"="Grass",
+	"Anorith"="Bug", "Armaldo"="Bug",
+	"Tropius"="Flying",
+	"Spheal"="Water", "Sealeo"="Water", "Walrein"="Water",
+	"Relicanth"="Rock",
+	"Salamence"="Flying",
+	"Beldum"="Psychic", "Metang"="Psychic", "Metagross"="Psychic")
 
 // species, icon_state, type, the 6 base stats (HP,Atk,Def,SpA,SpD,Spe), then the
 // evolution target species and the Potential level it evolves at (or null/0).
@@ -472,6 +515,135 @@ var/global/list/pokemon_second_types = list(
 	_pkmn("Lugia",      "lugiamiddle","Psychic",  106, 90,130, 90,154,110, null,           0)
 	_pkmn("Ho-Oh",      "Ho-Oh",      "Fire",     106,130, 90,110,154, 90, null,           0)
 	_pkmn("Celebi",     "Celebi",     "Psychic",  100,100,100,100,100,100, null,           0)
+	// --- HOENN REGION (Gen 3, #252-386, LEGENDARIES EXCLUDED so #252-376) ---
+	// Same format/conventions as Kanto/Johto. Single most-fitting primary type; second
+	// types added via pokemon_second_types; stone/item evolutions get evolve_level 0 and
+	// live in pokemon_stone_evolutions (reached through the Enchant Pokemon verb).
+	_pkmn("Treecko",    "Treecko",    "Grass",     40, 45, 35, 65, 55, 70, "Grovyle",     16)
+	_pkmn("Grovyle",    "Grovyle",    "Grass",     50, 65, 45, 85, 65, 95, "Sceptile",    36)
+	_pkmn("Sceptile",   "Sceptile",   "Grass",     70, 85, 65,105, 85,120, null,           0)
+	_pkmn("Torchic",    "Torchic",    "Fire",      45, 60, 40, 70, 50, 45, "Combusken",   16)
+	_pkmn("Combusken",  "Combusken",  "Fire",      60, 85, 60, 85, 60, 55, "Blaziken",    36)
+	_pkmn("Blaziken",   "Blaziken",   "Fire",      80,120, 70,110, 70, 80, null,           0)
+	_pkmn("Mudkip",     "Mudkip",     "Water",     50, 70, 50, 50, 50, 40, "Marshtomp",   16)
+	_pkmn("Marshtomp",  "Marshtomp",  "Water",     70, 85, 70, 60, 70, 50, "Swampert",    36)
+	_pkmn("Swampert",   "Swampert",   "Water",    100,110, 90, 85, 90, 60, null,           0)
+	_pkmn("Poochyena",  "Poochyena",  "Dark",      35, 55, 35, 30, 30, 35, "Mightyena",   18)
+	_pkmn("Mightyena",  "Mightyena",  "Dark",      70, 90, 70, 60, 60, 70, null,           0)
+	_pkmn("Zigzagoon",  "Zigzagoon",  "Normal",    38, 30, 41, 30, 41, 60, "Linoone",     20)
+	_pkmn("Linoone",    "Linoone",    "Normal",    78, 70, 61, 50, 61,100, null,           0)
+	_pkmn("Wurmple",    "Wurmple",    "Bug",       45, 45, 35, 20, 30, 20, "Silcoon",      7)
+	_pkmn("Silcoon",    "Silcoon",    "Bug",       50, 35, 55, 25, 25, 15, "Beautifly",   10)
+	_pkmn("Beautifly",  "Beautifly",  "Bug",       60, 70, 50,100, 50, 65, null,           0)
+	_pkmn("Cascoon",    "Cascoon",    "Bug",       50, 35, 55, 25, 25, 15, "Dustox",      10)
+	_pkmn("Dustox",     "Dustox",     "Bug",       60, 50, 70, 50, 90, 65, null,           0)
+	_pkmn("Lotad",      "Lotad",      "Water",     40, 30, 30, 40, 50, 30, "Lombre",      14)
+	_pkmn("Lombre",     "Lombre",     "Water",     60, 50, 50, 60, 70, 50, "Ludicolo",     0)  // Water Stone -> Enchant Pokemon verb
+	_pkmn("Ludicolo",   "Ludicolo",   "Water",     80, 70, 70, 90,100, 70, null,           0)
+	_pkmn("Seedot",     "Seedot",     "Grass",     40, 40, 50, 30, 30, 30, "Nuzleaf",     14)
+	_pkmn("Nuzleaf",    "Nuzleaf",    "Grass",     70, 70, 40, 60, 40, 60, "Shiftry",      0)  // Leaf Stone -> Enchant Pokemon verb
+	_pkmn("Shiftry",    "Shiftry",    "Grass",     90,100, 60, 90, 60, 80, null,           0)
+	_pkmn("Taillow",    "Taillow",    "Flying",    40, 55, 30, 30, 30, 85, "Swellow",     22)
+	_pkmn("Swellow",    "Swellow",    "Flying",    60, 85, 60, 75, 50,125, null,           0)
+	_pkmn("Wingull",    "Wingull",    "Water",     40, 30, 30, 55, 30, 85, "Pelipper",    25)
+	_pkmn("Pelipper",   "pelipper",   "Water",     60, 50,100, 95, 70, 65, null,           0)
+	_pkmn("Ralts",      "Ralts",      "Psychic",   28, 25, 25, 45, 35, 40, "Kirlia",      20)
+	_pkmn("Kirlia",     "Kirlia",     "Psychic",   38, 35, 35, 65, 55, 50, "Gardevoir",   30)
+	_pkmn("Gardevoir",  "Gardevoir",  "Psychic",   68, 65, 65,125,115, 80, null,           0)
+	_pkmn("Surskit",    "Surskit",    "Bug",       40, 30, 32, 50, 52, 65, "Masquerain",  22)
+	_pkmn("Masquerain", "Masquerain", "Bug",       70, 60, 62,100, 82, 80, null,           0)
+	_pkmn("Shroomish",  "Shroomish",  "Grass",     60, 40, 60, 40, 60, 35, "Breloom",     23)
+	_pkmn("Breloom",    "Breloom",    "Grass",     60,130, 80, 60, 60, 70, null,           0)
+	_pkmn("Slakoth",    "Slakoth",    "Normal",    60, 60, 60, 35, 35, 30, "Vigoroth",    18)
+	_pkmn("Vigoroth",   "Vigoroth",   "Normal",    80, 80, 80, 55, 55, 90, "Slaking",     36)
+	_pkmn("Slaking",    "Slaking",    "Normal",   150,160,100, 95, 65,100, null,           0)
+	_pkmn("Nincada",    "Nincada",    "Bug",       31, 45, 90, 30, 30, 40, "Ninjask",     20)
+	_pkmn("Ninjask",    "Ninjask",    "Bug",       61, 90, 45, 50, 50,160, null,           0)
+	_pkmn("Shedinja",   "Shedinja",   "Bug",        1, 90, 45, 30, 30, 40, null,           0)
+	_pkmn("Whismur",    "Whismur",    "Normal",    64, 51, 23, 51, 23, 28, "Loudred",     20)
+	_pkmn("Loudred",    "Loudred",    "Normal",    84, 71, 43, 71, 43, 48, "Exploud",     40)
+	_pkmn("Exploud",    "Exploud",    "Normal",   104, 91, 63, 91, 73, 68, null,           0)
+	_pkmn("Makuhita",   "Makuhita",   "Fighting",  72, 60, 30, 20, 30, 25, "Hariyama",    24)
+	_pkmn("Hariyama",   "Hariyama",   "Fighting", 144,120, 60, 40, 60, 50, null,           0)
+	_pkmn("Azurill",    "Azurill",    "Normal",    50, 20, 40, 20, 40, 20, "Marill",      10)
+	_pkmn("Nosepass",   "Nosepass",   "Rock",      30, 45,135, 45, 90, 30, null,           0)
+	_pkmn("Skitty",     "Skitty",     "Normal",    50, 45, 45, 35, 35, 50, "Delcatty",     0)  // Moon Stone -> Enchant Pokemon verb
+	_pkmn("Delcatty",   "Delcatty",   "Normal",    70, 65, 65, 55, 55, 90, null,           0)
+	_pkmn("Sableye",    "Sableye",    "Dark",      50, 75, 75, 65, 65, 50, null,           0)
+	_pkmn("Mawile",     "Mawile",     "Steel",     50, 85, 85, 55, 55, 50, null,           0)
+	_pkmn("Aron",       "Aron",       "Steel",     50, 70,100, 40, 40, 30, "Lairon",      32)
+	_pkmn("Lairon",     "Lairon",     "Steel",     60, 90,140, 50, 50, 40, "Aggron",      42)
+	_pkmn("Aggron",     "Aggron",     "Steel",     70,110,180, 60, 60, 50, null,           0)
+	_pkmn("Meditite",   "Meditite",   "Fighting",  30, 40, 55, 40, 55, 60, "Medicham",    37)
+	_pkmn("Medicham",   "Medicham",   "Fighting",  60, 60, 75, 60, 75, 80, null,           0)
+	_pkmn("Electrike",  "Electrike",  "Electric",  40, 45, 40, 65, 40, 65, "Manectric",   26)
+	_pkmn("Manectric",  "Manectric",  "Electric",  70, 75, 60,105, 60,105, null,           0)
+	_pkmn("Plusle",     "Plusle",     "Electric",  60, 50, 40, 85, 75, 95, null,           0)
+	_pkmn("Minun",      "Minun",      "Electric",  60, 40, 50, 75, 85, 95, null,           0)
+	_pkmn("Volbeat",    "Volbeat",    "Bug",       65, 73, 75, 47, 85, 85, null,           0)
+	_pkmn("Illumise",   "illumise",   "Bug",       65, 47, 75, 73, 85, 85, null,           0)
+	_pkmn("Roselia",    "Roselia",    "Grass",     50, 60, 45,100, 80, 65, null,           0)
+	_pkmn("Gulpin",     "Gulpin",     "Poison",    70, 43, 53, 43, 53, 40, "Swalot",      26)
+	_pkmn("Swalot",     "Swalot",     "Poison",   100, 73, 83, 73, 83, 55, null,           0)
+	_pkmn("Carvanha",   "Carvanha",   "Water",     45, 90, 20, 65, 20, 65, "Sharpedo",    30)
+	_pkmn("Sharpedo",   "Sharpedo",   "Water",     70,120, 40, 95, 40, 95, null,           0)
+	_pkmn("Wailmer",    "Wailmer",    "Water",    130, 70, 35, 70, 35, 60, "Wailord",     40)
+	_pkmn("Wailord",    "Wailord",    "Water",    170, 90, 45, 90, 45, 60, null,           0)
+	_pkmn("Numel",      "Numel",      "Fire",      60, 60, 40, 65, 45, 35, "Camerupt",    33)
+	_pkmn("Camerupt",   "Camerupt",   "Fire",      70,100, 70,105, 75, 40, null,           0)
+	_pkmn("Torkoal",    "Torkoal",    "Fire",      70, 85,140, 85, 70, 20, null,           0)
+	_pkmn("Spoink",     "Spoink",     "Psychic",   60, 25, 35, 70, 80, 60, "Grumpig",     32)
+	_pkmn("Grumpig",    "Grumpig",    "Psychic",   80, 45, 65, 90,110, 80, null,           0)
+	_pkmn("Spinda",     "Spinda",     "Normal",    60, 60, 60, 60, 60, 60, null,           0)
+	_pkmn("Trapinch",   "Trapinch",   "Ground",    45,100, 45, 45, 45, 10, "Vibrava",     35)
+	_pkmn("Vibrava",    "Vibrava",    "Ground",    50, 70, 50, 50, 50, 70, "Flygon",      45)
+	_pkmn("Flygon",     "Flygon",     "Ground",    80,100, 80, 80, 80,100, null,           0)
+	_pkmn("Cacnea",     "Cacnea",     "Grass",     50, 85, 40, 85, 40, 35, "Cacturne",    32)
+	_pkmn("Cacturne",   "Cacturne",   "Grass",     70,115, 60,115, 60, 55, null,           0)
+	_pkmn("Swablu",     "Swablu",     "Flying",    45, 40, 60, 40, 75, 50, "Altaria",     35)
+	_pkmn("Altaria",    "Altaria",    "Dragon",    75, 70, 90, 70,105, 80, null,           0)
+	_pkmn("Zangoose",   "Zangoose",   "Normal",    73,115, 60, 60, 60, 90, null,           0)
+	_pkmn("Seviper",    "Seviper",    "Poison",    73,100, 60,100, 60, 65, null,           0)
+	_pkmn("Lunatone",   "Lunatone",   "Rock",      90, 55, 65, 95, 85, 70, null,           0)
+	_pkmn("Solrock",    "Solrock",    "Rock",      90, 95, 85, 55, 65, 70, null,           0)
+	_pkmn("Barboach",   "Barboach",   "Water",     50, 48, 43, 46, 41, 60, "Whiscash",    30)
+	_pkmn("Whiscash",   "Whiscash",   "Water",    110, 78, 73, 76, 71, 60, null,           0)
+	_pkmn("Corphish",   "Corphish",   "Water",     43, 80, 65, 50, 35, 35, "Crawdaunt",   30)
+	_pkmn("Crawdaunt",  "Crawdaunt",  "Water",     63,120, 85, 90, 55, 55, null,           0)
+	_pkmn("Baltoy",     "Baltoy",     "Ground",    40, 40, 55, 40, 70, 55, "Claydol",     36)
+	_pkmn("Claydol",    "Claydol",    "Ground",    60, 70,105, 70,120, 75, null,           0)
+	_pkmn("Lileep",     "Lileep",     "Rock",      66, 41, 77, 61, 87, 23, "Cradily",     40)
+	_pkmn("Cradily",    "Cradily",    "Rock",      86, 81, 97, 81,107, 43, null,           0)
+	_pkmn("Anorith",    "Anorith",    "Rock",      45, 95, 50, 40, 50, 75, "Armaldo",     40)
+	_pkmn("Armaldo",    "Armaldo",    "Rock",      75,125,100, 70, 80, 45, null,           0)
+	_pkmn("Feebas",     "Feebas",     "Water",     20, 15, 20, 10, 55, 80, "Milotic",     20)
+	_pkmn("Milotic",    "Milotic",    "Water",     95, 60, 79,100,125, 81, null,           0)
+	_pkmn("Castform",   "Castform",   "Normal",    70, 70, 70, 70, 70, 70, null,           0)
+	_pkmn("Kecleon",    "Kecleon",    "Normal",    60, 90, 70, 60,120, 40, null,           0)
+	_pkmn("Shuppet",    "Shuppet",    "Ghost",     44, 75, 35, 63, 33, 45, "Banette",     37)
+	_pkmn("Banette",    "Banette",    "Ghost",     64,115, 65, 83, 63, 65, null,           0)
+	_pkmn("Duskull",    "Duskull",    "Ghost",     20, 40, 90, 30, 90, 25, "Dusclops",    37)
+	_pkmn("Dusclops",   "Dusclops",   "Ghost",     40, 70,130, 60,130, 25, null,           0)
+	_pkmn("Tropius",    "Tropius",    "Grass",     99, 68, 83, 72, 87, 51, null,           0)
+	_pkmn("Chimecho",   "Chimecho",   "Psychic",   65, 50, 70, 95, 80, 65, null,           0)
+	_pkmn("Absol",      "Absol",      "Dark",      65,130, 60, 75, 60, 75, null,           0)
+	_pkmn("Wynaut",     "Wynaut",     "Psychic",   95, 23, 48, 23, 48, 23, "Wobbuffet",   15)
+	_pkmn("Snorunt",    "Snorunt",    "Ice",       50, 50, 50, 50, 50, 50, "Glalie",      42)
+	_pkmn("Glalie",     "Glalie",     "Ice",       80, 80, 80, 80, 80, 80, null,           0)
+	_pkmn("Spheal",     "Spheal",     "Ice",       70, 40, 50, 55, 50, 25, "Sealeo",      32)
+	_pkmn("Sealeo",     "Sealeo",     "Ice",       90, 60, 70, 75, 70, 45, "Walrein",     44)
+	_pkmn("Walrein",    "Walrein",    "Ice",      110, 80, 90, 95, 90, 65, null,           0)
+	_pkmn("Clamperl",   "Clamperl",   "Water",     35, 64, 85, 74, 55, 32, "Huntail",      0)  // trade item -> Enchant Pokemon verb (Huntail/Gorebyss)
+	_pkmn("Huntail",    "Huntail",    "Water",     55,104,105, 94, 75, 52, null,           0)
+	_pkmn("Gorebyss",   "Gorebyss",   "Water",     55, 84,105,114, 75, 52, null,           0)
+	_pkmn("Relicanth",  "Relicanth",  "Water",    100, 90,130, 45, 65, 55, null,           0)
+	_pkmn("Luvdisc",    "Luvdisc",    "Water",     43, 30, 55, 40, 65, 97, null,           0)
+	_pkmn("Bagon",      "Bagon",      "Dragon",    45, 75, 60, 40, 30, 50, "Shelgon",     30)
+	_pkmn("Shelgon",    "Shelgon",    "Dragon",    65, 95,100, 60, 50, 50, "Salamence",   50)
+	_pkmn("Salamence",  "Salamence",  "Dragon",    95,135, 80,110, 80,100, null,           0)
+	_pkmn("Beldum",     "Beldum",     "Steel",     40, 55, 80, 35, 60, 30, "Metang",      20)
+	_pkmn("Metang",     "Metang",     "Steel",     60, 75,100, 55, 80, 50, "Metagross",   45)
+	_pkmn("Metagross",  "Metagross",  "Steel",     80,135,130, 95, 90, 70, null,           0)
 	// --- MYTHICAL --- Keldeo lives in its OWN sheet (Keldeo.dmi), not POKEMON.dmi.
 	// Water/Fighting (second type via pokemon_second_types); flagged legendary below.
 	_pkmn("Keldeo",     "",           "Water",     91, 72, 90,129, 90,108, null, 0, 'Icons/Characters/Special/Keldeo.dmi')
@@ -491,7 +663,8 @@ var/global/list/pokemon_second_types = list(
 			var/datum/pokemon_species/ds = pokemon_database[dtname]
 			ds.PokemonType2 = pokemon_second_types[dtname]
 	// Tag each species' region by its dex position (the dex is built in order:
-	// Kanto #1-151, Johto #152-251, then any Mythicals like Keldeo).
+	// Kanto #1-151, Johto #152-251, Hoenn #252-376 (legendaries excluded), then the
+	// appended specials (Keldeo, Leafeon, Glaceon) which are re-tagged by name below.
 	var/ridx = 0
 	for(var/rspn in pokemon_database)
 		ridx++
@@ -501,9 +674,11 @@ var/global/list/pokemon_second_types = list(
 		else if(ridx <= 251)
 			rs.region = "Johto"
 		else
-			rs.region = "Mythical"
-	// Leafeon/Glaceon sit at the end of the dex (to preserve the position boundaries)
-	// but belong to Eevee's Kanto family, not the Mythical bucket the loop just gave them.
+			rs.region = "Hoenn"
+	// Fix the appended-after-Hoenn specials the position loop just tagged "Hoenn":
+	// Keldeo is a Mythical; Leafeon/Glaceon belong to Eevee's Kanto family.
+	if(pokemon_database["Keldeo"])
+		pokemon_database["Keldeo"].region = "Mythical"
 	for(var/eon in list("Leafeon", "Glaceon"))
 		if(pokemon_database[eon])
 			var/datum/pokemon_species/es = pokemon_database[eon]

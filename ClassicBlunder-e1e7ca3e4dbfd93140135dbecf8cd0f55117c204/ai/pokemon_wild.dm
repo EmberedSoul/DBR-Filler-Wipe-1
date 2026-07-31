@@ -54,7 +54,7 @@ mob/var/tmp/list/fainted_pokemon = list()
 			wild_species = normal_names.Copy()
 			spawn_desc = "any Non-Legendary (no starters)"
 		if("By Region")
-			var/region = input(src, "Which region should this spot draw from?", "Region") as null|anything in list("Kanto", "Johto")
+			var/region = input(src, "Which region should this spot draw from?", "Region") as null|anything in list("Kanto", "Johto", "Hoenn")
 			if(region)
 				for(var/k in normal_names)
 					var/datum/pokemon_species/sp = pokemon_database[k]
@@ -91,11 +91,11 @@ mob/var/tmp/list/fainted_pokemon = list()
 		if("Pick specific")
 			// Browse a narrowed list (by region/type/pool) and add species one at a time.
 			while(TRUE)
-				var/pool = input(src, "Browse which list? (Done to finish) — Chosen: [wild_species.len ? jointext(wild_species, ", ") : "none"]", "Pick Species") in list("Kanto", "Johto", "By Type", "Legendary", "Starters", "Done")
+				var/pool = input(src, "Browse which list? (Done to finish) — Chosen: [wild_species.len ? jointext(wild_species, ", ") : "none"]", "Pick Species") in list("Kanto", "Johto", "Hoenn", "By Type", "Legendary", "Starters", "Done")
 				if(pool == "Done") break
 				var/list/src_list = list()
 				switch(pool)
-					if("Kanto", "Johto")
+					if("Kanto", "Johto", "Hoenn")
 						for(var/k in normal_names)
 							var/datum/pokemon_species/sp = pokemon_database[k]
 							if(sp && sp.region == pool) src_list += k
