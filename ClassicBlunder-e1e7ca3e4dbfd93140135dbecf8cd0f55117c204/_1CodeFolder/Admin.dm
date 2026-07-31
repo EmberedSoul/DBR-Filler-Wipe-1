@@ -1459,7 +1459,7 @@ mob/Admin2/verb
 				discord_output = replacetext(discord_output, "<b>","**")
 				discord_output = replacetext(discord_output, "</b>","**")
 				discord_output = replacetext(discord_output, "<br>","")
-				discord_output = "<@&1455270598635950333> [discord_output]"
+				discord_output = "<@Everyone> [discord_output]"
 				switch(input("IC Announcement or OOC Announcement?") in list("IC", "OOC"))
 					if("IC")
 						if(glob.discordICAnnounceWebhookURL)
