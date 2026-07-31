@@ -40,7 +40,7 @@ mob
 				if("Offense")    return OffMod
 				if("Defense")    return DefMod
 				if("Anger")      return AngerMax
-				if("Learning")   return RPPMult
+	//			if("Learning")   return RPPMult
 				if("Intellect")  return Intelligence
 				if("Imagination") return Imagination
 			return null
@@ -95,7 +95,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		ActiveMessage = "attunes to a Warrior Job Stone, their body reforging into a hardened frontline fighter!"
 		OffMessage = "sheds the Warrior attunement, their body settling back to normal..."
 		JobStats = list("Strength" = 10, "Endurance" = 4.5, "Force" = 1, "Speed" = 1.5, "Offense" = 2, "Defense" = 2, \
-			"Power" = 1.25, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
+			"Power" = 1.25, "Anger" = 1.5,"Intellect" = 1, "Imagination" = 1)
 		passives = list("SwordDamage" = 2, "TechniqueMastery" = 2)
 		BuffTechniques = list("/obj/Skills/AutoHit/Bulwark_Bash", "/obj/Skills/AutoHit/Cleaving_Blow")
 
@@ -105,7 +105,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		ActiveMessage = "attunes to a Berserker Job Stone, their rage building with each strike!"
 		OffMessage = "lets the Berserker attunement fade, their rage subsiding..."
 		JobStats = list("Strength" = 4, "Endurance" = 4, "Force" = 4, "Speed" = 2.5, "Offense" = 2, "Defense" = 1.5, \
-			"Power" = 1.75, "Anger" = 3, "Learning" = 1.5, "Intellect" = 2, "Imagination" = 2)
+			"Power" = 1.75, "Anger" = 3,"Intellect" = 2, "Imagination" = 2)
 		passives = list("EndlessAnger" = 1, "UnbridledFury" = 1)
 		BuffTechniques = list("/obj/Skills/AutoHit/Reckless_Slam", "/obj/Skills/AutoHit/Berserk_Flurry")
 
@@ -116,7 +116,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		ActiveMessage = "attunes to a Rogue Job Stone, becoming a blur of speed and precision!"
 		OffMessage = "drops the Rogue attunement, their movements settling back to normal..."
 		JobStats = list("Strength" = 1.5, "Endurance" = 1.5, "Force" = 1.5, "Speed" = 6, "Offense" = 8, "Defense" = 12, \
-			"Power" = 1.25, "Anger" = 1.25, "Learning" = 1.25, "Intellect" = 1.25, "Imagination" = 1.25)
+			"Power" = 1.25, "Anger" = 1.25, "Intellect" = 1.25, "Imagination" = 1.25)
 		BuffTechniques = list("/obj/Skills/AutoHit/Backstab", "/obj/Skills/Projectile/Fan_Of_Knives")
 		passives = list("CriticalChance" = 20, "CriticalStrike" = 0.33, "Flow" = 2, "Instinct" = 2)
 
@@ -128,7 +128,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		ActiveMessage = "attunes to a Dragoon Job Stone, poised to strike like a plummeting lance!"
 		OffMessage = "releases the Dragoon attunement, their footing settling back to normal..."
 		JobStats = list("Strength" = 2.75, "Endurance" = 2.5, "Force" = 1, "Speed" = 7.5, "Offense" = 2.5, "Defense" = 2.5, \
-			"Power" = 1.5, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
+			"Power" = 1.5, "Anger" = 1.5,"Intellect" = 1, "Imagination" = 1)
 		passives = list("Extend" = 2, "AttackSpeed" = 2)
 		BuffTechniques = list("/obj/Skills/Queue/Dragon_Step", "/obj/Skills/AutoHit/Dragoon_Dive")
 
@@ -140,7 +140,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		ActiveMessage = "attunes to a Black Mage Job Stone, destructive magic crackling at their fingertips!"
 		OffMessage = "lets the Black Mage attunement fade, the crackling magic dispersing..."
 		JobStats = list("Strength" = 1, "Endurance" = 1.5, "Force" = 7.5, "Speed" = 1.5, "Offense" = 4, "Defense" = 3.5, \
-			"Power" = 1.5, "Anger" = 1, "Learning" = 1.5, "Intellect" = 2.5, "Imagination" = 2.5)
+			"Power" = 1.5, "Anger" = 1, "Intellect" = 2.5, "Imagination" = 2.5)
 		passives = list("TechniqueMastery" = 3, "SpiritStrike" = 1, "ManaGeneration" = 1)
 		BuffTechniques = list("/obj/Skills/Projectile/Fire_II", "/obj/Skills/AutoHit/Thunder_II", "/obj/Skills/Queue/Blizzard_II")
 
@@ -152,7 +152,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		ActiveMessage = "attunes to a White Mage Job Stone, wrapped in a warm, protective radiance!"
 		OffMessage = "lets the White Mage attunement fade, the radiance dimming..."
 		JobStats = list("Strength" = 1, "Endurance" = 3, "Force" = 5, "Speed" = 1.5, "Offense" = 1.5, "Defense" = 3.5, \
-			"Power" = 1.5, "Anger" = 1, "Learning" = 1.5, "Intellect" = 2, "Imagination" = 2)
+			"Power" = 1.5, "Anger" = 1, "Intellect" = 2, "Imagination" = 2)
 		passives = list("Blubber" = 2, "LifeGeneration" = 2, "Holy" = 3,)
 		BuffTechniques = list("/obj/Skills/Projectile/Aero", "/obj/Skills/Utility/Holy")
 
@@ -164,7 +164,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		ActiveMessage = "attunes to a Red Mage Job Stone, blade and spell flowing as one!"
 		OffMessage = "lets the Red Mage attunement fade, blade and spell parting ways..."
 		JobStats = list("Strength" = 3, "Endurance" = 2, "Force" = 3, "Speed" = 2, "Offense" = 2.5, "Defense" = 1.5, \
-			"Power" = 1.5, "Anger" = 1.25, "Learning" = 1.25, "Intellect" = 1.75, "Imagination" = 1.75)
+			"Power" = 1.5, "Anger" = 1.25, "Intellect" = 1.75, "Imagination" = 1.75)
 		passives = list("LifeSteal" = 1, "KillerInstinct" = 1)
 		BuffTechniques = list("/obj/Skills/Projectile/Aero", "/obj/Skills/Projectile/Fire_II", "/obj/Skills/AutoHit/Thunder_II", "/obj/Skills/Utility/Esuna")
 
@@ -177,7 +177,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		ActiveMessage = "attunes to a Samurai Job Stone, drawing a gleaming blade in a single flash of steel!"
 		OffMessage = "sheathes the Samurai blade, the attunement fading with a soft click..."
 		JobStats = list("Strength" = 10, "Endurance" = 1, "Force" = 1, "Speed" = 9, "Offense" = 10, "Defense" = 0.75, \
-			"Power" = 1.75, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
+			"Power" = 1.75, "Anger" = 1.5, "Intellect" = 1, "Imagination" = 1)
 		passives = list("AttackSpeed" = 3, "SwordDamage" = 3, "PureReduction" = -5)
 		BuffTechniques = list("/obj/Skills/AutoHit/Moonlight_Dash", "/obj/Skills/AutoHit/Heavenly_Quake")
 		// Conjured Legendary light blade with a Chaos edge. SwordAscension +
@@ -203,7 +203,7 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		ActiveMessage = "attunes to a Dark Knight Job Stone, summoning a heavy blade wreathed in devouring void!"
 		OffMessage = "lets the Dark Knight attunement fade, the blade receding from their soul..."
 		JobStats = list("Strength" = 8, "Endurance" = 8, "Force" = 1, "Speed" = 1, "Offense" = 2, "Defense" = 8, \
-			"Power" = 1.5, "Anger" = 1.5, "Learning" = 1, "Intellect" = 1, "Imagination" = 1)
+			"Power" = 1.5, "Anger" = 1.5,"Intellect" = 1, "Imagination" = 1)
 		passives = list("LifeSteal" = 25, "CallousedHands" = 0.2,"PureReduction" = 2)
 		BuffTechniques = list("/obj/Skills/AutoHit/Abyssal_Cleave", "/obj/Skills/AutoHit/Dread_Harbinger")
 		// Conjured Legendary heavy blade with a Void edge (shatterproof, ascended).
