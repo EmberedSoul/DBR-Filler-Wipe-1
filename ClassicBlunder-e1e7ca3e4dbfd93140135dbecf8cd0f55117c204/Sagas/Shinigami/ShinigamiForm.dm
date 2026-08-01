@@ -218,7 +218,7 @@
 			StyleDef = 1 + (0.05 * p.SagaLevel)
 			StyleOff = 1 + (0.05 * p.SagaLevel)
 			passives["Duelist"] = (p.SagaLevel/2)
-			passives["Parry"] = (p.SagaLevel/3)
+			passives["Parry"] = (p.SagaLevel/4)
 			passives["Musoken"] = 1
 		verb/Zanjutsu()
 			set hidden=1

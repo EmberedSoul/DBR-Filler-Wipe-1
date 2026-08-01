@@ -13,7 +13,7 @@
 			"HardStyle"    = 1 + SL,
 			"Brutalize"    = 0.75 + (0.25 * SL),
 			"Bloodletting" = 4 + (1 * SL),
-			"Parry"        = 0.5 + (0.25 * SL),
+			"Parry"        = 0.25 + (0.25 * SL),
 			"IdealStrike"  = 1
 		)
 		if(SL < 3)
@@ -169,7 +169,7 @@
 			p.already_hit += M.ckey
 			user.Target = M
 			user.petal_attacking = TRUE
-			user.Melee1(forcedTarget=M, BreakAttackRate=1)
+			user.Melee1(BreakAttackRate=1)
 			user.petal_attacking = FALSE
 			var/obj/Effects/HE = new(null, 'Icons/Effects/Byakuya - Petals - Attacks.dmi', -40, -40)
 			HE.icon_state = "4"
