@@ -10,15 +10,14 @@
 		if(altered) return
 		var/SL = p.SagaLevel
 		passives = list(
-			"Sniper"       = 5 + SL,
+			"Sniper"       = 4 + SL,
 			"HardStyle"    = 2 + SL,
-			"Brutalize"    = 1.5 + (0.5 * SL),
-			"DeathField"   = 1.5 + (1.5 * SL),
-			"Bloodletting" = 6 + (3 * SL),
+			"Brutalize"    = 0.5 + (0.5 * SL),
+			"Bloodletting" = 4 + (3 * SL),
 			"Parry"        = 1.5 + (0.5 * SL),
 			"IdealStrike"  = 1
 		)
-		if(SL < 3)
+		if(SL < 5)
 			passives["ManaLeak"] = 4
 		ForMult = 1.3 + (0.1 * SL)
 		OffMult = 1.3 + (0.1 * SL)

@@ -8,11 +8,11 @@
 		var/SL = p.SagaLevel
 		passives = list(
 			"MartialMagic"   = 1,
-			"ManaGeneration" = 2 * SL,
+			"ManaGeneration" = 1 + SL,
 			"SpiritSword"    = 0.5 * SL,
-			"SpiritFlow"     = 1 * SL,
-			"SpiritPower"    = 0.25 * SL,
-			"HolyMod"        = 2,
+			"SpiritFlow"     = 0.75 * SL,
+//			"SpiritPower"    = 0.25 * SL,
+//			"HolyMod"        = 2,
 			"EvilResist"     = 2
 		)
 		if(p.ShinigamiRelease == "Katen Kyokotsu")
@@ -217,8 +217,8 @@
 			StyleStr = 1 + (0.05 * p.SagaLevel)
 			StyleDef = 1 + (0.05 * p.SagaLevel)
 			StyleOff = 1 + (0.05 * p.SagaLevel)
-			passives["Duelist"] = p.SagaLevel
-			passives["Parry"] = (p.SagaLevel/2)
+			passives["Duelist"] = (p.SagaLevel/2)
+			passives["Parry"] = (p.SagaLevel/3)
 			passives["Musoken"] = 1
 		verb/Zanjutsu()
 			set hidden=1

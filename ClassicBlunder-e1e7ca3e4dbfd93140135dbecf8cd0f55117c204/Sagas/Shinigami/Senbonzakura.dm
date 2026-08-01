@@ -9,12 +9,11 @@
 		if(altered) return
 		var/SL = p.SagaLevel
 		passives = list(
-			"Sniper"       = 3 + SL,
+			"Sniper"       = 2 + SL,
 			"HardStyle"    = 1 + SL,
-			"Brutalize"    = 0.5 + (0.5 * SL),
-			"DeathField"   = 0.5 + (1.5 * SL),
-			"Bloodletting" = 4 + (3 * SL),
-			"Parry"        = 0.5 + (0.5 * SL),
+			"Brutalize"    = 0.5 + (0.25 * SL),
+			"Bloodletting" = 4 + (1 * SL),
+			"Parry"        = 0.5 + (0.25 * SL),
 			"IdealStrike"  = 1
 		)
 		if(SL < 3)

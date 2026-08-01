@@ -93,8 +93,8 @@ Make it so that Bankai actually turns your sprite all white. Might need someone 
 			"AbsoluteZero"   = 1, // This gives other debuffs scaling off Chill stacks.
 			"IceHerald"      = 1, // Lets you use IceHerald in Bankai, Always.
 			"IceAge"         = 10 + (10 * SL), // This is Combustion but for Chill. Seems pretty thematic.
-			"AttackSpeed"    = -5 + (0.5 * SL), //Ice makes you cold. Rukia is shown having difficulty moving in her Bankai, may need it's numbers tweaked.
-			"Godspeed"       = -5 + (0.5 * SL), //Same Reason as above.
+			"AttackSpeed"    = -2.5 + (0.5 * SL), //Ice makes you cold. Rukia is shown having difficulty moving in her Bankai, may need it's numbers tweaked.
+			"Godspeed"       = -3 + (0.5 * SL), //Same Reason as above.
 			"Shirayuki"      = 1 //This currently does nothing but it's meant to give you Chill Stacks when you power up, and Bonuses based on chill-stacks.
 		)
 		if(SL < 5)
