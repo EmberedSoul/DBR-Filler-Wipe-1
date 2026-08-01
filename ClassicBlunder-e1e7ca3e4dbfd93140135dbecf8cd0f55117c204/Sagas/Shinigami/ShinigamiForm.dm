@@ -9,10 +9,10 @@
 		passives = list(
 			"MartialMagic"   = 1,
 			"ManaGeneration" = 1 + SL,
-			"SpiritSword"    = 0.5 * SL,
+			"SpiritSword"    = 0.75 * SL,
 			"SpiritFlow"     = 0.75 * SL,
-//			"SpiritPower"    = 0.25 * SL,
-//			"HolyMod"        = 2,
+			"SpiritPower"    = 0.25 * SL,
+			"HolyMod"        = 2,
 			"EvilResist"     = 2
 		)
 		if(p.ShinigamiRelease == "Katen Kyokotsu")
