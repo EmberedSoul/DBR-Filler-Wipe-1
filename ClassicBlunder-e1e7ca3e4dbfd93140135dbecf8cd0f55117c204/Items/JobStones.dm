@@ -256,24 +256,26 @@ obj/Items/Enchantment/Job_Stone
 		if(!JobBuffType)
 			usr << "This Job Stone is inert."
 			return
-		var/obj/Skills/Buffs/SpecialBuffs/Job_Attunement/J = locate(JobBuffType) in usr
-		if(!J)
-			J = new JobBuffType
-			usr.AddSkill(J)
-		// Push any saved blade customization onto the buff before it conjures, so
-		// the summoned sword uses the player's chosen icon/name. Harmless for jobs
-		// that don't make a sword (their buff simply ignores unused sword vars).
-		if(CustomSwordIcon)
-			J.SwordIcon = CustomSwordIcon
-			J.SwordX = CustomSwordX
-			J.SwordY = CustomSwordY
-		if(CustomSwordName)
-			J.SwordName = CustomSwordName
-		// Trigger routes through the Special Buff slot dispatcher: activates if
-		// the slot is free, deactivates if this buff already holds it, or is
-		// refused if a different special buff is active.
-		J.Trigger(usr)
-
+		if(!usr.Secret||!usr.Saga)
+			var/obj/Skills/Buffs/SpecialBuffs/Job_Attunement/J = locate(JobBuffType) in usr
+			if(!J)
+				J = new JobBuffType
+				usr.AddSkill(J)
+			// Push any saved blade customization onto the buff before it conjures, so
+			// the summoned sword uses the player's chosen icon/name. Harmless for jobs
+			// that don't make a sword (their buff simply ignores unused sword vars).
+			if(CustomSwordIcon)
+				J.SwordIcon = CustomSwordIcon
+				J.SwordX = CustomSwordX
+				J.SwordY = CustomSwordY
+			if(CustomSwordName)
+				J.SwordName = CustomSwordName
+			// Trigger routes through the Special Buff slot dispatcher: activates if
+			// the slot is free, deactivates if this buff already holds it, or is
+			// refused if a different special buff is active.
+			J.Trigger(usr)
+		else
+			usr <<"You shouldnt be using this."
 	// Shared blade-customization flow used by the sword jobs' Utility verbs. Stores
 	// the chosen look on the (saved) stone, mirrors it onto the job buff, and — if
 	// the job is active right now — refreshes the conjured blade in hand live.
