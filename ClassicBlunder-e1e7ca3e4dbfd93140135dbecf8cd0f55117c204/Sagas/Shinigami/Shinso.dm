@@ -14,7 +14,7 @@ mob/var/tmp/ButouActive = FALSE
 			"GiantSwings"     = 1 + SL,
 			"Sniper"          = 1 + SL,
 			"Brutalize"       = 0.5 + (0.5 * SL),
-			"BlurringStrikes" = 0.5 + (0.25 * SL),
+			"BlurringStrikes" = 1 + (0.25 * SL),
 			"Extend"          = 2 + (0.25 * SL)
 		)
 		if(SL < 3)

@@ -376,25 +376,25 @@ obj
 					ArmorIcon='LancelotArmor.dmi'
 					ArmorClass="Light"
 					passives = list()
-					var/list/SwordPassives = list("BlurringStrikes" = 1, "Brutalize" = 2, "TechniqueMastery" = 3)
-					var/list/ShieldPassives = list("CallousedHands" = 0.15, "Juggernaut" = 1)
+					var/list/SwordPassives = list("BlurringStrikes" = 0.5, "Brutalize" = 0.5, "TechniqueMastery" = 3)
+					var/list/ShieldPassives = list("CallousedHands" = 0.1, "Juggernaut" = 1)
 					var/list/StaffPassives = list("ManaGeneration" = 1, "QuickCast" = 1)
 					adjust(mob/p)
 						var/ImaginaryBonus=0
 						if(p.Class=="Imaginary")
-							ImaginaryBonus=0.15*p.AscensionsAcquired
+							ImaginaryBonus=0.1*p.AscensionsAcquired
 						if(p.KeybladeType=="Sword")
-							StrMult=1.25 + ImaginaryBonus
-							OffMult=1.25 + ImaginaryBonus
-							SpdMult=1.5 + ImaginaryBonus
+							StrMult=1.15 + ImaginaryBonus
+							OffMult=1.15 + ImaginaryBonus
+							SpdMult=1.3 + ImaginaryBonus
 							passives=SwordPassives
 						if(p.KeybladeType=="Shield")
-							EndMult=1.5 + ImaginaryBonus
-							DefMult=1.5 + ImaginaryBonus
+							EndMult=1.3 + ImaginaryBonus
+							DefMult=1.3 + ImaginaryBonus
 							passives=ShieldPassives
 						if(p.KeybladeType=="Staff")
-							ForMult=1.5 + ImaginaryBonus
-							OffMult=1.5 + ImaginaryBonus
+							ForMult=1.3 + ImaginaryBonus
+							OffMult=1.3 + ImaginaryBonus
 							passives=StaffPassives
 					verb/Keyblade_Armor()
 						set category="Skills"
