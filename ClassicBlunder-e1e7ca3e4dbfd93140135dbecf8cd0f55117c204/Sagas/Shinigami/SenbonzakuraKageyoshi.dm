@@ -19,9 +19,9 @@
 		)
 		if(SL < 5)
 			passives["ManaLeak"] = 4
-		ForMult = 1.3 + (0.1 * SL)
-		OffMult = 1.3 + (0.1 * SL)
-		DefMult = 1.3 + (0.1 * SL)
+		ForMult = 1.3 + (0.05 * SL)
+		OffMult = 1.3 + (0.05 * SL)
+		DefMult = 1.3 + (0.05 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn

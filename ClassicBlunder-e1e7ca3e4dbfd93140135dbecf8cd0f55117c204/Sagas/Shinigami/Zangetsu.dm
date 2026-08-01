@@ -69,15 +69,15 @@
 		passives = list(
 			"Zornhau"        = 1 + SL,
 			"HybridStrike"   = 0.5 + (SL/2),
-			"Half-Sword"     = 1 + SL,
+			"Half-Sword"     = 1 + SL/2,
 			"Instinct"       = 1 + SL,
 			"HeavyHitter" 	 = 1 + (0.25 * SL),
-			"PureDamage"     = 1 + SL
+			"PureDamage"     = 1 + SL/2
 		)
 		if(SL < 3)
 			passives["ManaLeak"] = 2
 		if(SL >= 7)
-			passives["DoubleStrike"] = 5
+			passives["DoubleStrike"] = 3
 		if(SL >= 7)
 			StrMult = 1.15 + (0.15 * SL)
 			ForMult = 1.15 + (0.15 * SL)
@@ -139,7 +139,7 @@
 			"HybridStrike"    = 0.75 + (SL/2),
 			"EmptyFlashStep"  = 1,
 			"PureDamage"      = 1 + SL,
-			"SwordAscension"  = SL,
+			"SwordAscension"  = SL/2,
 			"Steady"          = 1 + SL
 		)
 		if(SL < 5)

@@ -118,9 +118,9 @@
 		var/SL = p.SagaLevel
 		passives = list(
 			"LikeWater"       = 1 + SL,
-			"BlurringStrikes" = 2.5 + (SL * 0.5),
+			"BlurringStrikes" = 2 + (SL * 0.5),
 			"Fa Jin"          = 1.25 + (0.25 * SL),
-			"SpiritHand"      = 4 + (1.25 * SL),
+			"SpiritHand"      = 2 + (0.75 * SL),
 			"Momentum"        = 0.5 + (0.5 * SL),
 			"Fury"            = 0.5 + (0.5 * SL),
 			"Scorching"       = 1 + SL,
@@ -130,9 +130,9 @@
 		)
 		if(SL < 5)
 			passives["ManaLeak"] = 4
-		OffMult = 1.4 + (0.15 * SL)
-		StrMult = 1.4 + (0.15 * SL)
-		SpdMult = 1.4 + (0.15 * SL)
+		OffMult = 1.4 + (0.05 * SL)
+		StrMult = 1.4 + (0.05 * SL)
+		SpdMult = 1.4 + (0.05 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn
