@@ -256,7 +256,7 @@ obj/Items/Enchantment/Job_Stone
 		if(!JobBuffType)
 			usr << "This Job Stone is inert."
 			return
-		if(!usr.Secret||!usr.Saga)
+		if(!usr.Secret&&!usr.Saga)
 			var/obj/Skills/Buffs/SpecialBuffs/Job_Attunement/J = locate(JobBuffType) in usr
 			if(!J)
 				J = new JobBuffType
