@@ -13,14 +13,14 @@
 			"HardStyle"    = 1 + SL,
 			"Brutalize"    = 0.75 + (0.25 * SL),
 			"Bloodletting" = 4 + (1 * SL),
-			"Parry"        = 0.25 + (0.25 * SL),
+			"Parry"        = 0.15 + (0.2 * SL),
 			"IdealStrike"  = 1
 		)
 		if(SL < 3)
 			passives["ManaLeak"] = 2
-		ForMult = 1.1 + (0.1 * SL)
-		OffMult = 1.1 + (0.1 * SL)
-		DefMult = 1.1 + (0.1 * SL)
+		ForMult = 1.1 + (0.05 * SL)
+		OffMult = 1.1 + (0.05 * SL)
+		DefMult = 1.1 + (0.05 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn
