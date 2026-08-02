@@ -1680,7 +1680,7 @@ proc/Accuracy_Formula(mob/Offender,mob/Defender,AccMult=1,BaseChance=glob.WorldD
 					Defender.tailResistanceTraining(5)
 			if(prob(0.5))
 				// smirk
-				OMsg(Defender, "[Defender] is getting Ashton'd.")
+				OMsg(Defender, "[Defender] is being stabbed in the back!")
 
 			AccMult*=1.2
 
