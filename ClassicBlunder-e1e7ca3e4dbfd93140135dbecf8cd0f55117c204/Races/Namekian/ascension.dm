@@ -57,6 +57,10 @@ ascension
 						strength = 0.35
 						endurance = 0.35
 						skills = list(/obj/Skills/Buffs/SpecialBuffs/Giant_Form)
+				if(owner.Class=="Dragon")
+					for(var/obj/Skills/Utility/Heal/he in owner.contents)
+						he.SagaSignature=1
+						he.SignatureTechnique=0
 				..()
 		three
 			unlock_potential	=	ASCENSION_THREE_POTENTIAL
