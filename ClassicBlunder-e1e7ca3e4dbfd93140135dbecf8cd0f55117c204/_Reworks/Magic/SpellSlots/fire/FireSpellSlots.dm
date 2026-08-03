@@ -16,7 +16,7 @@
 		CanBeBlocked=0
 		FlickAttack=1
 		ManaCost=5
-		Cooldown=45
+		Cooldown=70
 		TurfStrike=1
 		HitSparkIcon='Slash - Hellfire.dmi'
 		HitSparkSize=1
