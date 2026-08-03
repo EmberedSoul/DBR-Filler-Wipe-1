@@ -2308,6 +2308,33 @@ obj
 						src.ControlledRush=1
 					adjust(usr)
 					usr.Activate(src)
+			Kirin
+				name = "Kirin"
+				Area="Strike"
+				Distance=16
+				ForOffense=1
+				DamageMult=22
+				Bolt=2
+				Shocking=14
+				Paralyzing=10
+				Stunner=4
+				MortalBlow=1
+				Scorching=6
+				Launcher=1
+				CanBeDodged=0
+				CanBeBlocked=1
+				WindUp=1
+				WindupMessage="raises a hand to the storm, gathering a dragon of lightning in the clouds above!"
+				ActiveMessage="brings down Kirin -- a dragon of heavenly lightning that judges in an instant!"
+				HitSparkIcon='Hit Effect.dmi'
+				HitSparkX=-32
+				HitSparkY=-32
+				HitSparkSize=2
+				Cooldown=300
+				EnergyCost=15
+				verb/Kirin()
+					set category="Skills"
+					usr.Activate(src)
 			The_Seventh_Super_Explosive_Wave
 				SignatureTechnique=4
 				StrOffense=0
@@ -5395,8 +5422,14 @@ mob
 				Z.Cooldown(1, null, src)
 			else
 				Z.Cooldown(1, null, src)
+			spawn() for(var/mob/m in view(10, src))
+				if(m.CheckSpecial("Sharingan"))
+					// Signature-copy rework: copy only Signatures, only while the viewer's
+					// Copy Signature window is open (TrySharinganCopy, in rinneganBuff.dm).
+					if(src.client && m.client && m.client.address == src.client.address)
+						continue
+					m.TrySharinganCopy(Z)
 			if(Z.Copyable)
-				var/copy = Z.Copyable
 				spawn() for(var/mob/m in view(40, src))
 					if(m.CheckSpecial("A - The Almighty"))
 						var/insightLevel = m.AscensionsAcquired+25 || 1
@@ -5411,27 +5444,6 @@ mob
 							copiedSkill.Copied = TRUE
 							copiedSkill.copiedBy = "The Almighty"
 							m << "You understand the nature of the [Z] technique you've just viewed."
-				spawn() for(var/mob/m in view(10, src))
-					if(m.CheckSpecial("Sharingan"))
-						var/copyLevel = getSharCopyLevel(m.SagaLevel)
-						if(Z.NewCopyable)
-							copy = Z.NewCopyable
-						else
-							copy = Z.Copyable
-						if(glob.SHAR_COPY_EQUAL_OR_LOWER)
-							if(copyLevel < copy)
-								continue
-						else
-							if(copyLevel <= copy)
-								continue
-						if(client&&m.client&&m.client.address==src.client.address)
-							continue
-						if(!locate(Z.type, m))
-							var/obj/Skills/copiedSkill = new Z.type
-							m.AddSkill(copiedSkill)
-							copiedSkill.Copied = TRUE
-							copiedSkill.copiedBy = "Sharingan"
-							m << "Your Sharingan analyzes and stores the [Z] technique you've just viewed."
 				spawn()
 					for(var/obj/Items/Tech/Security_Camera/SC in view(10, src))
 						if(Z.PreRequisite.len<1)

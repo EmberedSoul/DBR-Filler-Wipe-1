@@ -5106,6 +5106,13 @@ mob
 						Z.Cooldown()
 					else
 						Z.Cooldown(p = src)
+			spawn() for(var/mob/m in view(10, src))
+				if(m.CheckSpecial("Sharingan"))
+					// Signature-copy rework: copy only Signatures, only while the viewer's
+					// Copy Signature window is open (TrySharinganCopy, in rinneganBuff.dm).
+					if(src.client && m.client && m.client.address == src.client.address)
+						continue
+					m.TrySharinganCopy(Z)
 			if(Z.Copyable)
 				spawn() for(var/mob/m in view(40, src))
 					if(m.CheckSpecial("A - The Almighty"))
@@ -5121,28 +5128,6 @@ mob
 							copiedSkill.Copied = TRUE
 							copiedSkill.copiedBy = "The Almighty"
 							m << "You understand the nature of the [Z] technique you've just viewed."
-				spawn() for(var/mob/m in view(10, src))
-					if(m.CheckSpecial("Sharingan"))
-						var/copy = Z.Copyable
-						var/copyLevel = getSharCopyLevel(m.SagaLevel)
-						if(Z.NewCopyable)
-							copy = Z.NewCopyable
-						else
-							copy = Z.Copyable
-						if(glob.SHAR_COPY_EQUAL_OR_LOWER)
-							if(copyLevel < copy)
-								continue
-						else
-							if(copyLevel <= copy)
-								continue
-						if(m.client&&m.client.address==src.client.address)
-							continue
-						if(!locate(Z.type, m))
-							var/obj/Skills/copiedSkill = new Z.type
-							m.AddSkill(copiedSkill)
-							copiedSkill.Copied = TRUE
-							copiedSkill.copiedBy = "Sharingan"
-							m << "Your Sharingan analyzes and stores the [Z] technique you've just viewed."
 				spawn() for(var/mob/m in view(2, src))
 					for(var/obj/Items/Wearables/Guardian/Belt_of_Truth/W in m.contents)
 						if(findtext(W.suffix, "*Equipped*"))

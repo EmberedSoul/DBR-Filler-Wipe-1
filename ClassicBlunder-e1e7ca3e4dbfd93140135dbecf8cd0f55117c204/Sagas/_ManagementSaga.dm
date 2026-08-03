@@ -1308,14 +1308,37 @@ mob
 
 				if("Sharingan")
 					if(src.SagaLevel==2)
-						src<<"Your Sharingan's total recall allows you to master common techniques near instantly."
+						src<<"Your Sharingan's total recall lets you copy the signature techniques of others -- use Copy Signature while your eye is active, and Forget Signature to release what you've stored."
+						if(!locate(/obj/Skills/Utility/Copy_Signature, src))
+							src.AddSkill(new/obj/Skills/Utility/Copy_Signature)
+						if(!src.SharinganCopyMax) src.SharinganCopyMax=2
 					if(src.SagaLevel==4)
 						if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Mangekyou_Sharingan, src))
 							src.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Mangekyou_Sharingan)
 							src << "Your sharingan has matured into a Mangekyou Sharingan!"
-						var/Choice=input(src, "What kind of emotion made it mature into that form?") in list("Resolve", "Sacrifice", "Hatred")
-						if(Choice)
-							src.SharinganEvolution=Choice
+						var/Path=input(src, "What path does your awakened eye walk?", "Mangekyou Sharingan") in list("Avenging Fury", "Master of Illusions", "War Legend", "Copy-Ninja")
+						switch(Path)
+							if("Avenging Fury")
+								src.SharinganEvolution="Hatred"
+								src.SharinganCopyMax=2
+								if(!locate(/obj/Skills/AutoHit/Chidori, src))
+									src.AddSkill(new/obj/Skills/AutoHit/Chidori)
+								if(!locate(/obj/Skills/AutoHit/Kirin, src))
+									src.AddSkill(new/obj/Skills/AutoHit/Kirin)
+								src << "Vengeance sharpens your eye -- you master Chidori and can call down Kirin, and your blows carry pure, wounding force."
+							if("Master of Illusions")
+								src.SharinganEvolution="Sacrifice"
+								src.SharinganCopyMax=2
+								src.StartCrowVisions()
+								src << "Your eye drowns the world in illusion -- Tsukuyomi is yours, your evasion sharpens, and crows scatter to shield you."
+							if("War Legend")
+								src.SharinganEvolution="Resolve"
+								src.SharinganCopyMax=2
+								src << "You become a legend of war -- your Susanoo answers early and unbroken, and you stand as an immovable object."
+							if("Copy-Ninja")
+								src.SharinganEvolution="CopyNinja"
+								src.SharinganCopyMax=4
+								src << "You walk the copy-ninja's path -- your Sharingan can hold FOUR stolen signatures at once."
 						if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Susanoo, src))
 							src.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Susanoo)
 							src << "You can manifest a ghastly armor to protect and augment your attacks!"

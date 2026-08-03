@@ -4348,6 +4348,7 @@ NEW VARIABLES
 							passives = list("Maki" = 1, "PUSpike" = 10, "Flow" = 1)
 							src.Instinct=0
 							src.Flow=1
+							src.FatigueDrain=0   // base Sharingan tomoe cost nothing; only Mangekyou drains
 							AngerPoint = 15
 							ActiveMessage="is filled with cold rage as their eyes turn red and one tomoe appears in their iris!"
 						if(2)
@@ -4357,7 +4358,7 @@ NEW VARIABLES
 							passives = list("Maki" = 1, "PUSpike" = 20, "Flow" = 1, "Instinct" = 1)
 							src.Instinct=1
 							src.Flow=1
-							src.FatigueDrain=0.05
+							src.FatigueDrain=0
 							PUSpike=20
 							AngerPoint = 20
 							ActiveMessage="is filled with cold rage as their eyes turn red and two tomoe appear in their iris!"
@@ -9664,10 +9665,13 @@ NEW VARIABLES
 					switch(usr.SharinganEvolution)
 						if("Sacrifice")
 							src.BuffTechniques=list("/obj/Skills/AutoHit/Tsukiyomi","/obj/Skills/AutoHit/Amaterasu", "/obj/Skills/AutoHit/Sharingan_Genjutsu")
+							passives["Deflection"] = 2   // Master of Illusions: additional pure dodge
+							usr.StartCrowVisions()       // and the periodic crow-illusion decoys
 						if("Hatred")
 							src.BuffTechniques=list("/obj/Skills/AutoHit/Amaterasu2","/obj/Skills/Buffs/SlotlessBuffs/Autonomous/Kagutsuchi", "/obj/Skills/AutoHit/Sharingan_Genjutsu")
 							passives["Instinct"] = 1
 							src.Instinct=1
+							passives["PureDamage"] = 2   // Avenging Fury: additional pure damage
 						if("Resolve")
 							BuffTechniques = list("/obj/Skills/AutoHit/Sharingan_Genjutsu")
 							passives = list("BuffMastery" = 1 + usr.SagaLevel/2, "Deflection" = 1 + usr.SagaLevel/4, "Flow" = 1, "Instinct" = 1, "FluidForm" = 1, "Godspeed" = usr.SagaLevel/4,
@@ -9729,12 +9733,15 @@ NEW VARIABLES
 					FatigueCost = 6 - (usr.SagaLevel-4)
 					switch(usr.SharinganEvolution)
 						if("Resolve")
+							// War Legend: heavier pure reduction, guaranteed hits (PureHit), and the
+							// "Immovable Legend" identity -- can't be moved, and reflects a slice of damage.
 							passives = list("NoDodge" = 0, "GiantForm" = 1,\
-							"HybridStrike" = 1, "SweepingStrike" = 1, "Flow" = -1, "Instinct" = -1, "PureDamage" = 2, "PureReduction" = 2)
+							"HybridStrike" = 1, "SweepingStrike" = 1, "Flow" = -1, "Instinct" = -1, "PureDamage" = 2, "PureReduction" = 3, "The Immovable Object" = 1, "Reversal" = 0.2)
 							VaizardHealth += 2 * (usr.SagaLevel-3)
+							src.NoMiss = 1
 							if(usr.SagaLevel>=6)
 								passives = list("NoDodge" = 0, "GiantForm" = 1,\
-								"HybridStrike" = 1, "SweepingStrike" = 1, "Flow" = -1, "Instinct" = -1, "PureDamage" = 2, "PureReduction" = 2,"Skimming"=1)
+								"HybridStrike" = 1, "SweepingStrike" = 1, "Flow" = -1, "Instinct" = -1, "PureDamage" = 2, "PureReduction" = 3, "The Immovable Object" = 1, "Reversal" = 0.3,"Skimming"=1)
 					if(usr.SagaLevel>=5)
 						DefMult = 0.8
 						src.ActiveMessage="conjures a partially humanoid figure around them!"
@@ -12998,29 +13005,14 @@ mob
 						src.StyleBuff.Trigger(src, Override=1)
 						return
 
+				spawn() for(var/mob/m in view(10, src))
+					if(m.CheckSpecial("Sharingan"))
+						// Signature-copy rework: copy only Signatures, only while the viewer's
+						// Copy Signature window is open (TrySharinganCopy, in rinneganBuff.dm).
+						if(src.client && m.client && m.client.address == src.client.address)
+							continue
+						m.TrySharinganCopy(B)
 				if(B.Copyable)
-					spawn() for(var/mob/m in view(10, src))
-						if(m.CheckSpecial("Sharingan"))
-							var/copy = B.Copyable
-							var/copyLevel = getSharCopyLevel(m.SagaLevel)
-							if(m.client&&m.client.address==src.client.address)
-								continue
-							if(B.NewCopyable)
-								copy = B.NewCopyable
-							else
-								copy = B.Copyable
-							if(glob.SHAR_COPY_EQUAL_OR_LOWER)
-								if(copyLevel < copy)
-									continue
-							else
-								if(copyLevel <= copy)
-									continue
-							if(!locate(B.type, m))
-								var/obj/Skills/copiedSkill = new B.type
-								m.AddSkill(copiedSkill)
-								copiedSkill.Copied = TRUE
-								copiedSkill.copiedBy = "Sharingan"
-								m << "Your Sharingan analyzes and stores the [B.StyleActive] style you've just viewed."
 					spawn()
 						for(var/obj/Items/Tech/Security_Camera/SC in view(10, src))
 							if(IsList(B.PreRequisite))

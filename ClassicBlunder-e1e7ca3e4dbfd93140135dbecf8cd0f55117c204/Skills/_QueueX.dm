@@ -1504,6 +1504,13 @@ mob
 					src.Oxygen-=BreathCost/8
 				if(src.Oxygen<=0)
 					src.Oxygen=0
+			spawn() for(var/mob/m in view(10, src))
+				if(m.CheckSpecial("Sharingan"))
+					// Signature-copy rework: copy only Signatures, only while the viewer's
+					// Copy Signature window is open (TrySharinganCopy, in rinneganBuff.dm).
+					if(src.client && m.client && m.client.address == src.client.address)
+						continue
+					m.TrySharinganCopy(Q)
 			if(Q.Copyable)
 				spawn() for(var/mob/m in view(40, src))
 					if(m.CheckSpecial("A - The Almighty"))
@@ -1519,28 +1526,6 @@ mob
 							copiedSkill.Copied = TRUE
 							copiedSkill.copiedBy = "The Almighty"
 							m << "You understand the nature of the [Q] technique you've just viewed."
-				spawn() for(var/mob/m in view(10, src))
-					if(m.CheckSpecial("Sharingan"))
-						var/copy = Q.Copyable
-						var/copyLevel = getSharCopyLevel(m.SagaLevel)
-						if(Q.NewCopyable)
-							copy = Q.NewCopyable
-						else
-							copy = Q.Copyable
-						if(glob.SHAR_COPY_EQUAL_OR_LOWER)
-							if(copyLevel < copy)
-								continue
-						else
-							if(copyLevel <= copy)
-								continue
-						if(m.client&&m.client.address==src.client.address)
-							continue
-						if(!locate(Q.type, m))
-							var/obj/Skills/copiedSkill = new Q.type
-							m.AddSkill(copiedSkill)
-							copiedSkill.Copied = TRUE
-							copiedSkill.copiedBy = "Sharingan"
-							m << "Your Sharingan analyzes and stores the [Q] technique you've just viewed."
 				spawn()
 					for(var/obj/Items/Tech/Security_Camera/SC in view(10, src))
 						if(IsList(Q.PreRequisite))
