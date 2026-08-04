@@ -17,13 +17,13 @@ transformation
 			strengthadd = 0.6
 			forceadd = 0.6
 			mastery_boons(mob/user)
-				if(user.Potential>=37&&mastery<25)
+				if(user.Potential>=30&&mastery<25)
 					mastery=25
-				if(user.Potential>=39&&mastery<50)
+				if(user.Potential>=35&&mastery<50)
 					mastery=50
-				if(user.Potential>=41&&mastery<75)
+				if(user.Potential>=40&&mastery<75)
 					mastery=75
-				if(user.Potential>=43&&mastery<100)
+				if(user.Potential>=45&&mastery<100)
 					mastery=100
 				var/MasteryBoost=round(mastery/25, 1)
 				passives = list("CalmAnger"=1, "Instinct" = 1+(MasteryBoost/4), "Flow" = 1+(MasteryBoost/4), "Flicker" = 1+(MasteryBoost/4), "Pursuer" = 2,  "PureDamage" = 3+(MasteryBoost/2), "PureReduction" = -2+MasteryBoost,  "HolyMod" = 1+MasteryBoost, "SaiyanPower"=1, "SaiyanPower1"=0.8)

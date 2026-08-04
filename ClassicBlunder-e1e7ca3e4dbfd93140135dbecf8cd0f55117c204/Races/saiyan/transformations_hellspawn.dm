@@ -17,29 +17,29 @@ transformation
 			strengthadd = 0.3
 			forceadd = 0.3
 			mastery_boons(mob/user)
-				if(user.Potential>=37&&mastery<25)
+				if(user.Potential>=30&&mastery<25)
 					mastery=25
-				if(user.Potential>=39&&mastery<50)
+				if(user.Potential>=35&&mastery<50)
 					mastery=50
-				if(user.Potential>=41&&mastery<75)
+				if(user.Potential>=40&&mastery<75)
 					mastery=75
-				if(user.Potential>=43&&mastery<100)
+				if(user.Potential>=45&&mastery<100)
 					mastery=100
 				var/MasteryBoost=round(mastery/25, 1)
 				passives = list("Instinct" = 1+(MasteryBoost/4), "Flow" = 1+(MasteryBoost/4), "Flicker" = 1+(MasteryBoost/4), "Pursuer" = 2,  "PureDamage" = 3+(MasteryBoost/2), "PureReduction" = -2+MasteryBoost, "SaiyanPower"=1, "SaiyanPower1"=0.8)
-				if(user.Potential>=27)
+				if(user.Potential>=35)
 					if(!locate(/obj/Skills/Buffs/SpecialBuffs/SuperSaiyanGrade2, user)&&user.isRace(SAIYAN))
 						user.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/SuperSaiyanGrade2)
 						user.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/SuperSaiyanTypeX)
 						user << "You can draw out greater power from your mastery over super Saiyan - Grade 2 unlocked!"
-				if(user.Potential>=30)
+				if(user.Potential>=40)
 					if(!locate(/obj/Skills/Buffs/SpecialBuffs/SuperSaiyanGrade3, user)&&user.isRace(SAIYAN))
 						user.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/SuperSaiyanGrade3)
 						user.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/SuperSaiyanTypeY)
 						user << "You can strain past the limits of your Super Saiyan form! Grade 3 Unlocked!"
 				if(mastery >= 100)
 					passives = list("Instinct" = 1+(MasteryBoost/2), "Flow" = 1+(MasteryBoost/2), "Flicker" = 1+(MasteryBoost/2), "Pursuer" = 2,  "PureDamage" = 3+(MasteryBoost/2), "PureReduction" = -2+MasteryBoost, "SaiyanPower"=1, "SaiyanPower1"=1.75)
-				if(user.Potential>=35)
+				if(user.Potential>=45)
 					if(user.race.ascensions[1].choiceSelected == /ascension/sub_ascension/saiyan/zeal)
 						if(!locate(/obj/Skills/Buffs/SpecialBuffs/SaiyanFervor, user))
 							user.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/SaiyanFervor)
