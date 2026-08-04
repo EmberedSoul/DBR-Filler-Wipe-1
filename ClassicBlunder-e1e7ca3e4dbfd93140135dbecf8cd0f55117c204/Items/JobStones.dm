@@ -176,17 +176,17 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		JobLabel = "Samurai"
 		ActiveMessage = "attunes to a Samurai Job Stone, drawing a gleaming blade in a single flash of steel!"
 		OffMessage = "sheathes the Samurai blade, the attunement fading with a soft click..."
-		JobStats = list("Strength" = 10, "Endurance" = 1, "Force" = 1, "Speed" = 9, "Offense" = 10, "Defense" = 0.75, \
+		JobStats = list("Strength" = 10, "Endurance" = 0.5, "Force" = 1, "Speed" = 9, "Offense" = 10, "Defense" = 0.5, \
 			"Power" = 1.75, "Anger" = 1.5, "Intellect" = 1, "Imagination" = 1)
-		passives = list("AttackSpeed" = 3, "SwordDamage" = 3, "PureReduction" = -5)
+		passives = list("AttackSpeed" = 1, "SwordDamage" = 2, "PureReduction" = -5)
 		BuffTechniques = list("/obj/Skills/AutoHit/Moonlight_Dash", "/obj/Skills/AutoHit/Heavenly_Quake")
 		// Conjured Legendary light blade with a Chaos edge. SwordAscension +
 		// SwordUnbreakable make it ascended and shatterproof (Legendary-tier); the
 		// stone's Customize verb can override the icon/name (see Job_Stone/Samurai).
 		MakesSword = 1
 		SwordClass = "Light"
-		SwordElement = "Chaos"
-		SwordAscension = 5
+		SwordElement = "Fire"
+		SwordAscension = 3
 		SwordUnbreakable = 1
 		KillSword = 1
 		SwordName = "Samurai Blade"
@@ -204,13 +204,13 @@ obj/Skills/Buffs/SpecialBuffs/Job_Attunement
 		OffMessage = "lets the Dark Knight attunement fade, the blade receding from their soul..."
 		JobStats = list("Strength" = 8, "Endurance" = 8, "Force" = 1, "Speed" = 1, "Offense" = 2, "Defense" = 8, \
 			"Power" = 1.5, "Anger" = 1.5,"Intellect" = 1, "Imagination" = 1)
-		passives = list("LifeSteal" = 25, "CallousedHands" = 0.2,"PureReduction" = 2)
+		passives = list("LifeSteal" = 20, "CallousedHands" = 0.1,"PureReduction" = 2)
 		BuffTechniques = list("/obj/Skills/AutoHit/Abyssal_Cleave", "/obj/Skills/AutoHit/Dread_Harbinger")
 		// Conjured Legendary heavy blade with a Void edge (shatterproof, ascended).
 		MakesSword = 1
 		SwordClass = "Heavy"
-		SwordElement = "Void"
-		SwordAscension = 5
+		SwordElement = "Earth"
+		SwordAscension = 3
 		SwordUnbreakable = 1
 		KillSword = 1
 		SwordName = "Death Knight Sword"

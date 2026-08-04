@@ -129,9 +129,9 @@
 
 	// Key binding check also gates verb-list clicks on unbound skills (maybe?)
 	var/key = findHeldSkillKey(C, Z)
-//	if(!key)
-//		src << "<font color='red'>Bind [Z.name] to a key first. (Relogging should fix this. If you cannot relog, wait a few minutes and try again.)</font>"
-//		return
+	if(!key)
+		src << "<font color='red'>Bind [Z.name] to a key first. (Relogging should fix this. If you cannot relog, wait a few minutes and try again.)</font>"
+		return
 
 	// re-entry guard
 	if(held_skill_last_release && world.time - held_skill_last_release < 5)

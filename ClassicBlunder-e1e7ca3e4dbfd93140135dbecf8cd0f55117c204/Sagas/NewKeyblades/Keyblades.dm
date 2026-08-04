@@ -599,7 +599,7 @@ proc/
 				KeybladePassives=list("PULock" = 1, "AbyssMod" = 1+Boost,"EnergyGeneration" = 3+Boost, "Momentum" = 2,"SpiritFlow" =1+round(Boost/2))
 				return KeybladePassives
 			if("Fenrir")
-				KeybladePassives=list("PULock" = 1, "Steady" = 3, "Brutalize" = Boost/1.5, "Extend" = 1, "Conductor" = -50, "DemonicDurability" = Boost, "AngerAdaptiveForce" = 0.2*Boost)
+				KeybladePassives=list("PULock" = 1, "Steady" = 2, "Brutalize" = Boost/3, "Extend" = 1, "Conductor" = -50, "DemonicDurability" = Boost, "AngerAdaptiveForce" = 0.15*Boost)
 				return KeybladePassives
 			if("No Name")
 				KeybladePassives=list("PULock" = 1, "HardStyle" = 1)
