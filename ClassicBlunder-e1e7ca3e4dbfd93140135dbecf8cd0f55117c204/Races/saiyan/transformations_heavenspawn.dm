@@ -27,17 +27,17 @@ transformation
 					mastery=100
 				var/MasteryBoost=round(mastery/25, 1)
 				passives = list("CalmAnger"=1, "Instinct" = 1+(MasteryBoost/4), "Flow" = 1+(MasteryBoost/4), "Flicker" = 1+(MasteryBoost/4), "Pursuer" = 2,  "PureDamage" = 3+(MasteryBoost/2), "PureReduction" = -2+MasteryBoost,  "HolyMod" = 1+MasteryBoost, "SaiyanPower"=1, "SaiyanPower1"=0.8)
-				if(user.Potential>=27)
+				if(user.Potential>=35)
 					if(!locate(/obj/Skills/Buffs/SpecialBuffs/SuperSaiyanGrade2, user)&&user.isRace(SAIYAN))
 						user.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/SuperSaiyanGrade2)
 						user << "You can draw out greater power from your mastery over super Saiyan - Grade 2 unlocked!"
-				if(user.Potential>=30)
+				if(user.Potential>=40)
 					if(!locate(/obj/Skills/Buffs/SpecialBuffs/SuperSaiyanGrade3, user)&&user.isRace(SAIYAN))
 						user.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/SuperSaiyanGrade3)
 						user << "You can strain past the limits of your Super Saiyan form! Grade 3 Unlocked!"
 				if(mastery >= 100)
 					passives = list("CalmAnger"=1, "Instinct" = 1+(MasteryBoost/2), "Flow" = 1+(MasteryBoost/2), "Flicker" = 1+(MasteryBoost/2), "Pursuer" = 2,  "PureDamage" = 3+(MasteryBoost/2), "PureReduction" = -2+MasteryBoost, "HolyMod" = 1+MasteryBoost, "SaiyanPower"=1, "SaiyanPower1"=1.75)
-				if(user.Potential>=35)
+				if(user.Potential>=45)
 					if(!locate(/obj/Skills/Buffs/SpecialBuffs/SaiyanPurity, user))
 						user.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/SaiyanPurity)
 						user << "You have unlocked a new Signature buff! (Saiyan Purity)"

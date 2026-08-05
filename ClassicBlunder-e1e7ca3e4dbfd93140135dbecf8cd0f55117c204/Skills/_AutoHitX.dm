@@ -4526,8 +4526,8 @@ obj
 				Rush=3
 				ControlledRush=1
 				IgnoreAlreadyHit=1
-				// CanBeBlocked=0
-				// CanBeDodged=0
+				CanBeBlocked=0
+				CanBeDodged=0
 				ComboMaster=1
 				StyleNeeded="Ansatsuken"
 				proc/alter(mob/player)
@@ -4536,7 +4536,7 @@ obj
 					var/path = player.AnsatsukenPath == "Tatsumaki" ? 1 : 0
 					var/rounds = 3
 					var/cooldown = 40
-					var/launch = 0
+					var/launch = 1 + (0.5 * player.SagaLevel)
 					Size = 2
 					if(path)
 						cooldown = 30
@@ -4550,8 +4550,6 @@ obj
 				verb/Tatsumaki()
 					set category="Skills"
 					alter(usr)
-					ChargeTech = 1
-					ChargeTime=0.75
 					usr.Activate(src)
 			EX_Tatsumaki
 				UnarmedOnly=1
@@ -4566,21 +4564,19 @@ obj
 				Rush=3
 				ControlledRush=3
 				IgnoreAlreadyHit=1
-				// CanBeBlocked=0
-				// CanBeDodged=0
+				CanBeBlocked=0
+				CanBeDodged=0
 				ComboMaster=1
-				ChargeTech = 1
-				ChargeTime=0.5
 				ActiveMessage="rises high in the air with a terrifying whirlwind of kicks!!"
 				StyleNeeded="Ansatsuken"
 				adjust(mob/p)
 					if(p.AnsatsukenPath == "Tatsumaki")
-						Launcher = 3
+						Launcher = 5
 						Rounds = 8
 						DamageMult = 3 + (1.5 * p.SagaLevel)
 						Cooldown = 150 - (15 * p.SagaLevel)
 					else
-						Launcher = 0
+						Launcher = 2
 						Rounds = 6
 						DamageMult = 2 + (1 * p.SagaLevel)
 						Cooldown = 150 - (15 * p.SagaLevel)
@@ -6961,7 +6957,7 @@ obj
 				var/list/specDmgTypes = list()
 				if(!skipPureDamage && Owner && FromSkill)
 					var/holy = 0
-					if(FromSkill.HolyMod) 
+					if(FromSkill.HolyMod)
 						holy += FromSkill.HolyMod
 					if(FromSkill.Sanctify)
 						holy += FromSkill.Sanctify * glob.SANCTIFY_EFFECTIVENESS
