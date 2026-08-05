@@ -745,6 +745,25 @@ var/global/list/pokemon_icon_state_cache = null
 	// "Pokemon: Stop" toggle. While set, this Pokemon refuses to acquire ANY target
 	// (blocked in SetTarget), so it won't aggro until the trainer toggles Stop off.
 	var/tmp/pokemon_hold = 0
+	// "Pokemon: Attack Target" order. While set, the Pokemon is re-locked onto this
+	// target every tick (see Update) so it keeps attacking until the target is down or
+	// the trainer issues Stop / Follow — instead of lapsing back to follow after one hit.
+	var/tmp/mob/pokemon_attack_order = null
+
+	// Keep an outstanding attack order enforced. The base AI (with ai_follow /
+	// ai_focus_owner_target set) otherwise slips back into following the trainer after a
+	// single strike; re-asserting the target + Chase state here makes "Attack Target"
+	// mean "attack until told to stop".
+	Update()
+		set waitfor = 0
+		if(pokemon_attack_order)
+			if(!ismob(pokemon_attack_order) || !pokemon_attack_order.loc || pokemon_attack_order.KO)
+				pokemon_attack_order = null            // target is gone or downed — order fulfilled
+			else if(!pokemon_hold)
+				if(Target != pokemon_attack_order)
+					SetTarget(pokemon_attack_order)
+				ai_state = "Chase"
+		..()
 
 	// Tear down any assembled multi-tile pieces. Called before (re-)applying a
 	// species so evolutions don't leave the previous form's tiles hanging around.
@@ -954,11 +973,12 @@ var/global/list/pokemon_icon_state_cache = null
 		return
 	var/count = 0
 	for(var/mob/Player/AI/Pokemon/p in ai_followers)
-		p.pokemon_hold = 0        // ordering an attack ends "stand down"
+		p.pokemon_hold = 0            // ordering an attack ends "stand down"
+		p.pokemon_attack_order = Target // stay locked on until it's down or Stop is pressed
 		p.SetTarget(Target)
 		p.Chase()
 		count++
-	src << (count ? "Your Pokemon move to attack [Target]!" : "You have no Pokemon out.")
+	src << (count ? "Your Pokemon move to attack [Target] — and won't let up until it's down or you order them to Stop!" : "You have no Pokemon out.")
 
 /mob/PokemonOwner/verb/Pokemon_Stop()
 	set category = "Pokemon"
@@ -969,6 +989,7 @@ var/global/list/pokemon_icon_state_cache = null
 		p.pokemon_hold = !p.pokemon_hold
 		newstate = p.pokemon_hold
 		if(p.pokemon_hold)
+			p.pokemon_attack_order = null   // Stop cancels any standing attack order
 			p.RemoveTarget()
 			p.Idle()
 	if(isnull(newstate))
@@ -982,6 +1003,7 @@ var/global/list/pokemon_icon_state_cache = null
 	var/newstate = null
 	for(var/mob/Player/AI/Pokemon/p in ai_followers)
 		p.ai_follow = !p.ai_follow
+		p.pokemon_attack_order = null   // Follow / Stay cancels any standing attack order
 		p.RemoveTarget()
 		p.Idle()
 		newstate = p.ai_follow
