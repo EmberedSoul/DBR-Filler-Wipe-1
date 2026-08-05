@@ -9,9 +9,9 @@ mob/var/tmp/LeapAttackSweetSpotActive = FALSE
 		if(altered) return
 		var/SL = p.SagaLevel
 		passives = list(
-			"PureDamage"     = 1 + SL,
-			"PureReduction"  = 1 + SL,
-			"Persistence"    = 1 + SL,
+			"PureDamage"     = 1 + (SL/2),
+			"PureReduction"  = 1 + (SL/2),
+			"Persistence"    = 1 + (SL/2),
 			"NoDodge"        = 1,
 			"KillerInstinct" = 0.15 + (0.1 * SL),
 			"Instinct"       = 1 + SL,
@@ -77,12 +77,12 @@ mob/var/tmp/LeapAttackSweetSpotActive = FALSE
 		if(altered) return
 		var/SL = p.SagaLevel
 		passives = list(
-			"PureDamage"    = 1 + SL,
-			"PureReduction" = 1 + SL,
+			"PureDamage"    = 1 + (SL/2),
+			"PureReduction" = 1 + (SL/2),
 			"Persistence"   = 1 + (SL/2),
 			"BulletKill"    = 1,
 			"NoDodge"       = 1,
-			"Brutalize"     = 0.5 + (0.5 * SL),
+			"Brutalize"     = 0.5 + (0.25 * SL),
 			"Zornhau"       = 1 + SL,
 			"Inevitable"    = 1 + SL,
 			"Instinct"      = 1 + SL,
@@ -91,9 +91,9 @@ mob/var/tmp/LeapAttackSweetSpotActive = FALSE
 		)
 		if(SL < 5)
 			passives["ManaLeak"] = 2
-		StrMult = 1.35 + (0.15 * SL)
-		EndMult = 1.35 + (0.15 * SL)
-		OffMult = 1.35 + (0.15 * SL)
+		StrMult = 1.3 + (0.1 * SL)
+		EndMult = 1.3 + (0.1 * SL)
+		OffMult = 1.3 + (0.1 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn
@@ -226,24 +226,24 @@ mob/var/tmp/LeapAttackSweetSpotActive = FALSE
 		if(altered) return
 		var/SL = p.SagaLevel
 		passives = list(
-			"Duelist"           = 0.5 + (SL * 1.5),
+			"Duelist"           = 0.5 + (SL/2),
 			"Persistence"       = 3 + (SL/2),
 			"PridefulRage"      = 1,
 			"BulletKill"        = 1,
 			"NoDodge"           = 1,
 			"Half-Sword"        = 1 + SL,
 			"Instinct"          = 1 + SL,
-			"DemonicDurability" = 1 + SL,
+			"DemonicDurability" = 1 + (SL/2),
 			"HellRisen"         = 0.25 + (0.25 * SL),
-			"Juggernaut"        = 1 + SL,
+			"Juggernaut"        = 1 + (SL/2),
 			"UnderDog"          = 1 + (SL*2),
 			"ZenkaiPower"       = 0.5
 		)
 		if(SL < 7)
 			passives["BleedHit"] = 2
-		StrMult = 1.5 + (0.15 * SL)
-		EndMult = 1.5 + (0.15 * SL)
-		OffMult = 1.5 + (0.15 * SL)
+		StrMult = 1.5 + (0.1 * SL)
+		EndMult = 1.5 + (0.1 * SL)
+		OffMult = 1.5 + (0.1 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn
