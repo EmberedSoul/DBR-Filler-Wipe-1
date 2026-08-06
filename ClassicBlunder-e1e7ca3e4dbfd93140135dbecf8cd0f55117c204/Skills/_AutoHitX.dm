@@ -1696,6 +1696,7 @@ obj
 				SpecialAttack=1
 				Rush=5
 				ControlledRush=1
+				RushNoFlight=1
 				Instinct=1
 				Icon='Glowing Electricity.dmi'
 				ActiveMessage="is covered in lightning as they charge forward!"
