@@ -3405,7 +3405,7 @@ obj/Skills/Utility
 					ModChoices.Add("Biological Cybernetics")
 			if(M.BioAndroid||M.SuperAndroid)
 				ModChoices.Remove("Biological Cybernetics")
-			if(M.CyberneticMainframe||M.isRace(ANDROID)&&M.Potential<30)
+			if(M.CyberneticMainframe||M.isRace(ANDROID)&&M.Potential<30 ||M.BioAndroid)
 				ModChoices.Remove("Cybernetic Mainframe")
 
 			ModChoice=input(usr, "What modification would you like to install?", "Cybernetic Augmentation") in ModChoices
