@@ -54,7 +54,7 @@ mob/var/tmp/list/fainted_pokemon = list()
 			wild_species = normal_names.Copy()
 			spawn_desc = "any Non-Legendary (no starters)"
 		if("By Region")
-			var/region = input(src, "Which region should this spot draw from?", "Region") as null|anything in list("Kanto", "Johto", "Hoenn")
+			var/region = input(src, "Which region should this spot draw from?", "Region") as null|anything in list("Kanto", "Johto", "Hoenn", "Sinnoh")
 			if(region)
 				for(var/k in normal_names)
 					var/datum/pokemon_species/sp = pokemon_database[k]
@@ -91,11 +91,11 @@ mob/var/tmp/list/fainted_pokemon = list()
 		if("Pick specific")
 			// Browse a narrowed list (by region/type/pool) and add species one at a time.
 			while(TRUE)
-				var/pool = input(src, "Browse which list? (Done to finish) — Chosen: [wild_species.len ? jointext(wild_species, ", ") : "none"]", "Pick Species") in list("Kanto", "Johto", "Hoenn", "By Type", "Legendary", "Starters", "Done")
+				var/pool = input(src, "Browse which list? (Done to finish) — Chosen: [wild_species.len ? jointext(wild_species, ", ") : "none"]", "Pick Species") in list("Kanto", "Johto", "Hoenn", "Sinnoh", "By Type", "Legendary", "Starters", "Done")
 				if(pool == "Done") break
 				var/list/src_list = list()
 				switch(pool)
-					if("Kanto", "Johto", "Hoenn")
+					if("Kanto", "Johto", "Hoenn", "Sinnoh")
 						for(var/k in normal_names)
 							var/datum/pokemon_species/sp = pokemon_database[k]
 							if(sp && sp.region == pool) src_list += k
@@ -278,6 +278,10 @@ mob/var/tmp/list/fainted_pokemon = list()
 			if(!prev || wild.Potential > prev)
 				usr.pokemon_caught_potential[caught] = wild.Potential
 		usr.GivePokemonCommandVerbs() // grants the Pokemon command tab (Summon/Recall/...)
+		// Deoxys grants its Forme-shifting verb in the Pokemon tab.
+		if(caught == "Deoxys" && !locate(/obj/Skills/Utility/Deoxys_Form, usr))
+			usr.AddSkill(new/obj/Skills/Utility/Deoxys_Form)
+			usr << "<b>Deoxys' unstable DNA answers to you — \"Deoxys: Choose Form\" has been added to your Pokemon tab.</b>"
 		usr << "<b>Gotcha! [caught] was caught! ([usr.owned_pokemon.len]/[MAX_OWNED_POKEMON])</b>"
 		OMsg(usr, "[usr] captures a wild [caught]!")
 		del wild  // its Del() unregisters it from the spawner
@@ -341,6 +345,29 @@ mob/proc/SpawnPokemonAlly(datum/pokemon_species/s)
 	if(!sp) return
 	owned_pokemon -= sp
 	src << "You released [sp]. ([owned_pokemon.len]/[MAX_OWNED_POKEMON])"
+
+// --- Deoxys: Choose Form ---------------------------------------------------
+// Granted to the trainer when they capture Deoxys (see Capture_Pokemon). Shifts a
+// summoned Deoxys between its four Formes (stats + colour tint; Deoxys has no separate
+// form sprites in the sheet).
+/obj/Skills/Utility/Deoxys_Form
+	name = "Deoxys: Choose Form"
+	desc = "Shift your summoned Deoxys between its Normal, Attack, Defense and Speed Formes."
+	verb/Deoxys_Choose_Form()
+		set category = "Pokemon"
+		set name = "Deoxys: Choose Form"
+		var/mob/Player/AI/Pokemon/deo = null
+		for(var/mob/Player/AI/Pokemon/p in usr.ai_followers)
+			if(p.pkmn_species == "Deoxys" && p.ai_owner == usr)
+				deo = p
+				break
+		if(!deo)
+			usr << "You need Deoxys summoned to change its Forme."
+			return
+		var/form = input(usr, "Which Forme should Deoxys take?", "Deoxys Forme") as null|anything in list("Normal", "Attack", "Defense", "Speed")
+		if(!form) return
+		deo.ApplyDeoxysForm(form)
+		OMsg(usr, "[usr]'s Deoxys reshapes into its [form] Forme!")
 
 // --- Pokemon Enchantment: stone/item evolutions ----------------------------
 // Granted by learning the "Pokemon Enchantment" enchanting knowledge (see

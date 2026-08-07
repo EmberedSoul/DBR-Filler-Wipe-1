@@ -66,6 +66,23 @@ var/global/list/PokemonLegendarySkills = list(
 	"Lugia"    = "/obj/Skills/AutoHit/Aeroblast",
 	"Ho-Oh"    = "/obj/Skills/AutoHit/Rainbow_Inferno",
 	"Celebi"   = "/obj/Skills/AutoHit/Sacred_Grove",
+	// Hoenn legendaries
+	"Regirock"  = "/obj/Skills/AutoHit/Stone_Edge",
+	"Regice"    = "/obj/Skills/AutoHit/Ice_Age",
+	"Registeel" = "/obj/Skills/AutoHit/Metal_Breaker",
+	"Groudon"   = "/obj/Skills/AutoHit/Precipice_Blades",
+	"Kyogre"    = "/obj/Skills/Projectile/Origin_Pulse",
+	"Rayquaza"  = "/obj/Skills/AutoHit/Dragon_Ascent",
+	"Deoxys"    = "/obj/Skills/AutoHit/Psycho_Boost",
+	// Sinnoh legendaries
+	"Regigigas" = "/obj/Skills/AutoHit/Crush_Grip",
+	"Dialga"    = "/obj/Skills/AutoHit/Roar_Of_Time",
+	"Palkia"    = "/obj/Skills/AutoHit/Spacial_Rend",
+	"Giratina"  = "/obj/Skills/AutoHit/Shadow_Force",
+	"Heatran"   = "/obj/Skills/AutoHit/Magma_Storm",
+	"Darkrai"   = "/obj/Skills/AutoHit/Dark_Void",
+	"Cresselia" = "/obj/Skills/AutoHit/Lunar_Blessing",
+	"Arceus"    = "/obj/Skills/AutoHit/Divine_Judgment",
 	// Mythical
 	"Keldeo"   = "/obj/Skills/AutoHit/Secret_Sword")
 
@@ -913,3 +930,528 @@ var/global/list/PokemonLegendarySkills = list(
 		KenShockwave(user, icon = 'KenShockwave.dmi', Size = 3, Blend = 2, Time = 10)
 		KenShockwave(user, icon = 'Icons/Effects/SparkleBlue.dmi', Size = 3, Blend = 2, Time = 12)
 		KenShockwave(user, icon = 'Icons/Effects/SparkleFinal.dmi', Size = 2, Blend = 2, Time = 14)
+
+// ==========================================================================
+// HOENN & SINNOH LEGENDARY SIGNATURE MOVES
+// ==========================================================================
+
+// --- Groudon: Precipice Blades — molten spikes erupt in a ring, quaking the earth.
+/obj/Skills/AutoHit/Precipice_Blades
+	name = "Precipice Blades"
+	Area = "Circle"
+	Distance = 8
+	DamageMult = 22
+	StrOffense = 1
+	Scorching = 16
+	Shattering = 16
+	Quaking = 12
+	Launcher = 2
+	Stunner = 3
+	TurfShift = 'Icons/NSE/Map Stuff/DBR Revamp/Water and Special/LavaTile.dmi'
+	TurfShiftLayer = TURF_LAYER + 1
+	TurfShiftDuration = 0
+	TurfShiftDurationSpawn = 2
+	TurfShiftDurationDespawn = 8
+	HitSparkIcon = 'HellSSJ4AnimationRock.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 110
+	ActiveMessage = "roars as a ring of molten precipice blades erupts from the ground!"
+	verb/Precipice_Blades()
+		set category = "Skills"
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		// Several ground-shaking quakes as the earth splits open.
+		spawn()
+			for(var/n in 1 to 4)
+				user.Earthquake(6, -4, 4, -4, 4)
+				sleep(3)
+		KenShockwave(user, icon = 'HellSSJ4AnimationRock.dmi', Size = 5, Blend = 2, Time = 14)
+
+// --- Kyogre: Origin Pulse — a barrage of homing primordial beams that chill to the bone.
+// (A projectile, so it can't carry a stat-debuff buff; the massive speed loss comes from
+// heavy Slow + Freezing instead.)
+/obj/Skills/Projectile/Origin_Pulse
+	name = "Origin Pulse"
+	Distance = 100
+	DamageMult = 8
+	Blasts = 3
+	Homing = 1
+	LosesHoming = 10
+	Chilling = 18
+	Freezing = 14
+	ForRate = 1
+	Charge = 1
+	IconLock = 'BeamKHH.dmi'
+	IconSize = 1.5
+	ManaCost = 20
+	Cooldown = 120
+	ActiveMessage = "unleashes Origin Pulse -- a barrage of homing primordial beams!"
+	verb/Origin_Pulse()
+		set category = "Skills"
+		usr.UseProjectile(src)
+
+// --- Rayquaza: Dragon Ascent — ascends and dives, shrouding the impact in darkness
+// split by thunderstrikes. The highest raw damage of any Legendary move.
+/obj/Skills/AutoHit/Dragon_Ascent
+	name = "Dragon Ascent"
+	Area = "Around Target"
+	Distance = 14
+	DistanceAround = 5
+	DamageMult = 30
+	ForOffense = 1
+	Bolt = 2
+	Shocking = 12
+	Launcher = 3
+	Stunner = 3
+	MortalBlow = 1
+	Icon = 'Icons/Effects/SuperDarkness.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 10
+	HitSparkIcon = 'Hit Effect.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 130
+	ActiveMessage = "ascends into the heavens and dives in a devastating Dragon Ascent!"
+	verb/Dragon_Ascent()
+		set category = "Skills"
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		// A shroud of darkness falls over the impact, split by scattered thunderstrikes.
+		var/image/dark = image(icon = 'Icons/Effects/SuperDarkness.dmi', layer = MOB_LAYER + 3)
+		var/list/turf/shroud = list()
+		for(var/turf/t in range(4, user))
+			shroud += t
+			t.overlays += dark
+		spawn()
+			for(var/n in 1 to 6)
+				if(!shroud.len) break
+				var/turf/t = pick(shroud)
+				if(t)
+					var/obj/b = new /obj(t)
+					b.icon = 'Icons/Effects/LightningStrike.dmi'
+					b.layer = MOB_LAYER + 2
+					b.mouse_opacity = 0
+					b.density = 0
+					spawn(8)
+						if(b) del b
+				sleep(2)
+		spawn(45)
+			for(var/turf/t in shroud)
+				t.overlays -= dark
+
+// --- Deoxys: Psycho Boost — an all-out psychic overload.
+/obj/Skills/AutoHit/Psycho_Boost
+	name = "Psycho Boost"
+	Area = "Strike"
+	Distance = 14
+	DamageMult = 26
+	ForOffense = 1
+	Launcher = 2
+	Stunner = 3
+	MortalBlow = 1
+	Icon = 'SparkleViolet.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 8
+	HitSparkIcon = 'Hit Effect.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 110
+	ActiveMessage = "overloads reality with a devastating Psycho Boost!"
+	verb/Psycho_Boost()
+		set category = "Skills"
+		KenShockwave(usr, icon = 'SparkleViolet.dmi', Size = 4, Blend = 2, Time = 14)
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		KenShockwave(user, icon = 'SparkleViolet.dmi', Size = 4, Blend = 2, Time = 14)
+
+// --- Regirock: Stone Edge — a high-damage stone AoE that shatters guard and armor.
+/obj/Skills/AutoHit/Stone_Edge
+	name = "Stone Edge"
+	Area = "Circle"
+	Distance = 7
+	DamageMult = 18
+	StrOffense = 1
+	Shattering = 22
+	Launcher = 2
+	Stunner = 3
+	HitSparkIcon = 'HellSSJ4AnimationRock.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 90
+	ActiveMessage = "drives up a ring of jagged Stone Edges!"
+	verb/Stone_Edge()
+		set category = "Skills"
+		usr.Activate(src)
+
+// --- Regice: Ice Age — a freezing AoE that chills everything solid.
+/obj/Skills/AutoHit/Ice_Age
+	name = "Ice Age"
+	Area = "Circle"
+	Distance = 7
+	DamageMult = 16
+	ForOffense = 1
+	Chilling = 20
+	Freezing = 16
+	Shattering = 6
+	Launcher = 1
+	HitSparkIcon = 'IceBurst.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	ShockIcon = 'KenShockwave.dmi'
+	Shockwave = 4
+	Shockwaves = 2
+	PostShockwave = 1
+	Cooldown = 90
+	ActiveMessage = "blankets the field in an Ice Age!"
+	verb/Ice_Age()
+		set category = "Skills"
+		usr.Activate(src)
+
+// --- Registeel: Metal Breaker — a steel AoE built to break guards and weapons.
+/obj/Skills/AutoHit/Metal_Breaker
+	name = "Metal Breaker"
+	Area = "Circle"
+	Distance = 7
+	DamageMult = 17
+	StrOffense = 1
+	GuardBreak = 1
+	Crushing = 45          // shears through weapons and blocks (weapon-breaker)
+	Launcher = 2
+	Stunner = 3
+	HitSparkIcon = 'Slash - Zan.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 90
+	ActiveMessage = "slams down a Metal Breaker, shattering guard and steel alike!"
+	verb/Metal_Breaker()
+		set category = "Skills"
+		usr.Activate(src)
+
+// --- Regigigas: Crush Grip — seizes the foe, crushes them repeatedly, then hurls them away.
+/obj/Skills/AutoHit/Crush_Grip
+	name = "Crush Grip"
+	Area = "Strike"
+	Distance = 3
+	DamageMult = 8
+	StrOffense = 1
+	Grapple = 1
+	GrabMaster = 1
+	Rounds = 5             // crushes repeatedly while held
+	Crushing = 35
+	Stunner = 4
+	Launcher = 4           // launches / tosses them at the end
+	GrabTrigger = "/obj/Skills/Grapple/Toss"
+	HitSparkIcon = 'Hit Effect.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
+	Cooldown = 140
+	ActiveMessage = "seizes its foe in a Crush Grip and refuses to let go!"
+	verb/Crush_Grip()
+		set category = "Skills"
+		usr.Activate(src)
+
+// --- Dialga: Roar of Time — freezes time for everything nearby (Timestop-style).
+/obj/Skills/AutoHit/Roar_Of_Time
+	name = "Roar of Time"
+	Area = "Circle"
+	Distance = 8
+	DamageMult = 10
+	ForOffense = 1
+	Stunner = 5
+	Launcher = 1
+	Icon = 'Icons/Effects/Star.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 10
+	HitSparkIcon = 'Hit Effect.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	Cooldown = 200
+	ActiveMessage = "bellows a Roar of Time, and the world grinds to a halt!"
+	verb/Roar_Of_Time()
+		set category = "Skills"
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		// Freeze every non-ally nearby for a few seconds.
+		var/mob/owner_ref = null
+		if(istype(user, /mob/Player/AI/Pokemon))
+			var/mob/Player/AI/Pokemon/pu = user
+			owner_ref = pu.ai_owner
+		var/list/frozen = list()
+		for(var/mob/M in range(6, user))
+			if(M == user || M == owner_ref) continue
+			if(istype(M, /mob/Player/AI/Pokemon))
+				var/mob/Player/AI/Pokemon/pm = M
+				if(owner_ref && pm.ai_owner == owner_ref) continue
+			M.Frozen = 1
+			M.TimeFrozen = 1
+			frozen += M
+			if(M.client)
+				spawn() animate(M.client, color = list(0.3,0,0, 0,0.3,0, 0,0,0.4, 0,0,0), time = 5)
+		spawn(40)   // ~4 seconds
+			for(var/mob/M in frozen)
+				M.Frozen = 0
+				M.TimeFrozen = 0
+				if(M.client)
+					spawn() animate(M.client, color = null, time = 5)
+
+// --- Palkia: Spacial Rend — a stronger, more potent Graviga that scatters star-space.
+/obj/Skills/AutoHit/Spacial_Rend
+	name = "Spacial Rend"
+	Area = "Circle"
+	Distance = 9
+	DamageMult = 22
+	ForOffense = 1
+	GuardBreak = 1
+	Crippling = 6
+	Launcher = 2
+	Stunner = 3
+	MortalBlow = 1
+	TurfShift = 'Icons/Effects/Star.dmi'
+	TurfShiftLayer = MOB_LAYER + 1
+	TurfShiftDuration = 0
+	TurfShiftDurationSpawn = 3
+	TurfShiftDurationDespawn = 7
+	Icon = 'Icons/Effects/Star.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 8
+	HitSparkIcon = 'Slash - Zan.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 130
+	ActiveMessage = "tears open space itself with a Spacial Rend!"
+	verb/Spacial_Rend()
+		set category = "Skills"
+		KenShockwave(usr, icon = 'Icons/Effects/Star.dmi', Size = 4, Blend = 2, Time = 14)
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		KenShockwave(user, icon = 'Icons/Effects/Star.dmi', Size = 4, Blend = 2, Time = 14)
+
+// --- Giratina: Shadow Force — a swarm of black phantoms home into the foe, tearing away
+// their defenses, evasion and reduction.
+/obj/Skills/AutoHit/Shadow_Force
+	name = "Shadow Force"
+	Area = "Strike"
+	Distance = 16
+	DamageMult = 24
+	ForOffense = 1
+	Launcher = 3
+	Stunner = 4
+	MortalBlow = 1
+	CanBeDodged = 0
+	BuffAffected = "/obj/Skills/Buffs/SlotlessBuffs/Autonomous/PkmnDebuff/Shadow_Force"
+	HitSparkIcon = 'Hit Effect Dark.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 140
+	ActiveMessage = "vanishes into the shadows and strikes with Shadow Force!"
+	verb/Shadow_Force()
+		set category = "Skills"
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		if(!user.Target) return
+		var/mob/tgt = user.Target
+		var/phantom_icon = user.icon
+		var/phantom_state = user.icon_state
+		if(istype(user, /mob/Player/AI/Pokemon))
+			var/mob/Player/AI/Pokemon/pu = user
+			if(pu.body_sprite)
+				phantom_icon = pu.body_sprite.icon
+				phantom_state = pu.body_sprite.icon_state
+		for(var/n in 1 to 5)
+			var/turf/start = get_step(user, pick(NORTH,SOUTH,EAST,WEST,NORTHEAST,NORTHWEST,SOUTHEAST,SOUTHWEST))
+			if(!start) start = get_turf(user)
+			if(!start) continue
+			var/obj/phantom = new /obj(start)
+			phantom.icon = phantom_icon
+			phantom.icon_state = phantom_state
+			phantom.color = list(0.2,0,0, 0,0.2,0, 0,0,0.3, 0,0,0)   // black tint
+			phantom.alpha = 180
+			phantom.mouse_opacity = 0
+			phantom.density = 0
+			phantom.layer = MOB_LAYER + 1
+			spawn()
+				for(var/i in 1 to 14)
+					if(!phantom || !tgt || !tgt.loc) break
+					step_towards(phantom, tgt)
+					if(get_dist(phantom, tgt) <= 0) break
+					sleep(1)
+				if(phantom) del phantom
+
+/obj/Skills/Buffs/SlotlessBuffs/Autonomous/PkmnDebuff/Shadow_Force
+	DefMult = 0.6
+	EndMult = 0.6
+	passives = list("PureReduction" = -3, "Deflection" = -2)
+	ActiveMessage = "is wracked by spectral force -- their defense, reduction and evasion torn away!"
+	OffMessage = "shakes off the spectral corruption."
+
+// --- Heatran: Magma Storm — traps the foe in a searing vortex of molten steel that
+// leaves the ground glowing lava and shakes the earth as it collapses.
+/obj/Skills/AutoHit/Magma_Storm
+	name = "Magma Storm"
+	Area = "Circle"
+	Distance = 6
+	DamageMult = 22
+	ForOffense = 1
+	Scorching = 20
+	Crushing = 30          // the vortex ensnares and crushes
+	Stunner = 3
+	Launcher = 1
+	TurfShift = 'Icons/NSE/Map Stuff/DBR Revamp/Water and Special/LavaTile.dmi'
+	TurfShiftLayer = TURF_LAYER + 1
+	TurfShiftDuration = 0
+	TurfShiftDurationSpawn = 2
+	TurfShiftDurationDespawn = 10
+	Icon = 'Icons/Effects/Fire VFX5.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 8
+	HitSparkIcon = 'Icons/Effects/Fire VFX9.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 120
+	ActiveMessage = "traps its foe in a searing vortex of molten steel -- Magma Storm!"
+	verb/Magma_Storm()
+		set category = "Skills"
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		// A swirling ring of fire, and a few collapsing tremors.
+		KenShockwave(user, icon = 'Icons/Effects/SparkleOrange.dmi', Size = 5, Blend = 2, Time = 14)
+		KenShockwave(user, icon = 'Icons/Effects/Fire VFX3.dmi', Size = 4, Blend = 2, Time = 16)
+		spawn()
+			for(var/n in 1 to 3)
+				user.Earthquake(4, -3, 3, -3, 3)
+				sleep(4)
+
+// --- Darkrai: Dark Void — opens a nightmare of pooling darkness that drags the foe
+// under, hobbling their speed, offense and reflexes.
+/obj/Skills/AutoHit/Dark_Void
+	name = "Dark Void"
+	Area = "Circle"
+	Distance = 7
+	DamageMult = 18
+	ForOffense = 1
+	Stunner = 6            // dragged into a nightmare slumber
+	Slow = 2
+	Crippling = 20
+	Launcher = 1
+	BuffAffected = "/obj/Skills/Buffs/SlotlessBuffs/Autonomous/PkmnDebuff/Dark_Void"
+	Icon = 'Icons/Effects/SuperDarkness.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 10
+	HitSparkIcon = 'Hit Effect Dark.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 120
+	ActiveMessage = "opens a void of nightmares that drags its foes into darkness -- Dark Void!"
+	verb/Dark_Void()
+		set category = "Skills"
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		// A shroud of nightmare-darkness pools across the ground for a few seconds.
+		KenShockwave(user, icon = 'Icons/Effects/SparkleIndigo.dmi', Size = 5, Blend = 2, Time = 14)
+		var/image/dark = image(icon = 'Icons/Effects/SuperDarkness.dmi', layer = MOB_LAYER + 3)
+		var/list/turf/shroud = list()
+		for(var/turf/t in range(4, user))
+			shroud += t
+			t.overlays += dark
+		spawn(50)
+			for(var/turf/t in shroud)
+				t.overlays -= dark
+
+/obj/Skills/Buffs/SlotlessBuffs/Autonomous/PkmnDebuff/Dark_Void
+	SpdMult = 0.5
+	OffMult = 0.7
+	passives = list("Instinct" = -2, "Flow" = -2)
+	ActiveMessage = "is trapped in a waking nightmare -- sluggish and disoriented!"
+	OffMessage = "shakes off the lingering nightmare."
+
+// --- Cresselia: Lunar Blessing — a restorative wave of moonlight that harms foes while
+// its lunar wing mends its trainer's body and spirit. The support Legendary.
+/obj/Skills/AutoHit/Lunar_Blessing
+	name = "Lunar Blessing"
+	Area = "Circle"
+	Distance = 5
+	DamageMult = 15
+	ForOffense = 1
+	Stunner = 3
+	Launcher = 1
+	Icon = 'SparkleViolet.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 10
+	HitSparkIcon = 'Air Render.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2
+	ShockIcon = 'KenShockwave.dmi'
+	Shockwave = 4
+	Shockwaves = 2
+	Cooldown = 100
+	ActiveMessage = "bathes the field in restorative moonlight -- Lunar Blessing!"
+	verb/Lunar_Blessing()
+		set category = "Skills"
+		KenShockwave(usr, icon = 'Icons/Effects/SparkleBlue.dmi', Size = 4, Blend = 2, Time = 15)
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		// Cresselia's lunar wing mends its trainer's body and spirit.
+		KenShockwave(user, icon = 'Icons/Effects/SparkleBlue.dmi', Size = 4, Blend = 2, Time = 15)
+		if(istype(user, /mob/Player/AI/Pokemon))
+			var/mob/Player/AI/Pokemon/p = user
+			if(p.ai_owner)
+				p.ai_owner.HealHealth(25)
+				p.ai_owner.HealEnergy(40)
+				p.ai_owner.HealFatigue(150)
+
+// --- Arceus (the Alpha Pokemon): Judgment — a pillar of creation's light falls from on
+// high in holy judgment. The single highest-damage Legendary move, to match the strongest
+// Pokemon (which also wields scaling, uncapped God Ki — see PokemonArceusDivinity).
+/obj/Skills/AutoHit/Divine_Judgment
+	name = "Judgment"
+	Area = "Around Target"
+	Distance = 16
+	DistanceAround = 6
+	DamageMult = 34
+	ForOffense = 1
+	HolyMod = 6
+	Launcher = 3
+	Stunner = 4
+	MortalBlow = 1
+	Icon = 'Icons/Effects/SparkleGod.dmi'
+	IconX = -32
+	IconY = -32
+	IconTime = 10
+	HitSparkIcon = 'Icons/Effects/DivineSparkles.dmi'
+	HitSparkX = -32
+	HitSparkY = -32
+	HitSparkSize = 2.5
+	Cooldown = 140
+	ActiveMessage = "passes divine Judgment -- a pillar of creation's light falls from on high!"
+	verb/Judgment()
+		set category = "Skills"
+		KenShockwave(usr, icon = 'Icons/Effects/SparkleGod.dmi', Size = 5, Blend = 2, Time = 16)
+		usr.Activate(src)
+	OnLegendaryActivate(mob/user)
+		// A radiant pillar of creation's light, a divine sparkle burst, and the earth quakes.
+		KenShockwave(user, icon = 'Icons/Effects/AvalonLight.dmi', Size = 6, Blend = 2, Time = 16)
+		KenShockwave(user, icon = 'Icons/Effects/DivineSparkles.dmi', Size = 4, Blend = 2, Time = 18)
+		spawn()
+			for(var/n in 1 to 3)
+				user.Earthquake(5, -4, 4, -4, 4)
+				sleep(3)

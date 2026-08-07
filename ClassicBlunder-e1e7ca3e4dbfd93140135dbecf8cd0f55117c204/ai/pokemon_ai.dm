@@ -77,7 +77,9 @@ var/global/list/pokemon_database = list()
 // Spawner" admin UI so legendaries aren't handed out by accident. Extend this as
 // the dex grows past Kanto.
 var/global/list/pokemon_legendaries = list("Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew", \
-	"Raikou", "Entei", "Suicune", "Lugia", "Ho-Oh", "Celebi", "Keldeo")
+	"Raikou", "Entei", "Suicune", "Lugia", "Ho-Oh", "Celebi", "Keldeo", \
+	"Regirock", "Regice", "Registeel", "Groudon", "Kyogre", "Rayquaza", "Deoxys", \
+	"Regigigas", "Dialga", "Palkia", "Giratina", "Heatran", "Darkrai", "Cresselia", "Arceus")
 
 // Starter lines. Kept OUT of the normal spawner pools and offered in their own
 // "Starters" list in the Make Pokemon Spawner UI (so admins place them deliberately).
@@ -90,7 +92,10 @@ var/global/list/pokemon_starters = list(\
 	"Totodile", "Croconaw", "Feraligatr", \
 	"Treecko", "Grovyle", "Sceptile", \
 	"Torchic", "Combusken", "Blaziken", \
-	"Mudkip", "Marshtomp", "Swampert")
+	"Mudkip", "Marshtomp", "Swampert", \
+	"Turtwig", "Grotle", "Torterra", \
+	"Chimchar", "Monferno", "Infernape", \
+	"Piplup", "Prinplup", "Empoleon")
 
 // Evolutions that in the real games need a Stone / evolution item / trade / etc.,
 // which the level-based CheckEvolution can't reach. The "Enchant Pokemon" verb (from
@@ -127,7 +132,28 @@ var/global/list/pokemon_stone_evolutions = list(
 	"Lombre"     = list("Ludicolo"),   // Water Stone
 	"Nuzleaf"    = list("Shiftry"),    // Leaf Stone
 	"Skitty"     = list("Delcatty"),   // Moon Stone
-	"Clamperl"   = list("Huntail", "Gorebyss"))  // Deep Sea Tooth / Scale trade
+	"Clamperl"   = list("Huntail", "Gorebyss"),  // Deep Sea Tooth / Scale trade
+	// --- Sinnoh: Gen-4 evolutions of earlier Pokemon (stones / evo-items / trade / moves) ---
+	"Roselia"    = list("Roserade"),   // Shiny Stone
+	"Togetic"    = list("Togekiss"),   // Shiny Stone
+	"Kirlia"     = list("Gallade"),    // Dawn Stone
+	"Snorunt"    = list("Froslass"),   // Dawn Stone
+	"Murkrow"    = list("Honchkrow"),  // Dusk Stone
+	"Misdreavus" = list("Mismagius"),  // Dusk Stone
+	"Magneton"   = list("Magnezone"),  // Thunder Stone / magnetic field
+	"Nosepass"   = list("Probopass"),  // Thunder Stone / magnetic field
+	"Sneasel"    = list("Weavile"),    // Razor Claw
+	"Gligar"     = list("Gliscor"),    // Razor Fang
+	"Rhydon"     = list("Rhyperior"),  // Protector trade
+	"Electabuzz" = list("Electivire"), // Electirizer trade
+	"Magmar"     = list("Magmortar"),  // Magmarizer trade
+	"Porygon2"   = list("Porygon-Z"),  // Dubious Disc trade
+	"Dusclops"   = list("Dusknoir"),   // Reaper Cloth trade
+	"Tangela"    = list("Tangrowth"),  // learns Ancient Power
+	"Yanma"      = list("Yanmega"),    // learns Ancient Power
+	"Lickitung"  = list("Lickilicky"), // learns Rollout
+	"Aipom"      = list("Ambipom"),    // learns Double Hit
+	"Piloswine"  = list("Mamoswine"))  // learns Ancient Power
 
 // Second type for dual-type species. The dex line holds the primary type; this
 // adds the other half of the canonical pair, so a dual-type Pokemon is granted
@@ -249,7 +275,47 @@ var/global/list/pokemon_second_types = list(
 	"Spheal"="Water", "Sealeo"="Water", "Walrein"="Water",
 	"Relicanth"="Rock",
 	"Salamence"="Flying",
-	"Beldum"="Psychic", "Metang"="Psychic", "Metagross"="Psychic")
+	"Beldum"="Psychic", "Metang"="Psychic", "Metagross"="Psychic",
+	// --- Sinnoh ---
+	"Torterra"="Ground",
+	"Monferno"="Fighting", "Infernape"="Fighting",
+	"Empoleon"="Steel",
+	"Starly"="Normal", "Staravia"="Normal", "Staraptor"="Normal",
+	"Bibarel"="Water",
+	"Budew"="Poison", "Roserade"="Poison",
+	"Shieldon"="Steel", "Bastiodon"="Steel",
+	"Wormadam"="Grass",
+	"Mothim"="Flying",
+	"Combee"="Flying", "Vespiquen"="Flying",
+	"Gastrodon"="Ground",
+	"Drifloon"="Flying", "Drifblim"="Flying",
+	"Honchkrow"="Flying",
+	"Stunky"="Dark", "Skuntank"="Dark",
+	"Bronzor"="Psychic", "Bronzong"="Psychic",
+	"Mime Jr."="Fairy",
+	"Chatot"="Normal",
+	"Spiritomb"="Dark",
+	"Gible"="Ground", "Gabite"="Ground", "Garchomp"="Ground",
+	"Lucario"="Steel",
+	"Skorupi"="Bug", "Drapion"="Dark",
+	"Croagunk"="Fighting", "Toxicroak"="Fighting",
+	"Mantyke"="Flying",
+	"Snover"="Ice", "Abomasnow"="Ice",
+	"Weavile"="Ice",
+	"Magnezone"="Steel",
+	"Rhyperior"="Rock",
+	"Togekiss"="Flying",
+	"Yanmega"="Flying",
+	"Gliscor"="Flying",
+	"Mamoswine"="Ground",
+	"Gallade"="Fighting",
+	"Probopass"="Steel",
+	"Froslass"="Ghost",
+	"Rotom"="Ghost",
+	// Legendaries
+	"Rayquaza"="Flying",
+	"Dialga"="Dragon", "Palkia"="Dragon", "Giratina"="Dragon",
+	"Heatran"="Steel")
 
 // species, icon_state, type, the 6 base stats (HP,Atk,Def,SpA,SpD,Spe), then the
 // evolution target species and the Potential level it evolves at (or null/0).
@@ -644,6 +710,127 @@ var/global/list/pokemon_second_types = list(
 	_pkmn("Beldum",     "Beldum",     "Steel",     40, 55, 80, 35, 60, 30, "Metang",      20)
 	_pkmn("Metang",     "Metang",     "Steel",     60, 75,100, 55, 80, 50, "Metagross",   45)
 	_pkmn("Metagross",  "Metagross",  "Steel",     80,135,130, 95, 90, 70, null,           0)
+	// --- HOENN LEGENDARIES (#377-386) --- flagged legendary below; unique moves in
+	// pokemon_skills.dm. Regis, the weather trio, Deoxys.
+	_pkmn("Regirock",   "Regirock",   "Rock",      80,100,200, 50,100, 50, null,           0)
+	_pkmn("Regice",     "Regice",     "Ice",       80, 50,100,100,200, 50, null,           0)
+	_pkmn("Registeel",  "Registeel",  "Steel",     80, 75,150, 75,150, 50, null,           0)
+	_pkmn("Groudon",    "Groudon",    "Ground",   100,150,140,100, 90, 90, null,           0)
+	_pkmn("Kyogre",     "Kyogre",     "Water",    100,100, 90,150,140, 90, null,           0)
+	_pkmn("Rayquaza",   "Rayquaza",   "Dragon",   105,150, 90,150, 90, 95, null,           0)
+	_pkmn("Deoxys",     "Deoxys",     "Psychic",   50,150, 50,150, 50,150, null,           0)
+	// --- SINNOH LEGENDARIES --- appended out of national order (re-tagged "Sinnoh"
+	// below); Regigigas + the creation trio. Giratina's Origin sprite lives under the
+	// sheet's Spanish name "Giratina (Forma Origen)" (used by the 50%-HP rage shift).
+	_pkmn("Regigigas",  "Regigigas",  "Normal",   110,160,110, 80,110,100, null,           0)
+	_pkmn("Dialga",     "Dialga",     "Steel",    100,120,120,150,100, 90, null,           0)
+	_pkmn("Palkia",     "Palkia",     "Water",     90,120,100,150,120,100, null,           0)
+	_pkmn("Giratina",   "Giratina",   "Ghost",    150,100,120,100,120, 90, null,           0)
+	_pkmn("Heatran",    "Heatran",    "Fire",      91, 90,106,130,106, 77, null,           0)
+	_pkmn("Darkrai",    "Darkrai",    "Dark",      70, 90, 90,135, 90,125, null,           0)
+	_pkmn("Cresselia",  "Cresselia",  "Psychic",  120, 70,120, 75,130, 85, null,           0)
+	// Arceus -- the Alpha Pokemon, highest base-stat total in the dex. Flagged legendary
+	// below and given scaling, uncapped God Ki + Judgment (see aiGain/pokemon_skills.dm) so
+	// it is genuinely the strongest. NOTE: "Mew" is a PLACEHOLDER sprite -- there is no
+	// Arceus in POKEMON.dmi yet; swap this icon_state (or move it to its own sheet like
+	// Keldeo) once the art is added.
+	_pkmn("Arceus",     "Mew",        "Normal",   120,120,120,120,120,120, null,           0)
+	// --- SINNOH REGION (Gen 4, #387-479, LEGENDARIES EXCLUDED) --- same conventions as
+	// the other regions. A few icon_states use the sheet's spellings (Krickot, Craniados,
+	// Wormdan, Cherum, "Shellos M"/"Gastrodon M"/"Hippopotas M"/"Hippowdon M", "Porygon Z").
+	// Gen-4 evolutions of earlier Pokemon (Roserade, Magnezone, Weavile, ...) are reached
+	// through the Enchant Pokemon verb (pokemon_stone_evolutions), like the other regions.
+	_pkmn("Turtwig",    "Turtwig",    "Grass",     55, 68, 64, 45, 55, 31, "Grotle",      18)
+	_pkmn("Grotle",     "Grotle",     "Grass",     75, 89, 85, 55, 65, 36, "Torterra",    32)
+	_pkmn("Torterra",   "Torterra",   "Grass",     95,109,105, 75, 85, 56, null,           0)
+	_pkmn("Chimchar",   "Chimchar",   "Fire",      44, 58, 44, 58, 44, 61, "Monferno",    14)
+	_pkmn("Monferno",   "Monferno",   "Fire",      64, 78, 52, 78, 52, 81, "Infernape",   36)
+	_pkmn("Infernape",  "Infernape",  "Fire",      76,104, 71,104, 71,108, null,           0)
+	_pkmn("Piplup",     "Piplup",     "Water",     53, 51, 53, 61, 56, 40, "Prinplup",    16)
+	_pkmn("Prinplup",   "Prinplup",   "Water",     64, 66, 68, 81, 76, 50, "Empoleon",    36)
+	_pkmn("Empoleon",   "Empoleon",   "Water",     84, 86, 88,111,101, 60, null,           0)
+	_pkmn("Starly",     "Starly",     "Flying",    40, 55, 30, 30, 30, 60, "Staravia",    14)
+	_pkmn("Staravia",   "Staravia",   "Flying",    55, 75, 50, 40, 40, 80, "Staraptor",   34)
+	_pkmn("Staraptor",  "Staraptor",  "Flying",    85,120, 70, 50, 60,100, null,           0)
+	_pkmn("Bidoof",     "Bidoof",     "Normal",    59, 45, 40, 35, 40, 31, "Bibarel",     15)
+	_pkmn("Bibarel",    "Bibarel",    "Normal",    79, 85, 60, 55, 60, 71, null,           0)
+	_pkmn("Kricketot",  "Krickot",    "Bug",       37, 25, 41, 25, 41, 25, "Kricketune",  10)
+	_pkmn("Kricketune", "Kricketune", "Bug",       77, 85, 51, 55, 51, 65, null,           0)
+	_pkmn("Shinx",      "Shinx",      "Electric",  45, 65, 34, 40, 34, 45, "Luxio",       15)
+	_pkmn("Luxio",      "Luxio",      "Electric",  60, 85, 49, 60, 49, 60, "Luxray",      30)
+	_pkmn("Luxray",     "Luxray",     "Electric",  80,120, 79, 95, 79, 70, null,           0)
+	_pkmn("Budew",      "Budew",      "Grass",     40, 30, 35, 50, 70, 55, "Roselia",     10)
+	_pkmn("Roserade",   "Roserade",   "Grass",     60, 70, 65,125,105, 90, null,           0)
+	_pkmn("Cranidos",   "Craniados",  "Rock",      67,125, 40, 30, 30, 58, "Rampardos",   30)
+	_pkmn("Rampardos",  "Rampardos",  "Rock",      97,165, 60, 65, 50, 58, null,           0)
+	_pkmn("Shieldon",   "Shieldon",   "Rock",      30, 42,118, 42, 88, 30, "Bastiodon",   30)
+	_pkmn("Bastiodon",  "Bastiodon",  "Rock",      60, 52,168, 47,138, 30, null,           0)
+	_pkmn("Burmy",      "Burmy",      "Bug",       40, 29, 45, 29, 45, 36, "Wormadam",    20)
+	_pkmn("Wormadam",   "Wormdan",    "Bug",       60, 59, 85, 79,105, 36, null,           0)
+	_pkmn("Mothim",     "Mothim",     "Bug",       70, 94, 50, 94, 50, 66, null,           0)
+	_pkmn("Combee",     "Combee",     "Bug",       30, 30, 42, 30, 42, 70, "Vespiquen",   21)
+	_pkmn("Vespiquen",  "Vespiquen",  "Bug",       70, 80,102, 80,102, 40, null,           0)
+	_pkmn("Pachirisu",  "Pachirisu",  "Electric",  60, 45, 70, 45, 90, 95, null,           0)
+	_pkmn("Buizel",     "Buizel",     "Water",     55, 65, 35, 60, 30, 85, "Floatzel",    26)
+	_pkmn("Floatzel",   "Floatzel",   "Water",     85,105, 55, 85, 50,115, null,           0)
+	_pkmn("Cherubi",    "Cherubi",    "Grass",     45, 35, 45, 62, 53, 35, "Cherrim",     25)
+	_pkmn("Cherrim",    "Cherum",     "Grass",     70, 60, 70, 87, 78, 85, null,           0)
+	_pkmn("Shellos",    "Shellos M",  "Water",     76, 48, 48, 57, 62, 34, "Gastrodon",   30)
+	_pkmn("Gastrodon",  "Gastrodon M","Water",    111, 83, 68, 92, 82, 39, null,           0)
+	_pkmn("Ambipom",    "Ambipom",    "Normal",    75,100, 66, 60, 66,115, null,           0)
+	_pkmn("Drifloon",   "Drifloon",   "Ghost",     90, 50, 34, 60, 44, 70, "Drifblim",    28)
+	_pkmn("Drifblim",   "Drifblim",   "Ghost",    150, 80, 44, 90, 54, 80, null,           0)
+	_pkmn("Buneary",    "Buneary",    "Normal",    55, 66, 44, 44, 56, 85, "Lopunny",     20)
+	_pkmn("Lopunny",    "Lopunny",    "Normal",    65, 76, 84, 54, 96,105, null,           0)
+	_pkmn("Mismagius",  "Mismagius",  "Ghost",     60, 60, 60,105,105,105, null,           0)
+	_pkmn("Honchkrow",  "Honchkrow",  "Dark",     100,125, 52,105, 52, 71, null,           0)
+	_pkmn("Glameow",    "Glameow",    "Normal",    49, 55, 42, 42, 37, 85, "Purugly",     38)
+	_pkmn("Purugly",    "Purugly",    "Normal",    71, 82, 64, 64, 59,112, null,           0)
+	_pkmn("Chingling",  "Chingling",  "Psychic",   45, 30, 50, 65, 50, 45, "Chimecho",    20)
+	_pkmn("Stunky",     "Stunky",     "Poison",    63, 63, 47, 41, 41, 74, "Skuntank",    34)
+	_pkmn("Skuntank",   "Skuntank",   "Poison",   103, 93, 67, 71, 61, 84, null,           0)
+	_pkmn("Bronzor",    "Bronzor",    "Steel",     57, 24, 86, 24, 86, 23, "Bronzong",    33)
+	_pkmn("Bronzong",   "Bronzong",   "Steel",     67, 89,116, 79,116, 33, null,           0)
+	_pkmn("Bonsly",     "Bonsly",     "Rock",      50, 80, 95, 10, 45, 10, "Sudowoodo",   15)
+	_pkmn("Mime Jr.",   "Mime Jr.",   "Psychic",   20, 25, 45, 70, 90, 60, "Mr. Mime",    18)
+	_pkmn("Happiny",    "Happiny",    "Normal",   100,  5,  5, 15, 65, 30, "Chansey",     15)
+	_pkmn("Chatot",     "Chatot",     "Flying",    76, 65, 45, 92, 42, 91, null,           0)
+	_pkmn("Spiritomb",  "Spiritomb",  "Ghost",     50, 92,108, 92,108, 35, null,           0)
+	_pkmn("Gible",      "Gible",      "Dragon",    58, 70, 45, 40, 45, 42, "Gabite",      24)
+	_pkmn("Gabite",     "Gabite",     "Dragon",    68, 90, 65, 50, 55, 82, "Garchomp",    48)
+	_pkmn("Garchomp",   "Garchomp",   "Dragon",   108,130, 95, 80, 85,102, null,           0)
+	_pkmn("Munchlax",   "Munchlax",   "Normal",   135, 85, 40, 40, 85,  5, "Snorlax",     20)
+	_pkmn("Riolu",      "Riolu",      "Fighting",  40, 70, 40, 35, 40, 60, "Lucario",     30)
+	_pkmn("Lucario",    "Lucario",    "Fighting",  70,110, 70,115, 70, 90, null,           0)
+	_pkmn("Hippopotas", "Hippopotas M","Ground",   68, 72, 78, 38, 42, 32, "Hippowdon",   34)
+	_pkmn("Hippowdon",  "Hippowdon M","Ground",   108,112,118, 68, 72, 47, null,           0)
+	_pkmn("Skorupi",    "Skorupi",    "Poison",    40, 50, 90, 30, 55, 65, "Drapion",     40)
+	_pkmn("Drapion",    "Drapion",    "Poison",    70, 90,110, 60, 75, 95, null,           0)
+	_pkmn("Croagunk",   "Croagunk",   "Poison",    48, 61, 40, 61, 40, 50, "Toxicroak",   37)
+	_pkmn("Toxicroak",  "Toxicroak",  "Poison",    83,106, 65, 86, 65, 85, null,           0)
+	_pkmn("Carnivine",  "Carnivine",  "Grass",     74,100, 72, 90, 72, 46, null,           0)
+	_pkmn("Finneon",    "Finneon",    "Water",     49, 49, 56, 49, 61, 66, "Lumineon",    31)
+	_pkmn("Lumineon",   "Lumineon",   "Water",     69, 69, 76, 69, 86, 91, null,           0)
+	_pkmn("Mantyke",    "Mantyke",    "Water",     45, 20, 50, 60,120, 50, "Mantine",     25)
+	_pkmn("Snover",     "Snover",     "Grass",     60, 62, 50, 62, 60, 40, "Abomasnow",   40)
+	_pkmn("Abomasnow",  "Abomasnow",  "Grass",     90, 92, 75, 92, 85, 60, null,           0)
+	_pkmn("Weavile",    "Weavile",    "Dark",      70,120, 65, 45, 85,125, null,           0)
+	_pkmn("Magnezone",  "Magnezone",  "Electric",  70, 70,115,130, 90, 60, null,           0)
+	_pkmn("Lickilicky", "Lickilicky", "Normal",   110, 85, 95, 80, 95, 50, null,           0)
+	_pkmn("Rhyperior",  "Rhyperior",  "Ground",   115,140,130, 55, 55, 40, null,           0)
+	_pkmn("Tangrowth",  "Tangrowth",  "Grass",    100,100,125,110, 50, 50, null,           0)
+	_pkmn("Electivire", "Electivire", "Electric",  75,123, 67, 95, 85, 95, null,           0)
+	_pkmn("Magmortar",  "Magmortar",  "Fire",      75, 95, 67,125, 95, 83, null,           0)
+	_pkmn("Togekiss",   "Togekiss",   "Fairy",     85, 50, 95,120,115, 80, null,           0)
+	_pkmn("Yanmega",    "Yanmega",    "Bug",       86, 76, 86,116, 56, 95, null,           0)
+	_pkmn("Gliscor",    "Gliscor",    "Ground",    75, 95,125, 45, 75, 95, null,           0)
+	_pkmn("Mamoswine",  "Mamoswine",  "Ice",      110,130, 80, 70, 60, 80, null,           0)
+	_pkmn("Porygon-Z",  "Porygon Z",  "Normal",    85, 80, 70,135, 75, 90, null,           0)
+	_pkmn("Gallade",    "Gallade",    "Psychic",   68,125, 65, 65,115, 80, null,           0)
+	_pkmn("Probopass",  "Probopass",  "Rock",      60, 55,145, 75,150, 40, null,           0)
+	_pkmn("Dusknoir",   "Dusknoir",   "Ghost",     45,100,135, 65,135, 45, null,           0)
+	_pkmn("Froslass",   "Froslass",   "Ice",       70, 80, 70, 80, 70,110, null,           0)
+	_pkmn("Rotom",      "Rotom",      "Electric",  50, 50, 77, 95, 77, 91, null,           0)
 	// --- MYTHICAL --- Keldeo lives in its OWN sheet (Keldeo.dmi), not POKEMON.dmi.
 	// Water/Fighting (second type via pokemon_second_types); flagged legendary below.
 	_pkmn("Keldeo",     "",           "Water",     91, 72, 90,129, 90,108, null, 0, 'Icons/Characters/Special/Keldeo.dmi')
@@ -673,8 +860,10 @@ var/global/list/pokemon_second_types = list(
 			rs.region = "Kanto"
 		else if(ridx <= 251)
 			rs.region = "Johto"
-		else
+		else if(ridx <= 376)
 			rs.region = "Hoenn"
+		else
+			rs.region = "Sinnoh"
 	// Fix the appended-after-Hoenn specials the position loop just tagged "Hoenn":
 	// Keldeo is a Mythical; Leafeon/Glaceon belong to Eevee's Kanto family.
 	if(pokemon_database["Keldeo"])
@@ -683,6 +872,12 @@ var/global/list/pokemon_second_types = list(
 		if(pokemon_database[eon])
 			var/datum/pokemon_species/es = pokemon_database[eon]
 			es.region = "Kanto"
+	// The Hoenn legendaries sit just past the #376 Hoenn boundary, so the loop's
+	// "else -> Sinnoh" mislabels them; pin them back to Hoenn (cosmetic — legendaries
+	// spawn by flag, not region). Sinnoh legendaries + non-legendaries are already Sinnoh.
+	for(var/hleg in list("Regirock", "Regice", "Registeel", "Groudon", "Kyogre", "Rayquaza", "Deoxys"))
+		if(pokemon_database[hleg])
+			pokemon_database[hleg].region = "Hoenn"
 
 /proc/GetPokemonSpecies(sp)
 	if(!pokemon_database.len) BuildPokemonDatabase()
@@ -749,6 +944,12 @@ var/global/list/pokemon_icon_state_cache = null
 	// target every tick (see Update) so it keeps attacking until the target is down or
 	// the trainer issues Stop / Follow — instead of lapsing back to follow after one hit.
 	var/tmp/mob/pokemon_attack_order = null
+	// Rage state (Mewtwo / Giratina): once HP crosses 50%, they surge to 250% Anger +
+	// AttackSpeed (Giratina also shifts to Origin Forme). Latched so it fires once.
+	var/tmp/pokemon_raged = 0
+	// Deoxys' current Forme ("Normal"/"Attack"/"Defense"/"Speed"), set by the trainer's
+	// "Deoxys: Choose Form" verb.
+	var/tmp/deoxys_form = "Normal"
 
 	// Keep an outstanding attack order enforced. The base AI (with ai_follow /
 	// ai_focus_owner_target set) otherwise slips back into following the trainer after a
@@ -953,6 +1154,68 @@ var/global/list/pokemon_icon_state_cache = null
 				Potential = max(1, eff * pf)
 				potential_power_mult = max(1, ai_owner.potential_power_mult * pf)
 			CheckEvolution(eff)
+		PokemonRageCheck()
+		PokemonArceusDivinity()
+
+	// Arceus, the Alpha Pokemon: it wields God Ki that scales with its Potential (which
+	// itself tracks the trainer's), and the "God" passive removes the God-Ki cap — so it
+	// keeps growing stronger with no ceiling, cementing it as the strongest Pokemon. Both
+	// are re-pinned each tick (like the rage Anger) so nothing clears them.
+	proc/PokemonArceusDivinity()
+		if(pkmn_species != "Arceus" || !passive_handler) return
+		passive_handler.Set("God", 1)                       // uncaps God Ki (past GOD_KI_CAP)
+		passive_handler.Set("GodKi", max(1, Potential / 50)) // divine power scales with Potential
+
+	// Mewtwo / Giratina rage: at or below 50% HP they surge to 250% Anger and gain
+	// AttackSpeed (Giratina also shifts to its Origin Forme). Latched so the one-time
+	// bonuses apply once, but Anger is re-pinned each tick so nothing resets it.
+	proc/PokemonRageCheck()
+		if(pkmn_species != "Mewtwo" && pkmn_species != "Giratina") return
+		if(!pokemon_raged && Health <= 50)
+			pokemon_raged = 1
+			if(passive_handler) passive_handler.Increase("AttackSpeed", 2)
+			OMsg(src, "<b>[name]'s fury erupts — its power surges beyond all limits!</b>")
+			if(pkmn_species == "Giratina")
+				ClearBodyPieces()
+				if(body_sprite)
+					body_sprite.icon_state = "Giratina (Forma Origen)"
+				OMsg(src, "<b>[name] warps into its Origin Forme!</b>")
+		if(pokemon_raged)
+			Anger = 2.5   // re-pin so nothing clears the rage multiplier
+
+	// Deoxys Forme shift. Deoxys has all four Forme sprites in POKEMON.dmi (the duplicate
+	// "Deoxys" states were split into Deoxys / Deoxys Attack / Deoxys Defense / Deoxys
+	// Speed), so we swap the body sprite to the Forme and rebuild its stat mods (mirroring
+	// ApplyPokemonStats).
+	proc/ApplyDeoxysForm(form)
+		var/list/stats
+		var/fstate = "Deoxys"
+		switch(form)
+			if("Normal")
+				stats = list(50,150, 50,150, 50,150)
+				fstate = "Deoxys"
+			if("Attack")
+				stats = list(50,180, 20,180, 20,150)
+				fstate = "Deoxys Attack"
+			if("Defense")
+				stats = list(50, 70,160, 70,160, 90)
+				fstate = "Deoxys Defense"
+			if("Speed")
+				stats = list(50, 95, 90, 95, 90,180)
+				fstate = "Deoxys Speed"
+		if(!stats) return
+		var/K = POKEMON_STAT_DIVISOR
+		var/L = POKEMON_LEGENDARY_POWER_MULT
+		StrMod   = (stats[2] / K) * L
+		ForMod   = (stats[4] / K) * L
+		DefMod   = (stats[3] / K) * L
+		EndMod   = (((stats[1] + stats[5]) / 2) / K) * L
+		SpdMod   = (stats[6] / K) * L
+		OffMod   = (((stats[2] + stats[4]) / 2) / K) * L
+		if(body_sprite)
+			body_sprite.color = null        // clear the old colour-tint cue
+			body_sprite.icon_state = fstate // show the actual Forme sprite
+		deoxys_form = form
 
 // --- Trainer command verbs -------------------------------------------------
 // Granted to whoever owns a Pokemon (by Spawn_Pokemon here; by the real
