@@ -6434,7 +6434,6 @@ obj
 					Z.TurfShiftDuration=3
 					if(prob(50) && owner.passive_handler.Get("Full Manifestation"))
 						DarknessFlash(owner)
-					Z.ActiveMessage="<font color='red'><font size=+1><b>You cannot grasp the true form of [owner]'s attack...</font color></font size></b>"
 
 			src.dir=src.Owner.dir
 			src.loc=src.Owner.loc
