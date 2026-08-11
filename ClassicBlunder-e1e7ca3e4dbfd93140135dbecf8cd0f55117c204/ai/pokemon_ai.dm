@@ -21,8 +21,15 @@
 // total equals POKEMON_REFERENCE_BST gets POKEMON_POWER_FRACTION of the owner's
 // power; weaker/stronger species scale proportionally.
 #define POKEMON_STAT_DIVISOR 50
-#define POKEMON_POWER_FRACTION 0.5
+#define POKEMON_POWER_FRACTION 1
 #define POKEMON_REFERENCE_BST 500
+// --- Pokemon buff knobs ----------------------------------------------------
+// A summoned Pokemon's type signature move hits this much harder (STAB).
+#define POKEMON_STAB_MULT 1.2
+// Baseline pure damage-reduction every Pokemon carries so it isn't glass-cannon fragile.
+#define POKEMON_BASE_PURERED 1
+// Cap on the Potential-scaled bond PureDamage a trainer's investment grants their Pokemon.
+#define POKEMON_BOND_DMG_CAP 3
 // Default Potential (level) of a wild Pokemon spawned without a spawner level.
 // Kept low so first-stage wild Pokemon don't instantly evolve; a spawner (or
 // admin) sets a higher level for tougher areas. Evolution thresholds below are
@@ -154,6 +161,39 @@ var/global/list/pokemon_stone_evolutions = list(
 	"Lickitung"  = list("Lickilicky"), // learns Rollout
 	"Aipom"      = list("Ambipom"),    // learns Double Hit
 	"Piloswine"  = list("Mamoswine"))  // learns Ancient Power
+
+// A helpful passive granted to every summoned Pokemon based on its type(s), themed to
+// the type's identity (all are real, verified passives). A dual-type Pokemon gets BOTH.
+// Applied/re-pinned each tick in ApplyPokemonPassives.
+var/global/list/PokemonTypePassives = list(
+	"Normal"   = list("Momentum" = 1),         // keeps the pressure up
+	"Fire"     = list("Fury" = 1),             // burning offense
+	"Water"    = list("LikeWater" = 1),        // flowing evasion
+	"Electric" = list("DenkoSekka" = 1),       // lightning-flash dodges
+	"Grass"    = list("LifeGeneration" = 3),   // photosynthetic regen
+	"Ice"      = list("ChillImmune" = 1),      // unfazed by cold
+	"Fighting" = list("Brutalize" = 3),        // armor-piercing blows
+	"Poison"   = list("LifeSteal" = 25),       // venom saps life
+	"Ground"   = list("Unstoppable" = 1),      // rooted, unmovable
+	"Flying"   = list("Skimming" = 1),         // hovers over the field
+	"Psychic"  = list("Instinct" = 2),         // precognition -> foresees & dodges attacks
+	"Bug"      = list("AttackSpeed" = 1),      // swarming rapid strikes
+	"Rock"     = list("Harden" = 3),           // rock-solid endurance
+	"Ghost"    = list("Flicker" = 2),          // phasing afterimages
+	"Dragon"   = list("PureDamage" = 3),       // overwhelming draconic power
+	"Dark"     = list("Reversal" = 0.3),       // underhanded counters
+	"Steel"    = list("PureReduction" = 2),    // armored hide
+	"Fairy"    = list("Deflection" = 2))       // charmed misdirection
+
+// Union of every passive key the system touches (base survivability/bond + all type
+// passives), built once. ApplyPokemonPassives re-sets each of these every tick so a
+// stale key (e.g. after a type-changing evolution) is cleared to 0 rather than lingering.
+var/global/list/PokemonPassiveKeys = null
+/proc/BuildPokemonPassiveKeys()
+	PokemonPassiveKeys = list("PureReduction", "PureDamage")
+	for(var/t in PokemonTypePassives)
+		for(var/k in PokemonTypePassives[t])
+			if(!(k in PokemonPassiveKeys)) PokemonPassiveKeys += k
 
 // Second type for dual-type species. The dex line holds the primary type; this
 // adds the other half of the canonical pair, so a dual-type Pokemon is granted
@@ -1054,7 +1094,9 @@ var/global/list/pokemon_icon_state_cache = null
 			var/eff = PokemonEffectiveLevel()
 			var/pf = POKEMON_POWER_FRACTION * (bst / POKEMON_REFERENCE_BST)
 			Potential = max(1, eff * pf)
-			potential_power_mult = max(1, ai_owner.potential_power_mult * pf)
+			// sqrt(pf): pf already scales Potential, so take the root here to apply the
+			// power fraction once overall instead of double-dipping (helps weak species most).
+			potential_power_mult = max(1, ai_owner.potential_power_mult * sqrt(pf))
 		else
 			// Wild (no owner): a flat level (spawner may override). The AI power
 			// pipeline derives BP from Potential + mods, as monster AI do.
@@ -1078,14 +1120,20 @@ var/global/list/pokemon_icon_state_cache = null
 		if(isnull(effLevel)) effLevel = PokemonEffectiveLevel()
 		var/datum/pokemon_species/cur = pokemon_database[pkmn_species]
 		var/guard = 0
+		var/evolved = 0
 		while(cur && cur.evolves_into && cur.evolve_level && effLevel >= cur.evolve_level && guard++ < 6)
 			var/datum/pokemon_species/nxt = pokemon_database[cur.evolves_into]
 			if(!nxt) break
 			var/oldname = pkmn_species
 			ApplySpeciesCore(nxt)
+			evolved = 1
 			if(loc)
 				OMsg(src, "[oldname] evolved into [nxt.species]!")
 			cur = nxt
+		if(evolved)
+			// An evolution is a power spike: the new form surges in fully restored.
+			HealHealth(99999)
+			HealEnergy(99999)
 
 	// Grant the signature skill for this Pokemon's type (from pokemon_skills.dm).
 	proc/GrantTypeSkill()
@@ -1109,11 +1157,17 @@ var/global/list/pokemon_icon_state_cache = null
 			// Already have this move (e.g. from a pre-evolution). Re-fit its cooldown
 			// to the current form: full for dual-type, discounted for single-type — so
 			// a mono -> dual evolution (Charmeleon -> Charizard) stops being discounted.
+			// (STAB was baked into DamageMult when the skill was first created, below.)
 			existing.Cooldown = discount ? round(initial(existing.Cooldown) * POKEMON_SINGLE_TYPE_CD_MULT) : initial(existing.Cooldown)
 			return
 		var/obj/Skills/sk = new skpath
 		if(discount)
 			sk.Cooldown = round(sk.Cooldown * POKEMON_SINGLE_TYPE_CD_MULT)
+		// STAB: the mon's own type move hits harder. DamageMult lives on the skill
+		// subtypes (AutoHit/Queue/Projectile), so reach it via vars and skip any move
+		// type that doesn't define it.
+		if(!isnull(sk.vars["DamageMult"]))
+			sk.vars["DamageMult"] = round(sk.vars["DamageMult"] * POKEMON_STAB_MULT)
 		AddSkill(sk)
 
 	// Grant a Legendary's unique signature move (from pokemon_skills.dm), on top of
@@ -1152,10 +1206,49 @@ var/global/list/pokemon_icon_state_cache = null
 				var/bst = cur.hp + cur.atk + cur.def + cur.spatk + cur.spdef + cur.spe
 				var/pf = POKEMON_POWER_FRACTION * (bst / POKEMON_REFERENCE_BST)
 				Potential = max(1, eff * pf)
-				potential_power_mult = max(1, ai_owner.potential_power_mult * pf)
+				// sqrt(pf): the power fraction already scales Potential; applying it in full
+				// here too double-dips, so take the root so it lands once overall (this also
+				// helps weaker, low-BST species the most).
+				potential_power_mult = max(1, ai_owner.potential_power_mult * sqrt(pf))
 			CheckEvolution(eff)
 		PokemonRageCheck()
 		PokemonArceusDivinity()
+		ApplyPokemonPassives()
+
+	// Baseline survivability + trainer-bond power. Re-pinned each tick (like the rage /
+	// divinity above) so it can't be cleared. Every Pokemon carries a little pure damage
+	// reduction so it isn't a glass cannon; a trainer's investment (Trainer's Pledge, and
+	// more so Primordial Tamer) empowers their summoned Pokemon further, with a Potential-
+	// scaled bit of pure damage so the bond keeps paying off as the trainer grows.
+	proc/ApplyPokemonPassives()
+		if(!passive_handler) return
+		if(!PokemonPassiveKeys) BuildPokemonPassiveKeys()
+		// Accumulate every contribution into one list, then set each key once (so type
+		// passives that share a key with the bond, like Steel's PureReduction, add up).
+		var/list/P = list()
+		P["PureReduction"] = POKEMON_BASE_PURERED
+		P["PureDamage"] = 0
+		if(ai_owner && ai_owner.passive_handler)
+			if(ai_owner.passive_handler.Get("Trainers Pledge"))
+				P["PureReduction"] += 1
+				P["PureDamage"] += min(POKEMON_BOND_DMG_CAP, round(ai_owner.Potential / 100))
+			if(ai_owner.passive_handler.Get("Primordial Tamer"))
+				P["PureReduction"] += 1
+				P["PureDamage"] += 1
+		AddTypePassives(P, PokemonType)
+		AddTypePassives(P, PokemonType2)
+		// Set every known key (0 when absent) so a stale passive from a prior type is cleared.
+		for(var/k in PokemonPassiveKeys)
+			var/v = P[k]
+			passive_handler.Set(k, isnull(v) ? 0 : v)
+
+	// Fold one type's themed passive(s) into the accumulator (see PokemonTypePassives).
+	proc/AddTypePassives(list/P, ptype)
+		if(!ptype) return
+		var/list/tp = PokemonTypePassives[ptype]
+		if(!tp) return
+		for(var/k in tp)
+			P[k] += tp[k]
 
 	// Arceus, the Alpha Pokemon: it wields God Ki that scales with its Potential (which
 	// itself tracks the trainer's), and the "God" passive removes the God-Ki cap — so it
