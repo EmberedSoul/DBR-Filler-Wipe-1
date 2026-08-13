@@ -987,6 +987,14 @@ var/global/list/pokemon_icon_state_cache = null
 	// Rage state (Mewtwo / Giratina): once HP crosses 50%, they surge to 250% Anger +
 	// AttackSpeed (Giratina also shifts to Origin Forme). Latched so it fires once.
 	var/tmp/pokemon_raged = 0
+	// Ditto / Mew Transform: on engaging a target they copy its stats, look and a couple
+	// of its non-signature moves for a while, then revert. While active, the normal
+	// per-tick stat scaling is skipped so the copied stats hold.
+	var/tmp/transform_active = 0
+	var/tmp/transform_revert_time = 0
+	var/tmp/transform_cd_time = 0
+	var/tmp/transform_orig_species = null
+	var/tmp/list/transform_copied_types = null
 	// Deoxys' current Forme ("Normal"/"Attack"/"Defense"/"Speed"), set by the trainer's
 	// "Deoxys: Choose Form" verb.
 	var/tmp/deoxys_form = "Normal"
@@ -1199,7 +1207,8 @@ var/global/list/pokemon_icon_state_cache = null
 			else
 				HealHealth(1)
 				HealEnergy(2)
-		if(ai_owner && pkmn_species)
+		// Skip the normal scaling while transformed (Ditto/Mew) so the copied stats hold.
+		if(ai_owner && pkmn_species && !transform_active)
 			var/datum/pokemon_species/cur = pokemon_database[pkmn_species]
 			var/eff = PokemonEffectiveLevel()
 			if(cur)
@@ -1213,6 +1222,7 @@ var/global/list/pokemon_icon_state_cache = null
 			CheckEvolution(eff)
 		PokemonRageCheck()
 		PokemonArceusDivinity()
+		PokemonTransformCheck()
 		ApplyPokemonPassives()
 
 	// Baseline survivability + trainer-bond power. Re-pinned each tick (like the rage /
@@ -1275,6 +1285,83 @@ var/global/list/pokemon_icon_state_cache = null
 				OMsg(src, "<b>[name] warps into its Origin Forme!</b>")
 		if(pokemon_raged)
 			Anger = 2.5   // re-pin so nothing clears the rage multiplier
+
+	// Ditto (and Mew) Transform: on engaging a target, become a copy of it — take its
+	// combat stats and appearance and borrow a non-signature move or two — for a while,
+	// then revert. Ditto: ~10s / 1 move. Mew: ~30s / 3 moves.
+	proc/PokemonTransformCheck()
+		if(pkmn_species != "Ditto" && pkmn_species != "Mew") return
+		if(transform_active)
+			if(world.time >= transform_revert_time)
+				RevertTransform()
+			return
+		if(world.time < transform_cd_time) return
+		var/mob/T = Target
+		if(!T || T == src || !ismob(T) || T.KO) return
+		if(PokemonOwnerPair(src, T)) return   // never mimic our own trainer / ally
+		DoTransform(T)
+
+	proc/DoTransform(mob/T)
+		var/dur = 100                         // Ditto: ~10 seconds
+		var/copies = 1
+		if(pkmn_species == "Mew")
+			dur = 300                         // Mew: ~30 seconds
+			copies = 3
+		transform_orig_species = pkmn_species
+		// Copy the target's raw combat power and stat mods. The scaling tick is skipped
+		// while transform_active, so these hold for the duration.
+		Potential = T.Potential
+		potential_power_mult = T.potential_power_mult
+		StrMod = T.StrMod ; ForMod = T.ForMod ; DefMod = T.DefMod
+		EndMod = T.EndMod ; SpdMod = T.SpdMod ; OffMod = T.OffMod
+		// Copy the look.
+		if(body_sprite)
+			if(istype(T, /mob/Player/AI/Pokemon))
+				var/mob/Player/AI/Pokemon/tp = T
+				if(tp.body_sprite)
+					body_sprite.icon = tp.body_sprite.icon
+					body_sprite.icon_state = tp.body_sprite.icon_state
+			else
+				body_sprite.icon = T.icon
+				body_sprite.icon_state = T.icon_state
+		// Borrow up to `copies` of the target's non-signature combat moves.
+		transform_copied_types = list()
+		var/list/pool = list()
+		for(var/obj/Skills/s in T.AutoHits)
+			if(!s.SignatureTechnique) pool += s
+		for(var/obj/Skills/s in T.Projectiles)
+			if(!s.SignatureTechnique) pool += s
+		for(var/obj/Skills/s in T.Queues)
+			if(!s.SignatureTechnique) pool += s
+		for(var/n in 1 to copies)
+			if(!pool.len) break
+			var/obj/Skills/borrow = pick(pool)
+			pool -= borrow
+			if(locate(borrow.type, src)) continue
+			var/obj/Skills/cp = new borrow.type
+			cp.Copied = TRUE
+			cp.copiedBy = "Transform"
+			AddSkill(cp)
+			transform_copied_types += "[borrow.type]"
+		transform_active = 1
+		transform_revert_time = world.time + dur
+		OMsg(src, "<b>[transform_orig_species] transforms into [T.name]!</b>")
+
+	proc/RevertTransform()
+		// Drop the borrowed moves.
+		if(transform_copied_types)
+			for(var/obj/Skills/s in src)
+				if(s.copiedBy == "Transform" && ("[s.type]" in transform_copied_types))
+					DeleteSkill(s)
+			transform_copied_types = null
+		transform_active = 0
+		transform_cd_time = world.time + 50   // brief ~5s cooldown before it can copy again
+		// Restore its true form (re-derives stats, sprite and type skill from the species).
+		var/datum/pokemon_species/orig = pokemon_database[transform_orig_species]
+		if(orig)
+			ApplySpeciesCore(orig)
+		OMsg(src, "<b>[name] snaps back to its true form.</b>")
+		transform_orig_species = null
 
 	// Deoxys Forme shift. Deoxys has all four Forme sprites in POKEMON.dmi (the duplicate
 	// "Deoxys" states were split into Deoxys / Deoxys Attack / Deoxys Defense / Deoxys
