@@ -4,14 +4,14 @@
 	SpellSlot=1
 	MagicNeeded=1
 	Bless
-		TimerLimit=20
-		Cooldown=90
+		TimerLimit=30
+		Cooldown=-1
 		ManaCost=10
 		ManaDrain=0.1
 		StableHeal=1
-		HealthHeal=0.05
+		HealthHeal=0.04
 		WoundHeal=1
-		passives=list("HolyMod" = 1, "LifeGeneration" = 2, "PureReduction" = 5)
+		passives=list("HolyMod" = 2,"PureReduction" = 2)
 		ActiveMessage="channels the light to mend their wounds!"
 		OffMessage="lets the blessing fade..."
 		verb/Bless()

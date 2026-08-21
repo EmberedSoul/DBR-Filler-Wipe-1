@@ -8,9 +8,9 @@
 		var/SL = p.SagaLevel
 		passives = list(
 			"MartialMagic"   = 1,
-			"ManaGeneration" = 2 * SL,
-			"SpiritSword"    = 0.5 * SL,
-			"SpiritFlow"     = 1 * SL,
+			"ManaGeneration" = 1 + SL,
+			"SpiritSword"    = 0.75 * SL,
+			"SpiritFlow"     = 0.75 * SL,
 			"SpiritPower"    = 0.25 * SL,
 			"HolyMod"        = 2,
 			"EvilResist"     = 2
@@ -208,7 +208,7 @@
 /obj/Skills/Buffs/NuStyle/SwordStyle
 	Zanjutsu
 		StyleActive="Zanjutsu"
-		passives = list("Duelist" = 1, "Parry" = 0.5, "Musoken" = 1)
+		passives = list("Duelist" = 1, "Parry" = 0, "Musoken" = 1)
 		StyleStr=1.15
 		StyleDef=1.15
 		StyleOff=1.15
@@ -217,8 +217,8 @@
 			StyleStr = 1 + (0.05 * p.SagaLevel)
 			StyleDef = 1 + (0.05 * p.SagaLevel)
 			StyleOff = 1 + (0.05 * p.SagaLevel)
-			passives["Duelist"] = p.SagaLevel
-			passives["Parry"] = (p.SagaLevel/2)
+//			passives["Duelist"] = (p.SagaLevel/3)
+//			passives["Parry"] = (p.SagaLevel/4)
 			passives["Musoken"] = 1
 		verb/Zanjutsu()
 			set hidden=1

@@ -1409,7 +1409,7 @@ obj/Items/Tech
 		icon='Tech.dmi'
 		icon_state="Vitality"
 		desc="A serum that can be used to instantly revitalize any accumulated weariness on the body - including a portion of damage thought to be permanent! But it can only be used every so often."
-		Cost=250
+		Cost=40
 		Click()
 			if(!(src in usr))
 				..()

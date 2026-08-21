@@ -41,7 +41,7 @@ obj/Items/Sword/Medium/Legendary/Shinigami/Zanpakuto_Dual
 			"Flicker"          = 1 + SL,
 			"Pursuer"          = 1 + SL,
 			"TechniqueMastery" = 1 + SL,
-			"Duelist"          = 1 + SL,
+			"Duelist"          = 0.5 + SL,
 			"Shadowbringer"    = 1
 		)
 		if(SL < 3)

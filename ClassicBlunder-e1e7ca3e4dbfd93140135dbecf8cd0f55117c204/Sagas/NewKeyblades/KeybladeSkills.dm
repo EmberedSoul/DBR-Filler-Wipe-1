@@ -18,7 +18,6 @@ obj
 				DelayTime=1.5
 				Rounds=3
 				MaxCharges=3
-				Charges=3
 				ChargeRefresh=30
 				ActiveMessage="dashes forward repeatedly with a jousting strike!"
 				adjust(mob/P)
@@ -30,7 +29,6 @@ obj
 						src.Rounds=5
 						DamageMult=2
 						MaxCharges=3
-						Charges=3
 						ChargeRefresh=15
 				verb/Sonic_Blade()
 					set category="Skills"
@@ -378,25 +376,25 @@ obj
 					ArmorIcon='LancelotArmor.dmi'
 					ArmorClass="Light"
 					passives = list()
-					var/list/SwordPassives = list("BlurringStrikes" = 1, "Brutalize" = 2, "TechniqueMastery" = 3)
-					var/list/ShieldPassives = list("CallousedHands" = 0.15, "Juggernaut" = 1)
+					var/list/SwordPassives = list("BlurringStrikes" = 0.5, "Brutalize" = 0.5, "TechniqueMastery" = 2)
+					var/list/ShieldPassives = list("CallousedHands" = 0.1, "Juggernaut" = 1)
 					var/list/StaffPassives = list("ManaGeneration" = 1, "QuickCast" = 1)
 					adjust(mob/p)
 						var/ImaginaryBonus=0
 						if(p.Class=="Imaginary")
-							ImaginaryBonus=0.15*p.AscensionsAcquired
+							ImaginaryBonus=0.05*p.AscensionsAcquired
 						if(p.KeybladeType=="Sword")
-							StrMult=1.25 + ImaginaryBonus
-							OffMult=1.25 + ImaginaryBonus
-							SpdMult=1.5 + ImaginaryBonus
+							StrMult=1.1 + ImaginaryBonus
+							OffMult=1.1 + ImaginaryBonus
+							SpdMult=1.2 + ImaginaryBonus
 							passives=SwordPassives
 						if(p.KeybladeType=="Shield")
-							EndMult=1.5 + ImaginaryBonus
-							DefMult=1.5 + ImaginaryBonus
+							EndMult=1.2 + ImaginaryBonus
+							DefMult=1.2 + ImaginaryBonus
 							passives=ShieldPassives
 						if(p.KeybladeType=="Staff")
-							ForMult=1.5 + ImaginaryBonus
-							OffMult=1.5 + ImaginaryBonus
+							ForMult=1.2 + ImaginaryBonus
+							OffMult=1.2 + ImaginaryBonus
 							passives=StaffPassives
 					verb/Keyblade_Armor()
 						set category="Skills"

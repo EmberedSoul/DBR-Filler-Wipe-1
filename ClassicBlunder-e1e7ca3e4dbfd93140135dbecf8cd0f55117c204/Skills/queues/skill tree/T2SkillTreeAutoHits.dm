@@ -74,20 +74,22 @@ obj
 			WindUp=1
 			ComboMaster=1
 			WindupMessage="relaxes their fist into a straight palm..."
-			DamageMult=5
+			DamageMult=8
 			StrOffense=1
+			EndDefense=0.9
+			Shearing=15
+			MaimStrike=3
 			ActiveMessage="uses their hand as a blade, trying to cut down their opponent!"
 			Area="Target"
 			GuardBreak=1
 			PassThrough=1
-			MortalBlow=1
 			HitSparkIcon='Slash - Zan.dmi'
 			HitSparkX=-16
 			HitSparkY=-16
 			HitSparkTurns=1
 			HitSparkSize=3
 			Cooldown=45
-			EnergyCost=15
+			EnergyCost=8
 			Instinct=1
 			verb/Slashing_Hand_Chop()
 				set category="Skills"

@@ -579,7 +579,7 @@ obj/Skills
 						src.ReturnX=User.x
 						src.ReturnY=User.y
 						src.ReturnZ=User.z
-						Destination=locate(25, 477, 16)
+						Destination=locate(298, 496, 5)
 
 
 				if(src.WindUpIcon)

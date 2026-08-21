@@ -1466,7 +1466,7 @@ mob/Admin2/verb
 				discord_output = replacetext(discord_output, "<b>","**")
 				discord_output = replacetext(discord_output, "</b>","**")
 				discord_output = replacetext(discord_output, "<br>","")
-				discord_output = "<@&1455270598635950333> [discord_output]"
+				discord_output = "<@Everyone> [discord_output]"
 				switch(input("IC Announcement or OOC Announcement?") in list("IC", "OOC"))
 					if("IC")
 						if(glob.discordICAnnounceWebhookURL)
@@ -2266,8 +2266,7 @@ mob/Admin3/verb
 			Log("Admin","<font color=blue>[ExtractInfo(usr)] is shutting down the server in 60 seconds.")
 			world<<"<font size=2><font color=#FFFF00>Shutting down in 60 seconds. Please stop all actions at this time."
 			sleep(600)
-			world<<"we get past it all"
-			world<<"araki upscale"
+			world<<"..And it all comes tumbling down."
 			shutdown()
 
 	SaveWorld()

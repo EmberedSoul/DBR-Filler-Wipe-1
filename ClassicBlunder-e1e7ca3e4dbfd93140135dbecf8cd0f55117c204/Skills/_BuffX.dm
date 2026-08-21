@@ -10209,10 +10209,7 @@ NEW VARIABLES
 				OffMessage="lives to see another day."
 				TextColor="green"
 				adjust(mob/p)
-					var/secretLevel = p.secretDatum.currentTier
-					var/asc = p.AscensionsAcquired
-					if(!altered)
-						passives = list("SpiralPowerUnlocked" = 2, "PureDamage" = 2, "PureReduction" = 2, "Motivation" = 0.25)
+					passives = list("SpiralPowerUnlocked" = 2, "PureDamage" = 2, "PureReduction" = 2, "Motivation" = 0.25)
 			Super_Galaxy_Evolution
 				TimerLimit= 60
 				PowerGlows=list(1,0.8,0.8, 0,1,0, 0.8,0.8,1, 0,0,0)

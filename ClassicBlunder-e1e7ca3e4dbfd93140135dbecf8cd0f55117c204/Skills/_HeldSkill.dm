@@ -458,7 +458,7 @@
 	// Overheld
 	if(hold_ticks > Z.ChargePeriod * 10)
 		if(Z.NoFizzle)
-			hold_ticks = Z.ChargePeriod * 10 
+			hold_ticks = Z.ChargePeriod * 10
 		else
 			FizzleHeldSkill(Z)
 			return

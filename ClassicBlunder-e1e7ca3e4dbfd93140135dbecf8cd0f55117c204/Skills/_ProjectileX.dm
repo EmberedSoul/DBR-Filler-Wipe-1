@@ -3336,7 +3336,6 @@ obj
 						var/damage = 0.5 + (0.25 * sagaLevel)
 						var/ansatsukenPath = player.AnsatsukenPath == "Hadoken" ? 1 : 0
 						var/distance = 30
-						var/charge = 0.25
 						var/iconSize = 1
 						var/stunner = 0
 						Knockback = 2
@@ -3348,7 +3347,6 @@ obj
 							src.IconLock = 'Hadoken - Satsui.dmi'
 						DamageMult = damage
 						Distance = distance
-						Charge = charge
 						MultiHit = 3
 						IconSize = iconSize
 						Radius = 1
@@ -3376,7 +3374,6 @@ obj
 					Cooldown = 150
 					ManaCost = 25
 					adjust(mob/p)
-						Charge=1.5
 						Distance = 20
 						Knockback = 4
 						DamageMult = 2 + (1 * p.SagaLevel)
@@ -3384,7 +3381,6 @@ obj
 						Radius = 1
 						IconSize = 1.25
 						if(p.AnsatsukenPath == "Hadoken")
-							Charge = 1
 							DamageMult = 3 + (1.5 * p.SagaLevel)
 							Radius = 2
 							IconSize = 2

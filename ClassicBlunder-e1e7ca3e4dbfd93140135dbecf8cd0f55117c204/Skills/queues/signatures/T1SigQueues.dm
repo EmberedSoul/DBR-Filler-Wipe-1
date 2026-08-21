@@ -91,8 +91,33 @@ obj
 				EnergyCost=5
 				Confusing=25
 				HitMessage="confuses the opponent's senses with a volley of pressure point strikes!"
+				adjust(mob/p)
+					var/asc= p.AscensionsAcquired
+					if(p.isInnovative(HUMAN, "Any") && !isInnovationDisable(p) && p.Class == "Heroic")
+						name="Discombobulate"
+						DamageMult=10 +(asc)
+						AccuracyMult=2
+						Crippling= 30*(asc)
+						Shearing=25
+						Stunner=4
+						Instinct=2
+						Combo=null
+						Rapid=null
+						BuffAffected= "/obj/Skills/Buffs/SlotlessBuffs/Autonomous/Staggered"
+						HitMessage="claps their hands over the opponent's ears, dazing the target!"
+					else
+						DamageMult=2
+						AccuracyMult = 1.25
+						Duration=5
+						Stunner=2
+						Crippling=15
+						Shearing=25
+						Combo=5
+						Rapid=1
+						BuffAffected=null
 				verb/Nerve_Shot()
 					set category="Skills"
+					adjust(usr)
 					usr.SetQueue(src)
 			Gale_Strike
 				SignatureTechnique=1

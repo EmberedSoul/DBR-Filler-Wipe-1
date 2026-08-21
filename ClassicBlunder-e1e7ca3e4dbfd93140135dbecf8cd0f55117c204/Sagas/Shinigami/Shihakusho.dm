@@ -1,7 +1,7 @@
 obj/Items/Armor/Mobile_Armor/Shinigami_Shihakusho
 	name = "Shihakushō"
 	icon = 'Icons/Armor/Shinigami Vest.dmi'
-	Ascended = 2
+	Ascended = 1
 	Destructable = 0
 	ShatterTier = 0
 	PermEquip = 1
@@ -24,7 +24,7 @@ obj/Items/Armor/Mobile_Armor/Shinigami_Shihakusho
 obj/Items/Armor/Balanced_Armor/Shinigami_Shihakusho
 	name = "Shihakushō"
 	icon = 'Icons/Armor/Shinigami Vest.dmi'
-	Ascended = 2
+	Ascended = 1
 	Destructable = 0
 	ShatterTier = 0
 	PermEquip = 1
@@ -46,7 +46,7 @@ obj/Items/Armor/Balanced_Armor/Shinigami_Shihakusho
 obj/Items/Armor/Plated_Armor/Shinigami_Shihakusho
 	name = "Shihakushō"
 	icon = 'Icons/Armor/Shinigami Vest.dmi'
-	Ascended = 2
+	Ascended = 1
 	Destructable = 0
 	ShatterTier = 0
 	PermEquip = 1

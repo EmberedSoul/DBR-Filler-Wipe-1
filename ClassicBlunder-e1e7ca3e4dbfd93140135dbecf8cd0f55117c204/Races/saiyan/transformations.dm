@@ -36,15 +36,15 @@ transformation
 				form_icon_2.color=list(1,0,0, 0,0.82,0, 0,0,0, -0.26,-0.26,-0.26)
 
 			mastery_boons(mob/user)
-				if(user.Potential>=22&&mastery<25)
+				if(user.Potential>=30&&mastery<25)
 					mastery=25
-				if(user.Potential>=27&&mastery<50)
+				if(user.Potential>=35&&mastery<50)
 					mastery=50
-				if(user.Potential>=30&&mastery<75)
+				if(user.Potential>=40&&mastery<75)
 					mastery=75
-				if(user.Potential>=35&&mastery<100)
+				if(user.Potential>=45&&mastery<100)
 					mastery=100
-				if(user.Potential>=45&&user.transUnlocked<2)
+				if(user.Potential>=60&&user.transUnlocked<2)
 					user.transUnlocked=2
 					user<<"<b>Through your staggering mastery over Super Saiyan, you have naturally unlocked Super Saiyan Two!</b>"
 				if(mastery >= 50)
@@ -171,17 +171,17 @@ transformation
 			strengthadd = 0.35
 			forceadd = 0.35
 			mastery_boons(mob/user)
-				if(user.Potential>=37&&mastery<25)
+				if(user.Potential>=61&&mastery<25)
 					mastery=25
-				if(user.Potential>=39&&mastery<50)
+				if(user.Potential>=63&&mastery<50)
 					mastery=50
-				if(user.Potential>=41&&mastery<75)
+				if(user.Potential>=65&&mastery<75)
 					mastery=75
-				if(user.Potential>=43&&mastery<100)
+				if(user.Potential>=67&&mastery<100)
 					mastery=100
 				if(mastery >= 100)
 					passives = list("Instinct" = 2, "Flow" = 2, "Flicker" = 1, "Pursuer" = 2, "PureDamage" = 3, "PureReduction" = 3, "SaiyanPower2"=0.5)
-				if(user.Potential>=65&&user.transUnlocked<3)
+				if(user.Potential>=70&&user.transUnlocked<3)
 					if(user.isRace(SAIYAN)||user.isRace(HALFSAIYAN)&&user.Class=="Justice"&&(user.race.ascensions[1].choiceSelected == /ascension/sub_ascension/half_saiyan/dominating))
 						user.transUnlocked=3
 						user<<"<b>Through your staggering mastery over Super Saiyan Two, you have naturally unlocked Super Saiyan Three!</b>"

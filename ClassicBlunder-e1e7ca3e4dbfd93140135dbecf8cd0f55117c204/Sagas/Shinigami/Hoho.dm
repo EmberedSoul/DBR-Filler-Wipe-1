@@ -2,9 +2,9 @@
 
 /obj/Skills/Hoho/Shunpo
 	name = "Shunpo"
-	MaxCharges = 5
-	Charges = 5
-	ChargeRefresh = 10
+	MaxCharges = 2
+	Charges = 2
+	ChargeRefresh = 20
 	ManaCost = 0
 	var/tmp/ShunpoToggle = FALSE
 
