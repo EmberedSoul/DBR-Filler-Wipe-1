@@ -20,7 +20,7 @@ mob/proc/gainShinigami()
 	z.Class = src.ZanpakutoClass
 	z.setStatLine()
 	z.name = "Zanpakutō ([src.AsauchiName])"
-	z.Ascended = min(1 + src.SagaLevel, 6)
+	z.Ascended = min(1 + (src.SagaLevel/3), 6)
 
 	if(src.ShinigamiRelease == "Katen Kyokotsu")
 		var/obj/Items/Sword/Medium/Legendary/Shinigami/Zanpakuto_Dual/z2 = new(src)
@@ -37,7 +37,7 @@ mob/proc/gainShinigami()
 			sh = new/obj/Items/Armor/Balanced_Armor/Shinigami_Shihakusho(src)
 		if("Heavy")
 			sh = new/obj/Items/Armor/Plated_Armor/Shinigami_Shihakusho(src)
-	sh.Ascended = min(1 + src.SagaLevel, 6)
+	sh.Ascended = min(1 + (src.SagaLevel/4), 6)
 
 	src.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Shinigami_Form)
 	src.AddSkill(new/obj/Skills/Buffs/NuStyle/SwordStyle/Zanjutsu)

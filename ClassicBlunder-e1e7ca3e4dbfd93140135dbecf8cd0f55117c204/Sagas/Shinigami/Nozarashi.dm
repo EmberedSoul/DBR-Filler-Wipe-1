@@ -20,11 +20,11 @@ mob/var/tmp/LeapAttackSweetSpotActive = FALSE
 			"ManaLeak"       = 4,
 			"ZenkaiPower"    = 0.15
 		)
-		StrMult = 1.15 + (0.1 * SL)
-		EndMult = 1.15 + (0.1 * SL)
-		DefMult = 1.15 + (0.1 * SL)
-		OffMult = 1.15 + (0.1 * SL)
-		SpdMult = 1.15 + (0.1 * SL)
+		StrMult = 1.1 + (0.1 * SL)
+		EndMult = 1.1 + (0.1 * SL)
+		DefMult = 1.1 + (0.1 * SL)
+		OffMult = 1.1 + (0.1 * SL)
+		SpdMult = 1.1 + (0.1 * SL)
 
 	verb/Unleash_Spiritual_Pressure()
 		set category = "Skills"
@@ -91,9 +91,9 @@ mob/var/tmp/LeapAttackSweetSpotActive = FALSE
 		)
 		if(SL < 5)
 			passives["ManaLeak"] = 2
-		StrMult = 1.3 + (0.1 * SL)
-		EndMult = 1.3 + (0.1 * SL)
-		OffMult = 1.3 + (0.1 * SL)
+		StrMult = 1.2 + (0.1 * SL)
+		EndMult = 1.2 + (0.1 * SL)
+		OffMult = 1.2 + (0.1 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn
@@ -241,9 +241,10 @@ mob/var/tmp/LeapAttackSweetSpotActive = FALSE
 		)
 		if(SL < 7)
 			passives["BleedHit"] = 2
-		StrMult = 1.5 + (0.1 * SL)
-		EndMult = 1.5 + (0.1 * SL)
-		OffMult = 1.5 + (0.1 * SL)
+			passives["EnergyLeak"] = 1
+		StrMult = 1.35 + (0.1 * SL)
+		EndMult = 1.35 + (0.1 * SL)
+		OffMult = 1.35 + (0.1 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn

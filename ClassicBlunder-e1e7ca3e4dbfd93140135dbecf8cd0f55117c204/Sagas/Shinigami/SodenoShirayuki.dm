@@ -23,11 +23,11 @@ Make it so that Bankai actually turns your sprite all white. Might need someone 
 		if(altered) return
 		var/SL = p.SagaLevel
 		passives = list(
-			"PureDamage"     = 1 + SL, //I feel all Shikai should get this.
+			"PureDamage"     = 1 + (SL/2), //I feel all Shikai should get this.
 			"ChillResist"    = 0.5 * SL, // This should make it so that Chill hurts you less.
-			"Freezing"       = 2 * SL, // This should be pretty self-explanatory, Rukia's release is an ice release. Brrr.
-			"SpiritSword"    = 0.25 * SL, //Rukia always comes off as a proper hybrid as a Shinigami should be, so give users of her release soem Spirit Sword.
-			"CriticalChance" = 5 * SL,
+			"Freezing"       = 2 * (SL/2), // This should be pretty self-explanatory, Rukia's release is an ice release. Brrr.
+			"SpiritSword"    = 0.25 * (SL/2), //Rukia always comes off as a proper hybrid as a Shinigami should be, so give users of her release soem Spirit Sword.
+			"CriticalChance" = 15 * (SL/2),
 			"CriticalDamage" = 0.05 * SL,
 			"Shirayuki"      = 1 //This currently does nothing but it's meant to give you Chill Stacks when you power up, and Bonuses based on chill-stacks.
 		)
@@ -37,9 +37,9 @@ Make it so that Bankai actually turns your sprite all white. Might need someone 
 			passives["IceHerald"] = 1 // Enhances the potency of the Shikai once you obtain baseline Bankai by giving your crits more OOMPH.
 			passives["IceAge"] = 7.5 * SL // This is Combustion but for Chill. Seems pretty thematic.
 
-		EndMult = 1.1 + (0.1 * SL) // I feel like ICE IS HARD makes a lot of sense here. Someone else can do the stats if they want somethign more thematic.
-		ForMult = 1.1 + (0.1 * SL)
-		SpdMult = 1.1 + (0.1 * SL) // Both to offset the chill nerf you give yourself while powering up with Shirayuki
+		EndMult = 1.2 + (0.075 * SL) // I feel like ICE IS HARD makes a lot of sense here. Someone else can do the stats if they want somethign more thematic.
+		ForMult = 1.2 + (0.075 * SL)
+		SpdMult = 1.2 + (0.075 * SL) // Both to offset the chill nerf you give yourself while powering up with Shirayuki
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn
@@ -84,21 +84,22 @@ Make it so that Bankai actually turns your sprite all white. Might need someone 
 		if(altered) return
 		var/SL = p.SagaLevel
 		passives = list(
-			"PureDamage"     = 1.5 * SL, //Made this a multiplier instead of an additive, Because Rukia's bankai is INCREDIBLY strong in what it does.
-			"ChillResist"    = 0.5 * SL, // This should make it so that Chill hurts you less.
-			"Freezing"       = 4 * SL, // This should be pretty self-explanatory, Rukia's release is an ice release. Brrr.
-			"SpiritSword"    = 0.5 * SL, //Rukia always comes off as a proper hybrid as a Shinigami should be, so give users of her release soem Spirit Sword.
-			"CriticalChance" = 10 * SL,
+			"PureDamage"     = 1.75 * (SL/2), //Made this a multiplier instead of an additive, Because Rukia's bankai is INCREDIBLY strong in what it does.
+			"ChillResist"    = 1 * SL, // This should make it so that Chill hurts you less.
+			"Freezing"       = 3 * SL, // This should be pretty self-explanatory, Rukia's release is an ice release. Brrr.
+			"SpiritSword"    = 0.75 * (SL/2), //Rukia always comes off as a proper hybrid as a Shinigami should be, so give users of her release soem Spirit Sword.
+			"CriticalChance" = 15 * (SL/2),
 			"CriticalDamage" = 0.1 * SL,
 			"AbsoluteZero"   = 1, // This gives other debuffs scaling off Chill stacks.
 			"IceHerald"      = 1, // Lets you use IceHerald in Bankai, Always.
 			"IceAge"         = 10 + (10 * SL), // This is Combustion but for Chill. Seems pretty thematic.
 			"AttackSpeed"    = -2.5 + (0.5 * SL), //Ice makes you cold. Rukia is shown having difficulty moving in her Bankai, may need it's numbers tweaked.
-			"Godspeed"       = -3 + (0.5 * SL), //Same Reason as above.
+			"Godspeed"       = -2 + (0.5 * SL), //Same Reason as above.
 			"Shirayuki"      = 1 //This currently does nothing but it's meant to give you Chill Stacks when you power up, and Bonuses based on chill-stacks.
 		)
-		if(SL < 5)
-			passives["ManaLeak"] = 4
+	//	if(SL < 5)
+//			passives["ManaLeak"] = 4
+//			passives["EnergyLeak"] = 1
 		StrMult = 1.3 + (0.1 * SL)
 		ForMult = 1.3 + (0.1 * SL)
 		EndMult = 1.3 + (0.1 * SL)

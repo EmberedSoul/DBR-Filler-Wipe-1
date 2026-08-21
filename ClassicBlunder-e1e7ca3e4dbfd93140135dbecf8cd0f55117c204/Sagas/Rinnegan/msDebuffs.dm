@@ -110,7 +110,7 @@ obj/blades
 	DefMult=0.5
 	passives = list("Flow" = -5, "Instinct"=-5, "FluidForm" = -2)
 	IconLock = 'SweatDrop.dmi'
-	TimerLimit = 35
+	TimerLimit = 30
 
 
 /obj/Skills/Buffs/SlotlessBuffs/Autonomous/AchillesHeel

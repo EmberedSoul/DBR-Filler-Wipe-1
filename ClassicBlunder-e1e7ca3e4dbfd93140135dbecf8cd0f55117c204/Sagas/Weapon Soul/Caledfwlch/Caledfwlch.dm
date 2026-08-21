@@ -4,7 +4,7 @@ obj/Items/Sword/Medium/Legendary/WeaponSoul/Sword_of_Glory//Caledfwlch
 	pixel_x=-31
 	pixel_y=-30
 	var/caledLight = TRUE
-	passives = list("SpiritSword" = 0.25)
+	passives = list("SpiritSword" = 0.5)
 	Ascended = 6
 	Destructable=0
 	ShatterTier=0

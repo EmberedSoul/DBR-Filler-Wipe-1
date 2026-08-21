@@ -96,9 +96,9 @@ proc/applyAshChoked(mob/target, mob/caster)
 		)
 		if(SL < 3)
 			passives["ManaLeak"] = 2
-		ForMult = 1.1 + (0.1 * SL)
-		StrMult = 1.1 + (0.1 * SL)
-		EndMult = 1.1 + (0.1 * SL)
+		ForMult = 1.2 + (0.075 * SL)
+		StrMult = 1.2 + (0.075 * SL)
+		EndMult = 1.2 + (0.075 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn
@@ -389,12 +389,15 @@ proc/applyAshChoked(mob/target, mob/caster)
 			"Instinct"         = 1 + SL,
 			"MagicSword"       = 1,
 			"HybridStrike"     = 2.5 + (0.5 * SL),
-			"Scorching"        = 3 + SL,
-			"SoulFire"         = 3 + SL,
+			"Scorching"        = 3 + (SL/2),
+			"SoulFire"         = 2 + (SL/2),
 			"FireHerald"       = 1
 		)
 		if(SL < 5)
 			passives["ManaLeak"] = 4
+			passives["EnergyLeak"] = 2
+		if(SL < 7)
+			passives["EnergyLeak"] = 1
 		ForMult = 1.3 + (0.1 * SL)
 		StrMult = 1.3 + (0.1 * SL)
 		EndMult = 1.3 + (0.1 * SL)

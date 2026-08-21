@@ -7,9 +7,10 @@ obj/Items/Sword/Wooden/Legendary/WeaponSoul/RyuiJinguBang
 	pixel_y = -32
 	unsheatheOffsetX = -32
 	unsheatheOffsetY = -32
-	passives = list("Steady" = 1)
+	passives = list("Steady" = 1, "SweepingStrikes" = 1, "Extend" = 1)
 	Destructable=0
 	ShatterTier=0
+	Ascended=6
 	Element = "Earth"
 	ElementallyInfused = "Earth"
 

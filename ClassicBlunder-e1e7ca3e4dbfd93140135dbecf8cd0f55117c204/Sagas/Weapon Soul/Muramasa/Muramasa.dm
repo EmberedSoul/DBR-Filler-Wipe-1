@@ -5,6 +5,8 @@ obj/Items/Sword/Light/Legendary/WeaponSoul/Bane_of_Blades//Muramasa
 	pixel_y=-16
 	passives = list("WeaponBreaker" = 1)
 	Ascended=6
+	Element="Dark"
+	ElementallyInfused = "Dark"
 	Destructable=0
 	ShatterTier=0
 obj/Skills/Buffs/SpecialBuffs/Heavenly_Regalia/Muramasa

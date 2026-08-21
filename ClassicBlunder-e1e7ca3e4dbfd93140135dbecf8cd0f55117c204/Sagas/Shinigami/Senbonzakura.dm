@@ -169,7 +169,7 @@
 			p.already_hit += M.ckey
 			user.Target = M
 			user.petal_attacking = TRUE
-			user.Melee1(forcedTarget=M, BreakAttackRate=1)
+			user.PetalMelee(forcedTarget=M, BreakAttackRate=1)
 			user.petal_attacking = FALSE
 			var/obj/Effects/HE = new(null, 'Icons/Effects/Byakuya - Petals - Attacks.dmi', -40, -40)
 			HE.icon_state = "4"

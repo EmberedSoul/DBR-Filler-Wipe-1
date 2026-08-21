@@ -516,11 +516,11 @@ mob/proc/GetPowerUpRatio()
 	var/Ratio=1
 	var/PowerUp=max(((PowerControl-100)/100),-0.5)
 	PowerUp += GetPUSpike();
-	
+
 	if(Secret == "Heavenly Restriction" && secretDatum?:hasImprovement("Power Control"))
 		PowerUp += secretDatum?:getBoon(src, "Power Control")/12
 
-	Ratio += PowerUp 
+	Ratio += PowerUp
 	if(PowerUp>0)
 		Ratio += GetMovementMastery()
 
@@ -975,7 +975,7 @@ mob/proc/
 			Ratio+=h
 		var/IncompleteRatio=1
 		if(passive_handler["Incomplete"])
-			IncompleteRatio=1-(passive_handler["Incomplete"]*0.5)
+			IncompleteRatio=1-(passive_handler["Incomplete"]*0.85)
 			if(passive_handler.Get("Incomplete")<0)
 				passive_handler.Set("Incomplete", 0)
 			Ratio*=IncompleteRatio
@@ -991,14 +991,14 @@ mob/proc/
 		Ratio += (scalingEldritchPower() * 2 / 10);
 		if(passive_handler.Get("NameCurse")=="Black Ant")
 			Ratio*=0.01
-		
+
 		if(src.Dead&&!src.KeepBody)
 			Ratio*=0.5
 		else if(src.z==glob.DEATH_LOCATION[3]&&!src.CheckSpecial("Cancer Cloth")&&src.SenseUnlocked<8&&!src.passive_handler.Get("SpiritPower"))
 			Ratio*=0.5
 		if(src.KO)
 			Power*=0.05
-		
+
 		Power=Ratio*GetPowerUpRatio()
 
 		if(Power < 1)

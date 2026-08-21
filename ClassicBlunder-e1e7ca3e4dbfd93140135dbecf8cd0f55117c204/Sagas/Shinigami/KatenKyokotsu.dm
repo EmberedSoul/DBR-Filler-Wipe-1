@@ -39,16 +39,16 @@ obj/Items/Sword/Medium/Legendary/Shinigami/Zanpakuto_Dual
 			"CriticalChance"   = 5 + (5 * SL),
 			"CriticalDamage"   = 0.05 + (0.05 * SL),
 			"Flicker"          = 1 + SL,
-			"Pursuer"          = 1 + SL,
-			"TechniqueMastery" = 1 + SL,
-			"Duelist"          = 0.5 + SL,
+			"Pursuer"          = 1 + (0.75 * SL),
+			"TechniqueMastery" = 1 + (0.33 * SL),
+			"Duelist"          = 0.5 + (0.33 * SL),
 			"Shadowbringer"    = 1
 		)
 		if(SL < 3)
 			passives["ManaLeak"] = 2
-		StrMult = 1.1 + (0.15 * SL)
-		SpdMult = 1.1 + (0.15 * SL)
-		ForMult = 1.1 + (0.15 * SL)
+		StrMult = 1.2 + (0.075 * SL)
+		SpdMult = 1.2 + (0.075 * SL)
+		ForMult = 1.2 + (0.075 * SL)
 
 
 	Trigger(mob/user)
@@ -149,7 +149,7 @@ obj/Items/Sword/Medium/Legendary/Shinigami/Zanpakuto_Dual
 /obj/Skills/Kageoni
 	name = "Kageoni"
 	ManaCost = 15
-	Cooldown = 75
+	Cooldown = 120
 
 	verb/Kageoni()
 		set name = "Kageoni"
@@ -179,7 +179,7 @@ obj/Items/Sword/Medium/Legendary/Shinigami/Zanpakuto_Dual
 /obj/Skills/AutoHit/Kageoni_Autohit
 	name = "Kageoni"
 	Area = "Target"
-	DamageMult = 20
+	DamageMult = 15
 	Executing = 0.5
 	HitSparkIcon='Slash.dmi'
 	HitSparkX=-32
@@ -602,18 +602,18 @@ var/global/list/BG_CONTRAST_HIGH = list(
 			"DoubleStrike"     = 3 + SL,
 			"CriticalChance"   = 5 + (5 * SL),
 			"CriticalDamage"   = 0.05 + (0.05 * SL),
-			"HardStyle"        = 3 + SL,
+			"HardStyle"        = 1 + SL,
 			"DeathField"       = 3 + SL,
-			"Duelist"          = 1 + SL,
+			"Duelist"          = 1.5 + (0.33 * SL),
 			"ManaCapMult"      = 0.2 + (0.15 * SL),
 			"Shadowbringer"    = 1,
 			"Tragedy"          = 1
 		)
 		if(SL < 5)
 			passives["ManaLeak"] = 4
-		StrMult = 1.4 + (0.1 * SL)
-		SpdMult = 1.4 + (0.1 * SL)
-		ForMult = 1.4 + (0.1 * SL)
+		StrMult = 1.35 + (0.1 * SL)
+		SpdMult = 1.35 + (0.1 * SL)
+		ForMult = 1.35 + (0.1 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn

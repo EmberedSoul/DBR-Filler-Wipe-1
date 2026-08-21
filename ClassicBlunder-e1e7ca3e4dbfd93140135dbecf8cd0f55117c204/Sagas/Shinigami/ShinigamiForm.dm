@@ -8,12 +8,12 @@
 		var/SL = p.SagaLevel
 		passives = list(
 			"MartialMagic"   = 1,
-			"ManaGeneration" = 1 + SL,
-			"SpiritSword"    = 0.75 * SL,
-			"SpiritFlow"     = 0.75 * SL,
+			"ManaGeneration" = 1 + (SL/3),
+			"SpiritSword"    = 1 + (SL/3),
+			"SpiritFlow"     = 1 + (SL/3),
 			"SpiritPower"    = 0.25 * SL,
-			"HolyMod"        = 2,
-			"EvilResist"     = 2
+			"HolyMod"        = 1 + (SL/3),
+			"EvilResist"     = 0.75 + (SL/3)
 		)
 		if(p.ShinigamiRelease == "Katen Kyokotsu")
 			passives["NeedsSecondSword"] = 1

@@ -41,9 +41,9 @@
 		)
 		if(SL < 3)
 			passives["ManaLeak"] = 2
-		OffMult = 1.2 + (0.15 * SL)
-		StrMult = 1.2 + (0.15 * SL)
-		SpdMult = 1.2 + (0.15 * SL)
+		OffMult = 1.2 + (0.075 * SL)
+		StrMult = 1.2 + (0.075 * SL)
+		SpdMult = 1.2 + (0.075 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn

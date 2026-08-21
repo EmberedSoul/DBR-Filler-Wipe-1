@@ -10,18 +10,18 @@ mob/var/tmp/ButouActive = FALSE
 		if(altered) return
 		var/SL = p.SagaLevel
 		passives = list(
-			"SweepingStrike"  = 0.5 + SL,
+			"SweepingStrike"  = 0.5 + (SL/2),
 			"GiantSwings"     = 1 + SL,
 			"Sniper"          = 1 + SL,
-			"Brutalize"       = 0.5 + (0.5 * SL),
+			"Brutalize"       = 0.5 + (0.25 * SL),
 			"BlurringStrikes" = 1 + (0.25 * SL),
 			"Extend"          = 2 + (0.25 * SL)
 		)
 		if(SL < 3)
 			passives["ManaLeak"] = 2
-		StrMult = 1.2 + (0.15 * SL)
-		SpdMult = 1.2 + (0.15 * SL)
-		OffMult = 1.2 + (0.15 * SL)
+		StrMult = 1.2 + (0.075 * SL)
+		SpdMult = 1.2 + (0.075 * SL)
+		OffMult = 1.2 + (0.075 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn
@@ -35,7 +35,7 @@ mob/var/tmp/ButouActive = FALSE
 		set category = "Skills"
 		if(!src.SlotlessOn)
 			if(!usr.InShinigamiForm)
-				usr << "You must be in Shinigami Form to use Shikai."
+				usr << "You 	must be in Shinigami Form to use Shikai."
 				return
 			if(usr.InBankai())
 				usr << "You cannot use Shikai while in Bankai."
@@ -67,21 +67,23 @@ mob/var/tmp/ButouActive = FALSE
 		if(altered) return
 		var/SL = p.SagaLevel
 		passives = list(
-			"SweepingStrike"  = 3 + SL,
-			"GiantSwings"     = 3 + SL,
-			"Sniper"          = 1.5 + SL,
-			"Brutalize"       = 1 + (0.5 * SL),
-			"BlurringStrikes" = 1.5 + (0.5 * SL),
-			"Extend"          = 3 + (0.5 * SL)
+			"SweepingStrike"  = 1 + (SL/2),
+			"GiantSwings"     = 3 + (SL/2),
+			"Sniper"          = 1.5 + (SL/2),
+			"Brutalize"       = 1.5 + (0.25 * SL),
+			"BlurringStrikes" = 1.5 + (0.25 * SL),
+			"Extend"          = 3 + (0.25 * SL)
 		)
 		if(SL < 5)
 			passives["ManaLeak"] = 4
+			passives["EnergyLeak"] = 2
 		if(SL >= 7)
-			passives["Toxic"]        = 3 + SL
+			passives["EnergyLeak"] = 1
+			passives["Toxic"]        = 2 + (SL/2)
 			passives["SilentPoison"] = 1
-		StrMult = 1.4 + (0.15 * SL)
-		SpdMult = 1.4 + (0.15 * SL)
-		OffMult = 1.4 + (0.15 * SL)
+		StrMult = 1.3 + (0.1 * SL)
+		SpdMult = 1.3 + (0.1 * SL)
+		OffMult = 1.3 + (0.1 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn

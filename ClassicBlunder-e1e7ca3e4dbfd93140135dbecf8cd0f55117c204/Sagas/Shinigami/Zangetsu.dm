@@ -132,15 +132,15 @@
 		var/SL = p.SagaLevel
 		passives = list(
 			"Flicker"         = 1 + SL,
-			"BlurringStrikes" = 1 + SL,
+			"BlurringStrikes" = 1 + (SL/3),
 			"Afterimages"     = 1,
-			"Godspeed"        = 1 + SL,
+			"Godspeed"        = 1 + (SL/2),
 			"Warping"         = 0.5 + (SL/2),
-			"HybridStrike"    = 0.75 + (SL/2),
+			"HybridStrike"    = 1 + (SL/2),
 			"EmptyFlashStep"  = 1,
-			"PureDamage"      = 1 + SL,
-			"SwordAscension"  = SL/2,
-			"Steady"          = 1 + SL
+			"PureDamage"      = 1 + (SL/2),
+			"SwordAscension"  = SL/4,
+			"Steady"          = 1 + (SL/2)
 		)
 		if(SL < 5)
 			passives["ManaLeak"] = 4
@@ -148,10 +148,10 @@
 			passives["Deicide"]  = 15
 			passives["EndlessNine"]  = 0.5
 		if(SL >= 7)
-			StrMult = 1.4 + (0.15 * SL)
-			ForMult = 1.4 + (0.15 * SL)
-			SpdMult = 1.15 + (0.15 * SL)
-			OffMult = 1.15 + (0.15 * SL)
+			StrMult = 1.3 + (0.1 * SL)
+			ForMult = 1.3 + (0.1 * SL)
+			SpdMult = 1.25 + (0.1 * SL)
+			OffMult = 1.15 + (0.1 * SL)
 		else
 			StrMult = 1.3 + (0.1 * SL)
 			ForMult = 1.3 + (0.1 * SL)

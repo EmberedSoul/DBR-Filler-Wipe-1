@@ -3,6 +3,8 @@ obj/Items/Sword/Light/Legendary/WeaponSoul/Sword_of_Purity//Masamune
 	icon='Masamune.dmi'
 	passives = list("Purity" = 1)
 	Ascended=6
+	Element="Light"
+	ElementallyInfused = "Light"
 	ShatterTier=0
 	Destructable=0
 
@@ -47,9 +49,9 @@ obj/Skills/AutoHit/Divine_Cleansing
 obj/Skills/Buffs/SpecialBuffs/Heavenly_Regalia/Masamune
 	name = "Heavenly Regalia: Blessed Blade"
 	StrMult=1.3
-	OffMult=1.3
-	DefMult=1.3
-	passives = list("BeyondPurity" = 1, "PureReduction" = 4, "HybridStrike" = 1, "Momentum" = 2) // may god have mercy on my soul
+	ForMult=1.3
+	EndMult=1.3
+	passives = list("BeyondPurity" = 1, "PureReduction" = 4, "HybridStrike" = 1, "Momentum" = 2, "HolyMod" = 2) // may god have mercy on my soul
 	IconLock='EyeFlameC.dmi'
 	ActiveMessage="'s soothing treasures ring in resonance: Heavenly Regalia!"
 	OffMessage="'s treasures lose their healing luster..."
@@ -64,9 +66,10 @@ obj/Skills/Buffs/SpecialBuffs/Heavenly_Regalia/Masamune
 		StyleDef=1
 		Finisher="/obj/Skills/Queue/Finisher/Snowfall"
 		adjust(mob/p)
-			StyleOff = 1.10 + (0.10 * p.SagaLevel)
-			StyleDef = 1 + (0.10 * p.SagaLevel)
-			passives["Steady"] = 1 + (0.5* p.SagaLevel)
+			StyleOff = 1.10 + (0.15 * p.SagaLevel)
+			StyleDef = 1.10 + (0.15 * p.SagaLevel)
+			passives["HolyMod"] = 1 + (0.75* p.SagaLevel)
+			passives["Steady"] = 1 + (0.75* p.SagaLevel)
 			passives["EvilResist"] = 1 + (0.25* p.SagaLevel)
 			passives["BlurringStrikes"] = 1 + (0.5* p.SagaLevel)
 		verb/Forgemaster_Lifeblood()

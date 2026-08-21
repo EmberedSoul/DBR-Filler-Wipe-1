@@ -7,6 +7,8 @@ obj/Items/Sword/Medium/Legendary/WeaponSoul/Sword_of_Faith // Kusanagi
 	ShatterTier=0
 	Destructable=0
 	Ascended=6
+	Element="Water"
+	ElementallyInfused = "Water"
 	MagicSword=1
 	TierTechniques=list(null, null, null, null, null, "/obj/Skills/Buffs/SlotlessBuffs/Totsuka_no_Tsurugi")
 

@@ -3,6 +3,8 @@ obj/Items/Sword/Heavy/Legendary/WeaponSoul/Sword_of_Hope//Durendal
 	icon='Durendal.dmi'
 	passives = list("ShockwaveBlows" = 1, "ArmorPeeling" = 1)
 	Ascended=6
+	Element="Earth"
+	ElementallyInfused = "Earth"
 	Destructable=0
 	ShatterTier=0
 
@@ -27,7 +29,7 @@ obj/Skills/Buffs/SpecialBuffs/Heavenly_Regalia/Durendal
 	StrMult=1.3
 	EndMult=1.3
 	DefMult=1.3
-	passives = list("ShockwaveBlows" = 1, "HolyMod" = 2)
+	passives = list("ShockwaveBlows" = 1, "HolyMod" = 2, "LifeGen" = 2)
 	IconLock='EyeFlameC.dmi'
 	ActiveMessage="'s legendary weapon and horn ring in resonance: Heavenly Regalia!"
 	OffMessage="'s treasures lose their Saintly luster..."

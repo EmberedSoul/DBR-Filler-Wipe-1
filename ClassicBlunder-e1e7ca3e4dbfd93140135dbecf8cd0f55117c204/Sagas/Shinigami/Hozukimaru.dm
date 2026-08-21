@@ -9,17 +9,17 @@
 		var/SL = p.SagaLevel
 		passives = list(
 			"Extend"         = 1.25 + (0.25 * SL),
-			"SweepingStrike" = 1,
-			"Instinct"       = 1 + SL,
+			"SweepingStrike" = 1 + (0.25 * SL),
+			"Instinct"       = 1 + (SL),
 			"PhysPleroma"    = 0.5 + (0.5 * SL),
-			"Fury"           = 0.5 + (0.5 * SL),
-			"Momentum"       = 0.5 + (0.5 * SL),
+			"Fury"           = 0.5 + (0.33 * SL),
+			"Momentum"       = 0.5 + (0.33 * SL),
 		)
 		if(SL < 3)
 			passives["ManaLeak"] = 2
-		StrMult = 1.2 + (0.15 * SL)
-		EndMult = 1.2 + (0.15 * SL)
-		OffMult = 1.2 + (0.15 * SL)
+		StrMult = 1.2 + (0.075 * SL)
+		EndMult = 1.2 + (0.075 * SL)
+		OffMult = 1.2 + (0.075 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn
@@ -71,14 +71,15 @@
 			"PhysPleroma"    = 0.5 + (0.5 * SL),
 			"Fury"           = 0.5 + (0.5 * SL),
 			"Momentum"       = 0.5 + (0.5 * SL),
-			"Harden"         = 1.5 + (0.5 * SL),
+			"Harden"         = 1.5 + (0.33 * SL),
 			"WarmingUp"      = 1
 		)
 		if(SL < 5)
 			passives["ManaLeak"] = 4
-		StrMult = 1.4 + (0.15 * SL)
-		EndMult = 1.4 + (0.15 * SL)
-		OffMult = 1.4 + (0.15 * SL)
+			passives["EnergyLeak"] = 1
+		StrMult = 1.3 + (0.15 * SL)
+		EndMult = 1.3 + (0.15 * SL)
+		OffMult = 1.3 + (0.15 * SL)
 
 	Trigger(mob/user)
 		var/wasOn = src.SlotlessOn

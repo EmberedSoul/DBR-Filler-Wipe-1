@@ -412,6 +412,7 @@
 #include "_Reworks\Combat\Damage\Melee\knockbacksMelee.dm"
 #include "_Reworks\Combat\Damage\Melee\Melee.dm"
 #include "_Reworks\Combat\Damage\Melee\multiStrike.dm"
+#include "_Reworks\Combat\Damage\Melee\Petals.dm"
 #include "_Reworks\Combat\Damage\Melee\queueEffects.dm"
 #include "_Reworks\Combat\Damage\Melee\raycast.dm"
 #include "_Reworks\Combat\Damage\Melee\statCalc.dm"
