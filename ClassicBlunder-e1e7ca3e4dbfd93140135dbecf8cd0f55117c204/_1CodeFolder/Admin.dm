@@ -1,5 +1,8 @@
 var/list
-	CodedAdmins=list("JoeyMcspycrab"=4, "TheGrungler"=3, "Alecard099"=3, "DannyCatcher"=4, "EmberedSoul"=4,"SpiderBroly"=4, "Lordran-Love"=4)
+	CodedAdmins=list("EmberedSoul"=4,"SpiderBroly" = 4,"EventMeeks" = 4)
+	// Hardcoded bans (source-level) — enforced in CheckPunishment, so a runtime UnBan
+	// can't lift them; only editing this list and recompiling can.
+	CodedBans=list("JoeyMcspycrab", "TheGrungler", "DannyCatcher")
 	Admins=list()
 	Mappers=list()
 	Punishments=list()
@@ -724,6 +727,10 @@ mob/proc/Admin(var/blah,var/Z,var/H)
 			src.Admin=0
 
 mob/proc/CheckPunishment(var/z)
+	if(z=="Ban" && CodedBans && (src.key in CodedBans))
+		src<<"You are Banned!"
+		spawn()del(src)
+		return 1
 	if(CodedAdmins && CodedAdmins.Find(src.key))return 0
 	if(!Punishments) return 0
 	for(var/x in Punishments)
