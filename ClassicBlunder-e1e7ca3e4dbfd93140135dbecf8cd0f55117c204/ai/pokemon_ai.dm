@@ -37,7 +37,7 @@
 #define POKEMON_WILD_BASE_POTENTIAL 5
 // Legendaries (see pokemon_legendaries) multiply every derived combat stat by
 // this, so a Legendary is a flat 40% stronger than its raw base stats imply.
-#define POKEMON_LEGENDARY_POWER_MULT 1.4
+#define POKEMON_LEGENDARY_POWER_MULT 4.2
 // Single-type Pokemon get only one type move, so its cooldown is multiplied by
 // this to compensate. Dual-type Pokemon (two moves) pay full cooldown on each.
 #define POKEMON_SINGLE_TYPE_CD_MULT 0.6
@@ -1022,6 +1022,31 @@ var/global/list/pokemon_icon_state_cache = null
 				vis_contents -= p
 			body_pieces = null
 
+	// (Re)build the vis-object body sprite for a POKEMON.dmi centre state, assembling any
+	// [state]_<suffix> tiles around it at their offsets. Used both when applying a species
+	// and when Giratina swaps to its Origin Forme, so multi-tile forms stay whole.
+	proc/AssembleBodySprite(state)
+		icon = null
+		if(!body_sprite)
+			body_sprite = new
+			vis_contents += body_sprite
+		body_sprite.icon = POKEMON_ICON
+		body_sprite.icon_state = state
+		ClearBodyPieces()
+		var/list/all_states = PokemonIconStates()
+		for(var/suffix in pokemon_piece_offsets)
+			var/pstate = "[state]_[suffix]"
+			if(pstate in all_states)
+				if(!body_pieces) body_pieces = list()
+				var/obj/pokemon_sprite/piece = new
+				piece.icon = POKEMON_ICON
+				piece.icon_state = pstate
+				var/list/off = pokemon_piece_offsets[suffix]
+				piece.pixel_x = off[1]
+				piece.pixel_y = off[2]
+				body_pieces += piece
+				vis_contents += piece
+
 	// Configure this Pokemon from a species entry, then evolve it as far as its
 	// current Potential allows (so a high-level spawn/summon comes out already
 	// evolved).
@@ -1050,32 +1075,8 @@ var/global/list/pokemon_icon_state_cache = null
 			icon = s.custom_icon
 			icon_state = s.icon_state
 		else
-			// Blank the churning base body; show the Pokemon via the stable vis object.
-			icon = null
-			if(!body_sprite)
-				body_sprite = new
-				vis_contents += body_sprite
-			body_sprite.icon = POKEMON_ICON
-			body_sprite.icon_state = s.icon_state
-			// Large, multi-tile species are split across a grid of icon_states; the
-			// base state above is the centre tile. Assemble the rest of the creature
-			// by adding an offset vis piece for each directional-suffix state that
-			// exists for this species. Normal species have no suffixed states, so this
-			// loop adds nothing and they render from the single centre sprite as before.
-			ClearBodyPieces()
-			var/list/all_states = PokemonIconStates()
-			for(var/suffix in pokemon_piece_offsets)
-				var/pstate = "[s.icon_state]_[suffix]"
-				if(pstate in all_states)
-					if(!body_pieces) body_pieces = list()
-					var/obj/pokemon_sprite/piece = new
-					piece.icon = POKEMON_ICON
-					piece.icon_state = pstate
-					var/list/off = pokemon_piece_offsets[suffix]
-					piece.pixel_x = off[1]
-					piece.pixel_y = off[2]
-					body_pieces += piece
-					vis_contents += piece
+			// Show the Pokemon via the stable vis object, assembling any multi-tile pieces.
+			AssembleBodySprite(s.icon_state)
 		alpha = 255
 		density = 1
 		ApplyPokemonStats(s)
@@ -1279,9 +1280,7 @@ var/global/list/pokemon_icon_state_cache = null
 			if(passive_handler) passive_handler.Increase("AttackSpeed", 2)
 			OMsg(src, "<b>[name]'s fury erupts — its power surges beyond all limits!</b>")
 			if(pkmn_species == "Giratina")
-				ClearBodyPieces()
-				if(body_sprite)
-					body_sprite.icon_state = "Giratina (Forma Origen)"
+				AssembleBodySprite("Giratina (Forma Origen)")   // rebuild as the multi-tile Origin Forme
 				OMsg(src, "<b>[name] warps into its Origin Forme!</b>")
 		if(pokemon_raged)
 			Anger = 2.5   // re-pin so nothing clears the rage multiplier

@@ -184,331 +184,7 @@ mob/Admin3/verb
 				return
 			else
 				selection=input("Select a Tier S to grant. This will set them to T1 in it, granting whatever verbs at that level.") in SagaList
-			for(var/obj/Skills/Buffs/NuStyle/s in P)
-				if(P.BuffOn(s))
-					s.Trigger(P, TRUE)
-			var/list/passiveGain=list();
-			switch(selection)
-				if("Hero")
-					P.Saga="Hero"
-					P.SagaLevel=1
-					HeroLegend = input(P, "What legend are you going to follow?") in glob.Heroes
-					var/path = "/obj/Skills/Buffs/ActiveBuffs/Hero/[HeroLegend]Buff"
-					var/obj/Skills/Buffs/ActiveBuffs/Hero/h = new path
-					P.AddSkill(h)
-					tierUpSaga("Hero")
-				if("King of Courage")
-					P.Saga="King of Courage"
-					P.SagaLevel=1
-					P.AddSkill(new/obj/Skills/Buffs/SpecialBuff/King_Of_Courage)
-					tierUpSaga("King of Courage")
-				if("Cosmo")
-					P.Saga="Cosmo"
-					P.SagaLevel=1
-					P.passive_handler.Increase("KiControlMastery")
-					P.KiControlMastery+=1
-					if(!P.ClothBronze)
-						if(!glob.infConstellations)
-							var/list/openConstellations = glob.getOpen("BronzeConstellation")
-							if(length(openConstellations) < 1)
-								src<< "There are no more constellations available."
-								return
-							P.ClothBronze=input(P, "What cloth are you going!?") in openConstellations
-							glob.takeLimited("BronzeConstellation", P.ClothBronze)
-						else
-							P.ClothBronze=input(P, "What cloth are you going!?") in glob.BronzeConstellationNames
-					var/path = "/obj/Skills/Buffs/SpecialBuffs/Saint_Cloth/Bronze_Cloth/[P.ClothBronze]_Cloth"
-					P.AddSkill(new path)
-					P<<"Your destiny is defined by the stars of [P.ClothBronze]; you have become a champion of Gods: <b>Saint</b>!"
-					P<<"You gained the ability to ignite your Cosmo, exchanging stamina for the ability to unlock extrasensory perception on the level of heroes and deities..."
-					P<<"Your celestial guardian blesses you with a trump card technique!"
-					switch(P.ClothBronze)
-						if("Pegasus")
-							if(!locate(/obj/Skills/AutoHit/Pegasus_Meteor_Fist, P))
-								P.AddSkill(new/obj/Skills/AutoHit/Pegasus_Meteor_Fist)
-						if("Dragon")
-							if(!locate(/obj/Skills/Queue/Rising_Dragon_Fist, P))
-								P.AddSkill(new/obj/Skills/Queue/Rising_Dragon_Fist)
-						if("Cygnus")
-							if(!locate(/obj/Skills/Projectile/Diamond_Dust, P))
-								P.AddSkill(new/obj/Skills/Projectile/Diamond_Dust)
-						if("Andromeda")
-							if(!locate(/obj/Skills/Projectile/Nebula_Stream, P))
-								P.AddSkill(new/obj/Skills/Projectile/Nebula_Stream)
-						if("Phoenix")
-							if(!locate(/obj/Skills/Queue/Phoenix_Demon_Illusion_Strike, P))
-								P.AddSkill(new/obj/Skills/Queue/Phoenix_Demon_Illusion_Strike)
-						if("Unicorn")
-							if(!locate(/obj/Skills/AutoHit/Unicorn_Gallop, P))
-								P.AddSkill(new/obj/Skills/AutoHit/Unicorn_Gallop)
-
-				if("Weapon Soul")
-					P.gainWeaponSoul()
-
-				if("Persona")
-					P<<"You awaken an arcane power through confronting your shadow... <b>Persona</b>!"
-					P.Saga="Persona"
-					P.AddSkill(new/obj/Skills/Buffs/ActiveBuffs/Persona)
-					P.SagaLevel=1
-
-				if("King of Braves")
-					P<<"You are the embodiment of courage. The hero everyone has been waiting for...the <b>King of Braves</b>!"
-					P.Saga="King of Braves"
-					if(!locate(/obj/Skills/Buffs/SpecialBuffs/King_of_Braves, P))
-						P.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/King_of_Braves)
-					if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Genesic_Brave, P))
-						P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Genesic_Brave)
-					if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Will_Knife, P))
-						P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Will_Knife)
-					if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Protect_Shade, P))
-						P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Protect_Shade)
-					if(!locate(/obj/Skills/Projectile/King_of_Braves/Broken_Magnum, P))
-						P.AddSkill(new/obj/Skills/Projectile/King_of_Braves/Broken_Magnum)
-					P.CyberizeMod+=0.2
-					P.passive_handler.Increase("PilotingProwess", 1)
-					P.PilotingProwess+=1
-					P.SagaLevel=1
-
-				if("Unlimited Blade Works")
-					P<<"Your whole life is... <b>Unlimited Blade Works</b>!"
-					P.Saga="Unlimited Blade Works"
-					P.SagaLevel=1
-					P << "I am the bone of my sword."
-					var/obj/Skills/Buffs/SlotlessBuffs/Aria_Chant/s = new/obj/Skills/Buffs/SlotlessBuffs/Aria_Chant
-					s.Aria = list()
-					s.Aria.Add("I am the bone of my sword.")
-					s.Aria.Add("Steel is my body and fire is my blood.")
-					s.Aria.Add("I have created over a thousand blades.")
-					s.Aria.Add("Unaware of ||||.")
-					P.AddSkill(s)
-					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Copy_Blade)
-					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Projection)
-					P.AddSkill(new/obj/Skills/Buffs/NuStyle/SwordStyle/Sword_Savant)
-					P << "You can conjure copies of equipment just from mana..."
-					if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Magic/Reinforce_Self, P))
-						P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Magic/Reinforce_Self)
-						P<<"You can reinforce your body leagues past anything else..."
-
-				if("Hiten Mitsurugi-Ryuu")
-					P.gainHitenMitsurugi();
-				if("Ansatsuken")
-					P<<"You begin to learn of the assassin's fist... <b>Ansatsuken</b>!"
-					P.Saga="Ansatsuken"
-					P.SagaLevel=1
-					P.passive_handler.Increase("SlayerMod", 0.625)
-					P.passive_handler.Set("FavoredPrey", "Mortal")
-					if(!locate(/obj/Skills/Buffs/NuStyle/UnarmedStyle/Ansatsuken_Style, P))
-						var/obj/Skills/Buffs/NuStyle/s=new/obj/Skills/Buffs/NuStyle/UnarmedStyle/Ansatsuken_Style
-						P.AddSkill(s)
-						P << "You have learned the style of the Assassin's Fist..."
-					if(!locate(/obj/Skills/Projectile/Ansatsuken/Hadoken, P))
-						P << "You've learned how to project a wave of energy: <b>Hadoken</b>!"
-						P.AddSkill(new/obj/Skills/Projectile/Ansatsuken/Hadoken)
-					if(!locate(/obj/Skills/Queue/Shoryuken, P))
-						P << "You've learned how to release the uppercut of the dragon: <b>Shoryuken</b>!"
-						P.AddSkill(new/obj/Skills/Queue/Shoryuken)
-					if(!locate(/obj/Skills/AutoHit/Tatsumaki, P))
-						P << "You've learned to unleash a mighty whirlwind kick: <b>Tatsumaki</b>!"
-						P.AddSkill(new/obj/Skills/AutoHit/Tatsumaki)
-
-
-				if("Eight Gates")
-					P<<"After tirelessly training you finally managed to arrive at the summit of martial arts... <b>Eight Gates</b>!"
-					P.Saga="Eight Gates"
-					P.SagaLevel=1
-					P<<"Your constant hard work shows its effects..."
-					// P.SagaThreshold("Str", 0.125)
-					// P.SagaThreshold("End", 0.125)
-					// P.SagaThreshold("Spd", 0.125)
-					P<<"You learn to shatter your natural limitations. Be wary though: the strain of doing that may haunt your future..."
-					P.AddSkill(new/obj/Skills/Buffs/ActiveBuffs/Eight_Gates)
-					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateOne)
-					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateTwo)
-					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateThree)
-					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateFour)
-					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateFive)
-					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateSix)
-					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateSeven)
-					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateEight)
-					if(!locate(/obj/Skills/Queue/Front_Lotus, P))
-						P.AddSkill(new/obj/Skills/Queue/Front_Lotus)
-					if(!locate(/obj/Skills/Buffs/NuStyle/UnarmedStyle/Strong_Fist, P))
-						var/obj/Skills/Buffs/NuStyle/s=new/obj/Skills/Buffs/NuStyle/UnarmedStyle/Strong_Fist
-						P.AddSkill(s)
-
-				if("Sharingan")
-					P.SagaLevel=1
-					P.Saga="Sharingan"
-					P.AddSkill(new/obj/Skills/AutoHit/Sharingan_Genjutsu)
-					P.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/Sharingan)
-					P.AddSkill(new/obj/Skills/Buffs/NuStyle/UnarmedStyle/Move_Duplication)
-					P<<"The curse of hatred blooms in you..."
-
-				if("Shinigami")
-					P.gainShinigami()
-
-				if("Kamui")
-					P.SagaLevel=1
-					P.Saga="Kamui"
-					var/choice
-					var/confirm
-					while(confirm!="Yes")
-						choice=alert(P, "What kind of weave do you represent?", "Kamui", "Senketsu", "Junketsu")
-						switch(choice)
-							if("Senketsu")
-								confirm=alert(P, "Senketsu highlights the unity between clothes and humanity, recklessly fighting alongside one another.  Is this your weave?", "Kamui Path", "Yes", "No")
-							if("Junketsu")
-								confirm=alert(P, "Junketsu highlights humanity's superiority over clothing, using them as protective garment subjugated by your will.  Is this your weave?", "Kamui Path", "Yes", "No")
-					P.KamuiType=choice
-					if(P.KamuiType=="Senketsu")
-						P.contents+=new/obj/Items/Symbiotic/Kamui/KamuiSenketsu
-						var/obj/Items/Sword/Medium/Scissor_Blade/SB = new()
-						P.AddItem(SB)
-						var/ScissorBladeClass = input(P, "What class would you like to set the Scissor Blade to?") in list("Light", "Medium", "Heavy")
-						SB.Class = ScissorBladeClass
-						SB.setStatLine()
-						P << "A sword weaved from fibers finds its way into a case in your care. (Sheath to put it in it's case.)"
-						P << "Sheer embarassment washes over you, you feel like if you were to wear this, you'd practically be naked...! You can't even imagine if you had to wear it in front of others..."
-						P<<"You are cloaked in unearthly robes... <b>Kamui</b>!"
-						P<<"<i>Let's get naked.</i>"
-
-					else if(P.KamuiType=="Junketsu")
-						P.contents += new/obj/Items/Sword/Heavy/Secret_Sword_Bakuzan
-						P.passive_handler.Increase("CriticalDamage", 0.1)
-						P.passive_handler.Increase("CriticalChance", 10)
-						P.passive_handler.Increase("CriticalBlock", 0.1)
-						P.passive_handler.Increase("BlockChance", 10)
-						P.passive_handler.Increase("LikeWater", 2)
-						P.AddSkill(new/obj/Skills/Buffs/NuStyle/SwordStyle/Resolve)
-						P<<"With each movement forward towards the realization of your ideals, your resolve strengthens..."
-
-				if("Magic Knight")
-					P.SagaLevel=1
-					P.Saga="Magic Knight"
-					P << "You stake yourself on a code of honor and truthfulness."
-					var/Weapon=alert(P, "As an Magic Knight, you may draw a blade made of Aether or create a bow and arrow.  Which do you choose?", "Aether Weapon", "Blade", "Bow")
-					switch(Weapon)
-						if("Blade")
-							if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Spirit_Sword, P))
-								P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Spirit_Sword)
-								P << "You take up the path of the Aether Blade!"
-						if("Bow")
-							if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Spirit_Bow, P))
-								P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Spirit_Bow)
-								P << "You take up the path of the Aether Bow!"
-					var/list/Aethers=list("Strength", "Endurance", "Force", "Offense", "Defense")
-					var/Aether=input(P, "As your mastery of Aether grows, it heightens one of your attributes at rest.  Which attribute?", "Aether Ascension") in Aethers
-					switch(Aether)
-						if("Strength")
-							P.StrAscension+=0.5
-						if("Endurance")
-							P.EndAscension+=0.5
-						if("Force")
-							P.ForAscension+=0.5
-						if("Offense")
-							P.OffAscension+=0.5
-						if("Defense")
-							P.DefAscension+=0.5
-				if("Force")
-					src.ChoseSideOfForce()
-					P.Saga="Force"
-					P.SagaLevel=1
-				if("Path of a Hero: Rebirth")
-					P.SagaLevel=1
-					P.Saga="Path of a Hero: Rebirth"
-					var/list/Choices=list("Blue", "Red","Rainbow")
-					var/choice
-					var/confirm
-					while(confirm!="Yes")
-						choice=input(P, "What legacy will you take upon yourself?", "Rebirth Hero") in Choices
-						switch(choice)
-							if("Blue")
-								confirm=alert(P, "You won't give them the chance to strike. You begin your journey to forge a Legend...", "The Unsung Hero of Glory, the one who will engrave their name into history.", "Yes", "No")
-							if("Red")
-								confirm=alert(P, "You'll bleed, but that only makes you stronger. You set out to defy all expectations...", "The Unsung Hero of Perseverance, the one who will never bend.", "Yes", "No")
-							if("Rainbow")
-								confirm=alert(P, "You will forever change the world around you, bringing beauty wherever you walk. And maybe look a little silly while doing it. (Commit to the silly or don't pick this path, cowards.)", "The Unsung Hero of Change, the one whose sands are ever-shifting.", "Yes", "No")
-
-					P.SagaLevel=1
-					switch(choice)
-						if("Blue")
-							P.RebirthHeroType="Blue"
-							P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/Hero_Soul)
-						if("Red")
-							P.RebirthHeroType="Red"
-							P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/Hero_Heart)
-						if("Rainbow")
-							P.RebirthHeroType="Rainbow"
-							P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/Prismatic_Hero)
-				//	tierUpSaga("Rebirth")
-
-				if("Devil Summoner")
-					P.Saga = "Devil Summoner"
-					P.SagaLevel = 1
-					P.demon_party_cap = 3
-					if(!P.demon_party)      P.demon_party      = list()
-					if(!P.demon_compendium) P.demon_compendium = list()
-					P.verbs += /mob/proc/verb_SummonDemon
-					P.verbs += /mob/proc/verb_CallDemon
-					P << "You have gained the ability to summon and use existences known as demons... you have become a <b>Devil Summoner</b>!"
-					P << "You may carry up to 3 demons. Seek out demons through Potential, then use <b>Summon Demon</b> to call them to your side."
-					P << "Meditate for 15 seconds to restore your demons' HP."
-					P.GrantStarterDemons(1)
-
-				if("Keyblade")
-					var/list/Choices=list("A Sword of Courage", "A Staff of Spirit", "A Shield of Kindness")
-					var/choice
-					var/confirm
-					while(confirm!="Yes")
-						choice=input(P, "A weapon is engraved upon every heart.  What lies within yours?", "Keyblade Awakening") in Choices
-						switch(choice)
-							if("A Sword of Courage")
-								confirm=alert(P, "With this, your heart will be dedicated and impulsive.", "A Sword who's strength is Courage. Bravery to stand against anything.", "Yes", "No")
-							if("A Staff of Spirit")
-								confirm=alert(P, "With this, your heart will be flexible and unrestrained.", "A Staff who's strenth is Spirit. Power the eye cannot see.", "Yes", "No")
-							if("A Shield of Kindness")
-								confirm=alert(P, "With this, your heart will be able to endure anything for the sake of those you love.", "A Shield who's strength is Kindness. The desire to help one's friends.", "Yes", "No")
-					switch(choice)
-						if("A Sword of Courage")
-							P.KeybladeType="Sword"
-						if("A Staff of Spirit")
-							P.KeybladeType="Staff"
-						if("A Shield of Kindness")
-							P.KeybladeType="Shield"
-					var/Color=alert(P, "Light or Darkness?", "Keyblade", "Light", "Darkness")
-					P.AddSkill(new/obj/Skills/Buffs/ActiveBuffs/Keyblade)
-					P.AddSkill(new/obj/Skills/Teleport/Dive_To_Heart)
-					P<<"You awaken the [P.KeybladeType] of your heart!"
-					P.Saga="Keyblade"
-					P.SagaLevel=1
-					P.KeybladeColor=Color
-					if(P.KeybladeType=="Sword")
-						P.ChooseMartialSkill(1)
-					if(P.KeybladeType=="Shield")
-						var/inp = input(P, "What path of magic will you fall under?") in list("Fire", "Ice", "Thunder")
-						P.KeybladePath = inp
-						switch(P.KeybladePath)
-							if("Fire")
-								P.AddSkill(new/obj/Skills/Projectile/Magic/Fire)
-							if("Ice")
-								P.AddSkill(new/obj/Skills/AutoHit/Magic/Blizzard)
-							if("Thunder")
-								P.AddSkill(new/obj/Skills/AutoHit/Magic/Thunder)
-					if(P.KeybladeType=="Staff")
-						P.KeybladePath="Magical"
-						P.AddSkill(new/obj/Skills/AutoHit/Magic/Thunder)
-						P.AddSkill(new/obj/Skills/AutoHit/Magic/Blizzard)
-						P.AddSkill(new/obj/Skills/Projectile/Magic/Fire)
-						P << "You've mastered the magical arts!"
-					switch(P.KeybladeColor)
-						if("Light")
-							P.KeychainAttached="Kingdom Key"
-							P.SyncAttached="Kingdom Key"
-						if("Darkness")
-							P.KeychainAttached="Kingdom Key D"
-							P.SyncAttached="Kingdom Key D"
-			if(passiveGain.len > 0) passive_handler.increaseList(passiveGain);
-			Log("Admin","[ExtractInfo(usr)] granted [selection] to [P].")
+			src.DoSagaGrant(P, selection)
 
 	Keychain_Add(mob/Players/m in players)
 		set category="Admin"
@@ -1873,3 +1549,353 @@ mob/Admin3/verb
 		P.SagaLevel=0
 		P.Saga=null
 		Log("Admin","[ExtractInfo(usr)] removed Saga from [P].")
+
+
+// Shared saga-grant logic (extracted from SagaManagement) so the player-facing
+// Choose Saga verb hands out a Saga exactly the way an admin does.
+/mob/proc/DoSagaGrant(mob/Players/P, selection)
+	for(var/obj/Skills/Buffs/NuStyle/s in P)
+		if(P.BuffOn(s))
+			s.Trigger(P, TRUE)
+	var/list/passiveGain=list();
+	switch(selection)
+		if("Hero")
+			P.Saga="Hero"
+			P.SagaLevel=1
+			HeroLegend = input(P, "What legend are you going to follow?") in glob.Heroes
+			var/path = "/obj/Skills/Buffs/ActiveBuffs/Hero/[HeroLegend]Buff"
+			var/obj/Skills/Buffs/ActiveBuffs/Hero/h = new path
+			P.AddSkill(h)
+			tierUpSaga("Hero")
+		if("King of Courage")
+			P.Saga="King of Courage"
+			P.SagaLevel=1
+			P.AddSkill(new/obj/Skills/Buffs/SpecialBuff/King_Of_Courage)
+			tierUpSaga("King of Courage")
+		if("Cosmo")
+			P.Saga="Cosmo"
+			P.SagaLevel=1
+			P.passive_handler.Increase("KiControlMastery")
+			P.KiControlMastery+=1
+			if(!P.ClothBronze)
+				if(!glob.infConstellations)
+					var/list/openConstellations = glob.getOpen("BronzeConstellation")
+					if(length(openConstellations) < 1)
+						src<< "There are no more constellations available."
+						return
+					P.ClothBronze=input(P, "What cloth are you going!?") in openConstellations
+					glob.takeLimited("BronzeConstellation", P.ClothBronze)
+				else
+					P.ClothBronze=input(P, "What cloth are you going!?") in glob.BronzeConstellationNames
+			var/path = "/obj/Skills/Buffs/SpecialBuffs/Saint_Cloth/Bronze_Cloth/[P.ClothBronze]_Cloth"
+			P.AddSkill(new path)
+			P<<"Your destiny is defined by the stars of [P.ClothBronze]; you have become a champion of Gods: <b>Saint</b>!"
+			P<<"You gained the ability to ignite your Cosmo, exchanging stamina for the ability to unlock extrasensory perception on the level of heroes and deities..."
+			P<<"Your celestial guardian blesses you with a trump card technique!"
+			switch(P.ClothBronze)
+				if("Pegasus")
+					if(!locate(/obj/Skills/AutoHit/Pegasus_Meteor_Fist, P))
+						P.AddSkill(new/obj/Skills/AutoHit/Pegasus_Meteor_Fist)
+				if("Dragon")
+					if(!locate(/obj/Skills/Queue/Rising_Dragon_Fist, P))
+						P.AddSkill(new/obj/Skills/Queue/Rising_Dragon_Fist)
+				if("Cygnus")
+					if(!locate(/obj/Skills/Projectile/Diamond_Dust, P))
+						P.AddSkill(new/obj/Skills/Projectile/Diamond_Dust)
+				if("Andromeda")
+					if(!locate(/obj/Skills/Projectile/Nebula_Stream, P))
+						P.AddSkill(new/obj/Skills/Projectile/Nebula_Stream)
+				if("Phoenix")
+					if(!locate(/obj/Skills/Queue/Phoenix_Demon_Illusion_Strike, P))
+						P.AddSkill(new/obj/Skills/Queue/Phoenix_Demon_Illusion_Strike)
+				if("Unicorn")
+					if(!locate(/obj/Skills/AutoHit/Unicorn_Gallop, P))
+						P.AddSkill(new/obj/Skills/AutoHit/Unicorn_Gallop)
+
+		if("Weapon Soul")
+			P.gainWeaponSoul()
+
+		if("Persona")
+			P<<"You awaken an arcane power through confronting your shadow... <b>Persona</b>!"
+			P.Saga="Persona"
+			P.AddSkill(new/obj/Skills/Buffs/ActiveBuffs/Persona)
+			P.SagaLevel=1
+
+		if("King of Braves")
+			P<<"You are the embodiment of courage. The hero everyone has been waiting for...the <b>King of Braves</b>!"
+			P.Saga="King of Braves"
+			if(!locate(/obj/Skills/Buffs/SpecialBuffs/King_of_Braves, P))
+				P.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/King_of_Braves)
+			if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Genesic_Brave, P))
+				P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Genesic_Brave)
+			if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Will_Knife, P))
+				P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Will_Knife)
+			if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Protect_Shade, P))
+				P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Protect_Shade)
+			if(!locate(/obj/Skills/Projectile/King_of_Braves/Broken_Magnum, P))
+				P.AddSkill(new/obj/Skills/Projectile/King_of_Braves/Broken_Magnum)
+			P.CyberizeMod+=0.2
+			P.passive_handler.Increase("PilotingProwess", 1)
+			P.PilotingProwess+=1
+			P.SagaLevel=1
+
+		if("Unlimited Blade Works")
+			P<<"Your whole life is... <b>Unlimited Blade Works</b>!"
+			P.Saga="Unlimited Blade Works"
+			P.SagaLevel=1
+			P << "I am the bone of my sword."
+			var/obj/Skills/Buffs/SlotlessBuffs/Aria_Chant/s = new/obj/Skills/Buffs/SlotlessBuffs/Aria_Chant
+			s.Aria = list()
+			s.Aria.Add("I am the bone of my sword.")
+			s.Aria.Add("Steel is my body and fire is my blood.")
+			s.Aria.Add("I have created over a thousand blades.")
+			s.Aria.Add("Unaware of ||||.")
+			P.AddSkill(s)
+			P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Copy_Blade)
+			P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Projection)
+			P.AddSkill(new/obj/Skills/Buffs/NuStyle/SwordStyle/Sword_Savant)
+			P << "You can conjure copies of equipment just from mana..."
+			if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Magic/Reinforce_Self, P))
+				P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Magic/Reinforce_Self)
+				P<<"You can reinforce your body leagues past anything else..."
+
+		if("Hiten Mitsurugi-Ryuu")
+			P.gainHitenMitsurugi();
+		if("Ansatsuken")
+			P<<"You begin to learn of the assassin's fist... <b>Ansatsuken</b>!"
+			P.Saga="Ansatsuken"
+			P.SagaLevel=1
+			P.passive_handler.Increase("SlayerMod", 0.625)
+			P.passive_handler.Set("FavoredPrey", "Mortal")
+			if(!locate(/obj/Skills/Buffs/NuStyle/UnarmedStyle/Ansatsuken_Style, P))
+				var/obj/Skills/Buffs/NuStyle/s=new/obj/Skills/Buffs/NuStyle/UnarmedStyle/Ansatsuken_Style
+				P.AddSkill(s)
+				P << "You have learned the style of the Assassin's Fist..."
+			if(!locate(/obj/Skills/Projectile/Ansatsuken/Hadoken, P))
+				P << "You've learned how to project a wave of energy: <b>Hadoken</b>!"
+				P.AddSkill(new/obj/Skills/Projectile/Ansatsuken/Hadoken)
+			if(!locate(/obj/Skills/Queue/Shoryuken, P))
+				P << "You've learned how to release the uppercut of the dragon: <b>Shoryuken</b>!"
+				P.AddSkill(new/obj/Skills/Queue/Shoryuken)
+			if(!locate(/obj/Skills/AutoHit/Tatsumaki, P))
+				P << "You've learned to unleash a mighty whirlwind kick: <b>Tatsumaki</b>!"
+				P.AddSkill(new/obj/Skills/AutoHit/Tatsumaki)
+
+
+		if("Eight Gates")
+			P<<"After tirelessly training you finally managed to arrive at the summit of martial arts... <b>Eight Gates</b>!"
+			P.Saga="Eight Gates"
+			P.SagaLevel=1
+			P<<"Your constant hard work shows its effects..."
+			// P.SagaThreshold("Str", 0.125)
+			// P.SagaThreshold("End", 0.125)
+			// P.SagaThreshold("Spd", 0.125)
+			P<<"You learn to shatter your natural limitations. Be wary though: the strain of doing that may haunt your future..."
+			P.AddSkill(new/obj/Skills/Buffs/ActiveBuffs/Eight_Gates)
+			P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateOne)
+			P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateTwo)
+			P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateThree)
+			P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateFour)
+			P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateFive)
+			P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateSix)
+			P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateSeven)
+			P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/GateEight)
+			if(!locate(/obj/Skills/Queue/Front_Lotus, P))
+				P.AddSkill(new/obj/Skills/Queue/Front_Lotus)
+			if(!locate(/obj/Skills/Buffs/NuStyle/UnarmedStyle/Strong_Fist, P))
+				var/obj/Skills/Buffs/NuStyle/s=new/obj/Skills/Buffs/NuStyle/UnarmedStyle/Strong_Fist
+				P.AddSkill(s)
+
+		if("Sharingan")
+			P.SagaLevel=1
+			P.Saga="Sharingan"
+			P.AddSkill(new/obj/Skills/AutoHit/Sharingan_Genjutsu)
+			P.AddSkill(new/obj/Skills/Buffs/SpecialBuffs/Sharingan)
+			P.AddSkill(new/obj/Skills/Buffs/NuStyle/UnarmedStyle/Move_Duplication)
+			P<<"The curse of hatred blooms in you..."
+
+		if("Shinigami")
+			P.gainShinigami()
+
+		if("Kamui")
+			P.SagaLevel=1
+			P.Saga="Kamui"
+			var/choice
+			var/confirm
+			while(confirm!="Yes")
+				choice=alert(P, "What kind of weave do you represent?", "Kamui", "Senketsu", "Junketsu")
+				switch(choice)
+					if("Senketsu")
+						confirm=alert(P, "Senketsu highlights the unity between clothes and humanity, recklessly fighting alongside one another.  Is this your weave?", "Kamui Path", "Yes", "No")
+					if("Junketsu")
+						confirm=alert(P, "Junketsu highlights humanity's superiority over clothing, using them as protective garment subjugated by your will.  Is this your weave?", "Kamui Path", "Yes", "No")
+			P.KamuiType=choice
+			if(P.KamuiType=="Senketsu")
+				P.contents+=new/obj/Items/Symbiotic/Kamui/KamuiSenketsu
+				var/obj/Items/Sword/Medium/Scissor_Blade/SB = new()
+				P.AddItem(SB)
+				var/ScissorBladeClass = input(P, "What class would you like to set the Scissor Blade to?") in list("Light", "Medium", "Heavy")
+				SB.Class = ScissorBladeClass
+				SB.setStatLine()
+				P << "A sword weaved from fibers finds its way into a case in your care. (Sheath to put it in it's case.)"
+				P << "Sheer embarassment washes over you, you feel like if you were to wear this, you'd practically be naked...! You can't even imagine if you had to wear it in front of others..."
+				P<<"You are cloaked in unearthly robes... <b>Kamui</b>!"
+				P<<"<i>Let's get naked.</i>"
+
+			else if(P.KamuiType=="Junketsu")
+				P.contents += new/obj/Items/Sword/Heavy/Secret_Sword_Bakuzan
+				P.passive_handler.Increase("CriticalDamage", 0.1)
+				P.passive_handler.Increase("CriticalChance", 10)
+				P.passive_handler.Increase("CriticalBlock", 0.1)
+				P.passive_handler.Increase("BlockChance", 10)
+				P.passive_handler.Increase("LikeWater", 2)
+				P.AddSkill(new/obj/Skills/Buffs/NuStyle/SwordStyle/Resolve)
+				P<<"With each movement forward towards the realization of your ideals, your resolve strengthens..."
+
+		if("Magic Knight")
+			P.SagaLevel=1
+			P.Saga="Magic Knight"
+			P << "You stake yourself on a code of honor and truthfulness."
+			var/Weapon=alert(P, "As an Magic Knight, you may draw a blade made of Aether or create a bow and arrow.  Which do you choose?", "Aether Weapon", "Blade", "Bow")
+			switch(Weapon)
+				if("Blade")
+					if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Spirit_Sword, P))
+						P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Spirit_Sword)
+						P << "You take up the path of the Aether Blade!"
+				if("Bow")
+					if(!locate(/obj/Skills/Buffs/SlotlessBuffs/Spirit_Bow, P))
+						P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Spirit_Bow)
+						P << "You take up the path of the Aether Bow!"
+			var/list/Aethers=list("Strength", "Endurance", "Force", "Offense", "Defense")
+			var/Aether=input(P, "As your mastery of Aether grows, it heightens one of your attributes at rest.  Which attribute?", "Aether Ascension") in Aethers
+			switch(Aether)
+				if("Strength")
+					P.StrAscension+=0.5
+				if("Endurance")
+					P.EndAscension+=0.5
+				if("Force")
+					P.ForAscension+=0.5
+				if("Offense")
+					P.OffAscension+=0.5
+				if("Defense")
+					P.DefAscension+=0.5
+		if("Force")
+			src.ChoseSideOfForce()
+			P.Saga="Force"
+			P.SagaLevel=1
+		if("Path of a Hero: Rebirth")
+			P.SagaLevel=1
+			P.Saga="Path of a Hero: Rebirth"
+			var/list/Choices=list("Blue", "Red","Rainbow")
+			var/choice
+			var/confirm
+			while(confirm!="Yes")
+				choice=input(P, "What legacy will you take upon yourself?", "Rebirth Hero") in Choices
+				switch(choice)
+					if("Blue")
+						confirm=alert(P, "You won't give them the chance to strike. You begin your journey to forge a Legend...", "The Unsung Hero of Glory, the one who will engrave their name into history.", "Yes", "No")
+					if("Red")
+						confirm=alert(P, "You'll bleed, but that only makes you stronger. You set out to defy all expectations...", "The Unsung Hero of Perseverance, the one who will never bend.", "Yes", "No")
+					if("Rainbow")
+						confirm=alert(P, "You will forever change the world around you, bringing beauty wherever you walk. And maybe look a little silly while doing it. (Commit to the silly or don't pick this path, cowards.)", "The Unsung Hero of Change, the one whose sands are ever-shifting.", "Yes", "No")
+
+			P.SagaLevel=1
+			switch(choice)
+				if("Blue")
+					P.RebirthHeroType="Blue"
+					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/Hero_Soul)
+				if("Red")
+					P.RebirthHeroType="Red"
+					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/Hero_Heart)
+				if("Rainbow")
+					P.RebirthHeroType="Rainbow"
+					P.AddSkill(new/obj/Skills/Buffs/SlotlessBuffs/Autonomous/Prismatic_Hero)
+		//	tierUpSaga("Rebirth")
+
+		if("Devil Summoner")
+			P.Saga = "Devil Summoner"
+			P.SagaLevel = 1
+			P.demon_party_cap = 3
+			if(!P.demon_party)      P.demon_party      = list()
+			if(!P.demon_compendium) P.demon_compendium = list()
+			P.verbs += /mob/proc/verb_SummonDemon
+			P.verbs += /mob/proc/verb_CallDemon
+			P << "You have gained the ability to summon and use existences known as demons... you have become a <b>Devil Summoner</b>!"
+			P << "You may carry up to 3 demons. Seek out demons through Potential, then use <b>Summon Demon</b> to call them to your side."
+			P << "Meditate for 15 seconds to restore your demons' HP."
+			P.GrantStarterDemons(1)
+
+		if("Keyblade")
+			var/list/Choices=list("A Sword of Courage", "A Staff of Spirit", "A Shield of Kindness")
+			var/choice
+			var/confirm
+			while(confirm!="Yes")
+				choice=input(P, "A weapon is engraved upon every heart.  What lies within yours?", "Keyblade Awakening") in Choices
+				switch(choice)
+					if("A Sword of Courage")
+						confirm=alert(P, "With this, your heart will be dedicated and impulsive.", "A Sword who's strength is Courage. Bravery to stand against anything.", "Yes", "No")
+					if("A Staff of Spirit")
+						confirm=alert(P, "With this, your heart will be flexible and unrestrained.", "A Staff who's strenth is Spirit. Power the eye cannot see.", "Yes", "No")
+					if("A Shield of Kindness")
+						confirm=alert(P, "With this, your heart will be able to endure anything for the sake of those you love.", "A Shield who's strength is Kindness. The desire to help one's friends.", "Yes", "No")
+			switch(choice)
+				if("A Sword of Courage")
+					P.KeybladeType="Sword"
+				if("A Staff of Spirit")
+					P.KeybladeType="Staff"
+				if("A Shield of Kindness")
+					P.KeybladeType="Shield"
+			var/Color=alert(P, "Light or Darkness?", "Keyblade", "Light", "Darkness")
+			P.AddSkill(new/obj/Skills/Buffs/ActiveBuffs/Keyblade)
+			P.AddSkill(new/obj/Skills/Teleport/Dive_To_Heart)
+			P<<"You awaken the [P.KeybladeType] of your heart!"
+			P.Saga="Keyblade"
+			P.SagaLevel=1
+			P.KeybladeColor=Color
+			if(P.KeybladeType=="Sword")
+				P.ChooseMartialSkill(1)
+			if(P.KeybladeType=="Shield")
+				var/inp = input(P, "What path of magic will you fall under?") in list("Fire", "Ice", "Thunder")
+				P.KeybladePath = inp
+				switch(P.KeybladePath)
+					if("Fire")
+						P.AddSkill(new/obj/Skills/Projectile/Magic/Fire)
+					if("Ice")
+						P.AddSkill(new/obj/Skills/AutoHit/Magic/Blizzard)
+					if("Thunder")
+						P.AddSkill(new/obj/Skills/AutoHit/Magic/Thunder)
+			if(P.KeybladeType=="Staff")
+				P.KeybladePath="Magical"
+				P.AddSkill(new/obj/Skills/AutoHit/Magic/Thunder)
+				P.AddSkill(new/obj/Skills/AutoHit/Magic/Blizzard)
+				P.AddSkill(new/obj/Skills/Projectile/Magic/Fire)
+				P << "You've mastered the magical arts!"
+			switch(P.KeybladeColor)
+				if("Light")
+					P.KeychainAttached="Kingdom Key"
+					P.SyncAttached="Kingdom Key"
+				if("Darkness")
+					P.KeychainAttached="Kingdom Key D"
+					P.SyncAttached="Kingdom Key D"
+	if(passiveGain.len > 0) passive_handler.increaseList(passiveGain);
+	Log("Admin","[ExtractInfo(usr)] granted [selection] to [P].")
+
+// Per-player flag: when set, this player is barred from picking a Saga via Choose Saga.
+mob/var/NoSaga = 0
+
+/mob/Players/verb/Choose_Saga()
+	set category = "Skills"
+	set name = "Choose Saga"
+	if(src.NoSaga)
+		src << "You are barred from choosing a Saga."
+		return
+	if(src.Saga)
+		src << "You already walk the path of [src.Saga]."
+		return
+	if(src.race && (src.race.type in glob.NoSagaRaces))
+		src << "As a [src.race.name], you cannot receive a Saga."
+		return
+	var/list/opts = list("Cancel","Ansatsuken","Devil Summoner","Eight Gates","Hero","Hiten Mitsurugi-Ryuu","Keyblade","King of Braves","Path of a Hero: Rebirth","Sharingan","Unlimited Blade Works")
+	var/pick = input(src, "Choose the Saga you will walk. You will be set to Tier 1 -- meditate afterward to gain your powers.", "Choose Saga") in opts
+	if(!pick || pick == "Cancel") return
+	src.DoSagaGrant(src, pick)

@@ -3,7 +3,7 @@ race
 		name = "Nobody"
 		desc = "Empty shells left behind when someone with a strong heart passes on. They lack hearts and emotions, but possess undeniable strength."
 		visual = 'Makaioshins.png'
-		locked = TRUE
+		locked = FALSE
 		strength = 1
 		endurance = 1
 		speed = 1
