@@ -254,7 +254,7 @@ globalTracker
 		WorldDefaultAcc = 50
 		WorldWhiffRate = 25
 		celestialObjectTicks
-		NoSagaRaces = list(ELDRITCH, NOBODY, DEMON, DRAGON, ELF, SAIYAN, ANGEL, MAKAIOSHIN)
+		NoSagaRaces = list(ELDRITCH, NOBODY, DEMON, DRAGON, ELF, SAIYAN, ANGEL, MAKAIOSHIN, MAJIN)
 		WILL_NOT_TARP_LIST = list("JustLat", "TheUltimateHope")
 		T3_STYLES_GODKI_VALUE = 0.15//Would recommend moving this to 0.25
 		T3_SAGA_STLYE_GODKI = 0//TODO BETWEEN WIPES: Style. =_=
